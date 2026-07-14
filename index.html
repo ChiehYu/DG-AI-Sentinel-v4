@@ -410,30 +410,31 @@
                     </h3>
                     <p class="text-xs text-gray-400 mt-0.5">系統自動將您的交易紀錄進行加權平均精算，並聯動即時防守黃線與成本安全邊際 (-5% Protection)。</p>
                 </div>
-                <div class="flex items-center gap-2 flex-wrap">
-                    <button onclick="openTradeModal()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded font-bold text-xs transition">
-                        + 新增買賣紀錄
+                <div class="grid grid-cols-2 sm:flex sm:flex-wrap sm:items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0">
+                    <button onclick="openTradeModal()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-2 rounded-lg font-bold text-xs transition flex items-center justify-center gap-1.5 shadow col-span-2 sm:col-span-1">
+                        ➕ 新增買賣紀錄
                     </button>
-                    <button onclick="exportTradesCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded font-bold text-xs transition flex items-center gap-1">
-                        📤 導出 CSV (Excel可讀)
+                    <button onclick="exportTradesCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg font-bold text-xs transition flex items-center justify-center gap-1.5 shadow">
+                        📤 導出 CSV
                     </button>
-                    <button onclick="exportTradesJSON()" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded font-bold text-xs transition flex items-center gap-1">
-                        📤 導出 JSON 備份
+                    <button onclick="exportTradesJSON()" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded-lg font-bold text-xs transition flex items-center justify-center gap-1.5 shadow">
+                        📤 導出 JSON
                     </button>
-                    <label class="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1.5 rounded font-bold text-xs transition cursor-pointer flex items-center gap-1 m-0">
-                        📥 匯入紀錄備份
+                    <label class="bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded-lg font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1.5 shadow m-0">
+                        📥 匯入備份
                         <input type="file" id="importTradesFile" accept=".csv,.json" class="hidden" onchange="importTradesFromFile(event)">
                     </label>
-                    <button onclick="openTotalSummaryModal()" class="bg-purple-600 hover:bg-purple-500 text-white px-3 py-1.5 rounded font-bold text-xs transition">
-                        📊 檢視成本盈虧總表
+                    <button onclick="openTotalSummaryModal()" class="bg-purple-600 hover:bg-purple-500 text-white px-3 py-2 rounded-lg font-bold text-xs transition flex items-center justify-center gap-1.5 shadow col-span-2 sm:col-span-1">
+                        📊 成本與盈虧總表
                     </button>
                 </div>
             </div>
             
-            <div class="overflow-x-auto">
+            <!-- 桌面端/平板端傳統表格檢視 (md 及以上顯示) -->
+            <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-left border-collapse text-xs sm:text-sm">
                     <thead>
-                        <tr class="bg-[#1e2330] text-gray-400 border-b border-gray-700 font-bold">
+                        <tr class="bg-[#1e2330] text-gray-400 border-b border-gray-700 font-bold whitespace-nowrap">
                             <th class="px-4 py-3">成交日期</th>
                             <th class="px-4 py-3">交易動作</th>
                             <th class="px-4 py-3">股票標的與代號</th>
@@ -447,6 +448,11 @@
                         <tr><td colspan="7" class="px-4 py-8 text-center text-gray-500 italic">載入信貸建倉紀錄中...</td></tr>
                     </tbody>
                 </table>
+            </div>
+
+            <!-- 手機端專屬卡片流檢視 (僅手機 md 以下顯示，告別擠在一起與跳行) -->
+            <div id="tradeHistoryMobileCards" class="md:hidden flex flex-col gap-3 mt-1">
+                <div class="py-8 text-center text-gray-500 italic text-xs">載入信貸建倉紀錄中...</div>
             </div>
         </div>
     </div>

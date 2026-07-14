@@ -981,34 +981,70 @@ async function deleteTrade(id) {
 function renderTradeHistory() {
     let trades = JSON.parse(localStorage.getItem('dg_sentinel_v3_trades')) || [];
     const tbody = document.getElementById('tradeHistoryBody');
-    tbody.innerHTML = '';
+    const mobileCardContainer = document.getElementById('tradeHistoryMobileCards');
+    
+    if (tbody) tbody.innerHTML = '';
+    if (mobileCardContainer) mobileCardContainer.innerHTML = '';
 
     if (trades.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-gray-500 italic">目前尚無新增的額外交易紀錄（將以 200 萬信貸預設 6 大標的為基礎觀測）</td></tr>';
+        if (tbody) tbody.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-gray-500 italic">目前尚無新增的額外交易紀錄（將以 200 萬信貸預設 6 大標的為基礎觀測）</td></tr>';
+        if (mobileCardContainer) mobileCardContainer.innerHTML = '<div class="py-8 text-center text-gray-500 italic text-xs">目前尚無新增的額外交易紀錄</div>';
         return;
     }
 
     trades.forEach(t => {
         const isBuy = t.type === 'buy' || !t.type;
         const totalTradeCost = Math.round(t.price * t.shares);
-        const typeBadge = isBuy ? '<span class="text-red-400 border border-red-500/50 px-1.5 py-0.5 rounded text-xs">買進</span>' : '<span class="text-green-400 border border-green-500/50 px-1.5 py-0.5 rounded text-xs">賣出</span>';
+        const typeBadge = isBuy ? '<span class="text-red-400 border border-red-500/50 px-1.5 py-0.5 rounded text-[11px] font-bold whitespace-nowrap">買進</span>' : '<span class="text-green-400 border border-green-500/50 px-1.5 py-0.5 rounded text-[11px] font-bold whitespace-nowrap">賣出</span>';
         const sName = (basePortfolio[t.symbol] && basePortfolio[t.symbol].name) || t.symbol;
 
-        const tr = document.createElement('tr');
-        tr.className = 'hover:bg-gray-800/80 transition-colors';
-        tr.innerHTML = `
-            <td class="px-4 py-3 text-gray-400 font-mono">${t.date}</td>
-            <td class="px-4 py-3">${typeBadge}</td>
-            <td class="px-4 py-3 font-bold text-white">${sName} (${t.symbol})</td>
-            <td class="px-4 py-3 text-right font-mono text-gray-300">$${t.price.toFixed(2)}</td>
-            <td class="px-4 py-3 text-right font-mono text-gray-300">${t.shares.toLocaleString()} 股</td>
-            <td class="px-4 py-3 text-right font-bold font-mono ${isBuy ? 'text-yellow-400' : 'text-green-400'}">${isBuy ? '+' : '-'} $${totalTradeCost.toLocaleString()}</td>
-            <td class="px-4 py-3 text-center space-x-2">
-                <button onclick="editTrade(${t.id})" class="text-blue-400 hover:text-blue-300">✎ 編輯</button>
-                <button onclick="deleteTrade(${t.id})" class="text-gray-500 hover:text-red-400">🗑 刪除</button>
-            </td>
-        `;
-        tbody.appendChild(tr);
+        // 1. 桌面與平板端表格列 (傳統橫向排列，嚴格禁止折行)
+        if (tbody) {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-gray-800/80 transition-colors whitespace-nowrap';
+            tr.innerHTML = `
+                <td class="px-4 py-3 text-gray-400 font-mono whitespace-nowrap">${t.date}</td>
+                <td class="px-4 py-3 whitespace-nowrap">${typeBadge}</td>
+                <td class="px-4 py-3 font-bold text-white whitespace-nowrap">${sName} (${t.symbol})</td>
+                <td class="px-4 py-3 text-right font-mono text-gray-300 whitespace-nowrap">$${t.price.toFixed(2)}</td>
+                <td class="px-4 py-3 text-right font-mono text-gray-300 whitespace-nowrap">${t.shares.toLocaleString()} 股</td>
+                <td class="px-4 py-3 text-right font-bold font-mono whitespace-nowrap ${isBuy ? 'text-yellow-400' : 'text-green-400'}">${isBuy ? '+' : '-'} $${totalTradeCost.toLocaleString()}</td>
+                <td class="px-4 py-3 text-center whitespace-nowrap space-x-3">
+                    <button onclick="editTrade(${t.id})" class="text-blue-400 hover:text-blue-300 font-bold">✎ 編輯</button>
+                    <button onclick="deleteTrade(${t.id})" class="text-gray-500 hover:text-red-400 font-bold">🗑 刪除</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        }
+
+        // 2. 手機端專屬卡片流 (垂直清晰分區，徹底解決字體跳行與直排文字痛點)
+        if (mobileCardContainer) {
+            const card = document.createElement('div');
+            card.className = 'bg-[#0f131c] border border-gray-800/90 p-3.5 rounded-xl flex flex-col gap-2 hover:border-gray-700 transition shadow-md';
+            card.innerHTML = `
+                <div class="flex justify-between items-center border-b border-gray-800/80 pb-2">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-mono text-gray-400">${t.date}</span>
+                        ${typeBadge}
+                    </div>
+                    <div class="flex items-center gap-3 text-xs">
+                        <button onclick="editTrade(${t.id})" class="text-blue-400 font-bold flex items-center gap-1 hover:text-blue-300 transition">✎ 編輯</button>
+                        <button onclick="deleteTrade(${t.id})" class="text-gray-500 hover:text-red-400 font-bold flex items-center gap-1 transition">🗑 刪除</button>
+                    </div>
+                </div>
+                <div class="flex justify-between items-end pt-0.5">
+                    <div>
+                        <div class="font-bold text-white text-sm leading-tight">${sName}</div>
+                        <div class="text-xs text-cyan-400 font-mono font-bold mt-1">${t.symbol}</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-mono font-black text-sm sm:text-base ${isBuy ? 'text-yellow-400' : 'text-green-400'}">${isBuy ? '+' : '-'} $${totalTradeCost.toLocaleString()}</div>
+                        <div class="text-[11px] text-gray-400 font-mono mt-1">$${t.price.toFixed(2)} × ${t.shares.toLocaleString()} 股</div>
+                    </div>
+                </div>
+            `;
+            mobileCardContainer.appendChild(card);
+        }
     });
 }
 
