@@ -410,12 +410,22 @@
                     </h3>
                     <p class="text-xs text-gray-400 mt-0.5">系統自動將您的交易紀錄進行加權平均精算，並聯動即時防守黃線與成本安全邊際 (-5% Protection)。</p>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 flex-wrap">
                     <button onclick="openTradeModal()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded font-bold text-xs transition">
                         + 新增買賣紀錄
                     </button>
+                    <button onclick="exportTradesCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded font-bold text-xs transition flex items-center gap-1">
+                        📤 導出 CSV (Excel可讀)
+                    </button>
+                    <button onclick="exportTradesJSON()" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded font-bold text-xs transition flex items-center gap-1">
+                        📤 導出 JSON 備份
+                    </button>
+                    <label class="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1.5 rounded font-bold text-xs transition cursor-pointer flex items-center gap-1 m-0">
+                        📥 匯入紀錄備份
+                        <input type="file" id="importTradesFile" accept=".csv,.json" class="hidden" onchange="importTradesFromFile(event)">
+                    </label>
                     <button onclick="openTotalSummaryModal()" class="bg-purple-600 hover:bg-purple-500 text-white px-3 py-1.5 rounded font-bold text-xs transition">
-                        📊 檢視全帳戶成本與盈虧總表
+                        📊 檢視成本盈虧總表
                     </button>
                 </div>
             </div>

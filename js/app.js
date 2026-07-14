@@ -80,11 +80,24 @@ const defaultItemizedTrades = [
     { id: 1720569600001, date: '2026-07-10', symbol: '00919', type: 'buy', price: 29.85, shares: 3000 }
 ];
 
-function seedDefaultItemizedTradesIfNeeded() {
-    if (localStorage.getItem('dg_sentinel_v3_seeded_12itemized') !== 'v3.2') {
+async function seedDefaultItemizedTradesIfNeeded() {
+    if (localStorage.getItem('dg_sentinel_v3_seeded_12itemized') !== 'v3.3') {
         localStorage.removeItem('dg_sentinel_v3_portfolio');
+        try {
+            const res = await fetch('data/trades.json');
+            if (res.ok) {
+                const jsonTrades = await res.json();
+                if (Array.isArray(jsonTrades) && jsonTrades.length > 0) {
+                    localStorage.setItem('dg_sentinel_v3_trades', JSON.stringify(jsonTrades));
+                    localStorage.setItem('dg_sentinel_v3_seeded_12itemized', 'v3.3');
+                    return;
+                }
+            }
+        } catch (e) {
+            // 離線或讀取失敗時，自動使用內建 defaultItemizedTrades 備援
+        }
         localStorage.setItem('dg_sentinel_v3_trades', JSON.stringify(defaultItemizedTrades));
-        localStorage.setItem('dg_sentinel_v3_seeded_12itemized', 'v3.2');
+        localStorage.setItem('dg_sentinel_v3_seeded_12itemized', 'v3.3');
     }
 }
 
@@ -999,6 +1012,92 @@ function renderTradeHistory() {
     });
 }
 
+function exportTradesCSV() {
+    const trades = JSON.parse(localStorage.getItem('dg_sentinel_v3_trades')) || [];
+    if (trades.length === 0) return alert("目前尚無交易紀錄可導出！");
+    let csv = "\uFEFF成交日期,交易方向,股票代號,標的名目,成交單價,成交股數,成交總額\n";
+    trades.forEach(t => {
+        const isBuy = t.type === 'buy' || !t.type;
+        const dir = isBuy ? "買進" : "賣出";
+        const sName = (basePortfolio[t.symbol] && basePortfolio[t.symbol].name) || t.symbol;
+        const total = Math.round(t.price * t.shares);
+        csv += `${t.date},${dir},${t.symbol},${sName},${t.price},${t.shares},${total}\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `DG_AI_Sentinel_交易紀錄_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+}
+
+function exportTradesJSON() {
+    const trades = JSON.parse(localStorage.getItem('dg_sentinel_v3_trades')) || [];
+    if (trades.length === 0) return alert("目前尚無交易紀錄可導出！");
+    const blob = new Blob([JSON.stringify(trades, null, 4)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `DG_AI_Sentinel_交易紀錄備份_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+}
+
+function importTradesFromFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const content = e.target.result;
+        try {
+            let importedTrades = [];
+            if (file.name.endsWith('.json')) {
+                importedTrades = JSON.parse(content);
+            } else if (file.name.endsWith('.csv')) {
+                const lines = content.split(/\r?\n/).filter(l => l.trim().length > 0);
+                for (let i = 1; i < lines.length; i++) {
+                    const cols = lines[i].split(',');
+                    if (cols.length >= 6) {
+                        const date = cols[0].trim();
+                        const dir = cols[1].trim();
+                        const symbol = cols[2].trim();
+                        const price = parseFloat(cols[4].trim());
+                        const shares = parseInt(cols[5].trim(), 10);
+                        if (date && symbol && !isNaN(price) && !isNaN(shares)) {
+                            importedTrades.push({
+                                id: Date.now() + i,
+                                date: date,
+                                symbol: symbol,
+                                type: (dir === '賣出' || dir === 'sell') ? 'sell' : 'buy',
+                                price: price,
+                                shares: shares
+                            });
+                        }
+                    }
+                }
+            }
+            if (importedTrades.length > 0) {
+                if (confirm(`成功解析 ${importedTrades.length} 筆交易紀錄！\n點按「確定」將覆蓋目前紀錄；點按「取消」則合併加入現有紀錄中。`)) {
+                    localStorage.setItem('dg_sentinel_v3_trades', JSON.stringify(importedTrades));
+                } else {
+                    const existing = JSON.parse(localStorage.getItem('dg_sentinel_v3_trades')) || [];
+                    localStorage.setItem('dg_sentinel_v3_trades', JSON.stringify([...existing, ...importedTrades]));
+                }
+                renderTradeHistory();
+                const currSymbol = document.getElementById('customStockInput').value || '00919';
+                delete cachedData[currSymbol];
+                loadDashboard(currSymbol);
+                alert("✅ 交易紀錄匯入更新完成！成本與均價已自動重新精算。");
+            } else {
+                alert("⚠️ 未能在檔案中解析出有效的交易紀錄內容。");
+            }
+        } catch (err) {
+            alert("❌ 檔案格式讀取錯誤：" + err.message);
+        }
+        event.target.value = '';
+    };
+    reader.readAsText(file);
+}
+
 // ============================================================================
 // 7. 雲端 Firebase 同步與總表 Modal
 // ============================================================================
@@ -1104,7 +1203,7 @@ async function loadDashboard(symbol) {
 }
 
 window.addEventListener('load', async () => {
-    seedDefaultItemizedTradesIfNeeded();
+    await seedDefaultItemizedTradesIfNeeded();
     loadBasePortfolioFromLocal();
     updateQuickSelector();
     renderTradeHistory();
