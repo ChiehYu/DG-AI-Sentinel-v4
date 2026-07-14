@@ -33,36 +33,60 @@ const PREDICT_DAYS = 20;
 // 核心 6 大標的與真實信貸持股成本
 let basePortfolio = {
     '00919': {
-        name: '群益精選高息', shares: 4000, cost: 29.70, targetShares: 16670, category: 'defense',
+        name: '群益精選高息', shares: 0, cost: 0, targetShares: 16670, category: 'defense',
         color: '#10b981', border: 'border-green-500',
         strategy: "【防守月月配核心】1/4/7/10 月領息。已持股 4 張均價 $29.70。單季配息低於 $20,000 元二代健保門檻免扣稅。"
     },
     '0056': {
-        name: '元大高股息', shares: 2000, cost: 51.70, targetShares: 4690, category: 'defense',
+        name: '元大高股息', shares: 0, cost: 0, targetShares: 4690, category: 'defense',
         color: '#10b981', border: 'border-green-500',
         strategy: "【防守月月配核心】2/5/8/11 月領息。已卡位除息門票，持有 2 張均價 $51.70。"
     },
     '00878': {
-        name: '國泰永續高息', shares: 2000, cost: 32.75, targetShares: 7500, category: 'defense',
+        name: '國泰永續高息', shares: 0, cost: 0, targetShares: 7500, category: 'defense',
         color: '#10b981', border: 'border-green-500',
         strategy: "【防守月月配核心】3/6/9/12 月領息。持有 2 張均價 $32.75，與 00919/0056 形成全年 12 個月無縫接息防衛網。"
     },
     '2330': {
-        name: '台積電', shares: 20, cost: 2425.00, targetShares: 183, category: 'offense', targetPrice: 3000,
+        name: '台積電', shares: 0, cost: 0, targetShares: 183, category: 'offense', targetPrice: 3000,
         color: '#3b82f6', border: 'border-blue-500',
         strategy: "【進攻 AI 晶片龍頭】全球晶圓製造與 CoWoS 先進封裝霸主。信貸進攻部位 50% 核心，守季線分批定期定額承接。"
     },
     '2454': {
-        name: '聯發科', shares: 15, cost: 3833.00, targetShares: 65, category: 'offense', targetPrice: 5000,
+        name: '聯發科', shares: 0, cost: 0, targetShares: 65, category: 'offense', targetPrice: 5000,
         color: '#a855f7', border: 'border-purple-500',
         strategy: "【進攻 ASIC 算力核心】Google TPU v8t 專案與手機 SoC 高度成長。趁大跌分批零股進場，均價大降至 $3,833。"
     },
     '3037': {
-        name: '欣興', shares: 65, cost: 876.00, targetShares: 187, category: 'offense', targetPrice: 1200,
+        name: '欣興', shares: 0, cost: 0, targetShares: 187, category: 'offense', targetPrice: 1200,
         color: '#ef4444', border: 'border-red-500',
         strategy: "【進攻先進封裝載板】ABF 載板全球龍頭。嚴守 900 元下方承接紀律，兼具爆發性與安全邊際。"
     }
 };
+
+// 預設匯入前段時間討論之 Phase 2 初期建倉與千點回檔低吸逐項明細 (共 12 筆真實紀錄)
+const defaultItemizedTrades = [
+    { id: 1720915200006, date: '2026-07-14', symbol: '3037', type: 'buy', price: 855.00, shares: 15 },
+    { id: 1720915200005, date: '2026-07-14', symbol: '2454', type: 'buy', price: 3630.00, shares: 5 },
+    { id: 1720915200004, date: '2026-07-14', symbol: '2330', type: 'buy', price: 2410.00, shares: 10 },
+    { id: 1720915200003, date: '2026-07-14', symbol: '00878', type: 'buy', price: 32.40, shares: 1000 },
+    { id: 1720915200002, date: '2026-07-14', symbol: '0056', type: 'buy', price: 51.15, shares: 1000 },
+    { id: 1720915200001, date: '2026-07-14', symbol: '00919', type: 'buy', price: 29.25, shares: 1000 },
+    { id: 1720656000003, date: '2026-07-11', symbol: '3037', type: 'buy', price: 882.00, shares: 50 },
+    { id: 1720656000002, date: '2026-07-11', symbol: '2454', type: 'buy', price: 3935.00, shares: 10 },
+    { id: 1720656000001, date: '2026-07-11', symbol: '2330', type: 'buy', price: 2440.00, shares: 10 },
+    { id: 1720569600003, date: '2026-07-10', symbol: '00878', type: 'buy', price: 33.10, shares: 1000 },
+    { id: 1720569600002, date: '2026-07-10', symbol: '0056', type: 'buy', price: 52.25, shares: 1000 },
+    { id: 1720569600001, date: '2026-07-10', symbol: '00919', type: 'buy', price: 29.85, shares: 3000 }
+];
+
+function seedDefaultItemizedTradesIfNeeded() {
+    if (localStorage.getItem('dg_sentinel_v3_seeded_12itemized') !== 'v3.2') {
+        localStorage.removeItem('dg_sentinel_v3_portfolio');
+        localStorage.setItem('dg_sentinel_v3_trades', JSON.stringify(defaultItemizedTrades));
+        localStorage.setItem('dg_sentinel_v3_seeded_12itemized', 'v3.2');
+    }
+}
 
 let temporaryStockNames = {};
 let cachedData = {};
@@ -1080,6 +1104,7 @@ async function loadDashboard(symbol) {
 }
 
 window.addEventListener('load', async () => {
+    seedDefaultItemizedTradesIfNeeded();
     loadBasePortfolioFromLocal();
     updateQuickSelector();
     renderTradeHistory();
