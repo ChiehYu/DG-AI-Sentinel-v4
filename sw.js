@@ -1,8 +1,9 @@
-const CACHE_NAME = 'dg-sentinel-v3-cache-v1';
+const CACHE_NAME = 'dg-sentinel-v3-cache-v3.2';
 const ASSETS_TO_CACHE = [
   './index.html',
   './css/style.css',
   './js/app.js',
+  './data/trades.json',
   './manifest.json'
 ];
 
@@ -30,16 +31,26 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
+// 採用 Network-First (網路優先，離線備援) 策略，確保每次有網路皆能取得最新程式碼與交易紀錄
 self.addEventListener('fetch', event => {
-  // 針對 Fugle 或外部 API 不進行快取干預，由前端 LocalStorage 控管
   if (event.request.url.includes('api.fugle.tw') || event.request.url.includes('news.google.com')) {
     return;
   }
   event.respondWith(
-    caches.match(event.request).then(cachedResponse => {
-      return cachedResponse || fetch(event.request).catch(() => {
-        return caches.match('./index.html');
-      });
-    })
+    fetch(event.request)
+      .then(networkResponse => {
+        if (networkResponse && networkResponse.status === 200 && event.request.method === 'GET') {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseToCache);
+          });
+        }
+        return networkResponse;
+      })
+      .catch(() => {
+        return caches.match(event.request).then(cachedResponse => {
+          return cachedResponse || caches.match('./index.html');
+        });
+      })
   );
 });
