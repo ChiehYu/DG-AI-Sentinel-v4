@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DG AI Sentinel v3.0 | 200萬信貸投資計畫旗艦版</title>
+    <!-- PWA Manifest & Icons -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0b0e14">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Apache ECharts v5.5.0 -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        window.firebaseModules = { initializeApp, getFirestore, doc, setDoc, getDoc };
+    </script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="p-3 sm:p-4 min-h-screen flex flex-col bg-[#0b0e14] text-[#e2e8f0]">
+
+    <!-- ======================================================= -->
+    <!-- 頂部導航與狀態列 -->
+    <!-- ======================================================= -->
+    <header class="flex flex-col xl:flex-row justify-between items-center mb-4 flex-shrink-0 gap-4 border-b border-gray-800 pb-3">
+        <div class="flex flex-col sm:flex-row items-center gap-6 w-full xl:w-auto justify-between sm:justify-start">
+            <div class="flex items-center gap-3">
+                <svg class="w-10 h-10 filter drop-shadow-[0_0_8px_rgba(34,211,238,0.6)] flex-shrink-0" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="100" height="100" rx="22" fill="#151924" stroke="#2a2e39" stroke-width="2"/>
+                    <path d="M30 25 C45 20 55 20 70 25 C70 55 50 78 50 78 C50 78 30 55 30 25 Z" stroke="url(#dgGlow)" stroke-width="4" stroke-linejoin="round" fill="none"/>
+                    <path d="M40 35 H48 C56 35 56 55 48 55 H40 V35 Z" fill="none" stroke="#3b82f6" stroke-width="6" stroke-linecap="round"/>
+                    <path d="M62 45 H52 V51 H58 V57 H52 C46 57 46 51 46 51" fill="none" stroke="#22d3ee" stroke-width="6" stroke-linecap="round"/>
+                    <circle cx="50" cy="50" r="3" fill="#ffffff" class="animate-ping"/>
+                    <defs>
+                        <linearGradient id="dgGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#3b82f6" /><stop offset="50%" stop-color="#a855f7" /><stop offset="100%" stop-color="#22d3ee" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <h1 class="text-xl sm:text-2xl font-black text-white tracking-widest glow-text">DG AI Sentinel</h1>
+                        <span class="bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 text-white font-extrabold text-[10px] px-2 py-0.5 rounded-full shadow-md">v3.0 旗艦版</span>
+                        <span class="bg-yellow-500/20 text-yellow-400 border border-yellow-500/40 text-[10px] font-bold px-2 py-0.5 rounded-full">200萬信貸專用</span>
+                    </div>
+                    <p class="text-[10px] text-gray-400 font-bold tracking-wider">為姜杰佑 (ChiehYu) 打造之全螢幕即時監控與盤後分析系統</p>
+                </div>
+            </div>
+
+            <!-- 分頁切換器 (即時 vs 盤後/信貸專區) -->
+            <div class="flex bg-[#151924] p-1 rounded-xl border border-gray-700 shadow-inner w-full sm:w-auto justify-center">
+                <button onclick="switchTab('realtime')" id="tabBtnRealtime" class="flex-1 sm:flex-none px-4 py-1.5 rounded-lg font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 bg-blue-600 text-white shadow-md">
+                    ⚡ 即時行情與 K 線防守
+                </button>
+                <button onclick="switchTab('analytics')" id="tabBtnAnalytics" class="flex-1 sm:flex-none px-4 py-1.5 rounded-lg font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 text-gray-400 hover:text-white">
+                    📊 盤後與 200 萬信貸流速
+                </button>
+            </div>
+        </div>
+
+        <!-- 頂部操作工具列 -->
+        <div class="flex items-center gap-2 sm:gap-3 flex-wrap justify-between sm:justify-end w-full xl:w-auto">
+            <div class="flex items-center gap-2 bg-[#151924] p-1.5 rounded-lg border border-gray-700 shadow-inner flex-wrap">
+                <select id="quickSelector" onchange="quickSelectStock()" class="bg-transparent text-gray-200 text-xs sm:text-sm font-bold outline-none border-r border-gray-600 pr-2 cursor-pointer">
+                    <option value="">🚀 選擇核心持股 ▼</option>
+                </select>
+                
+                <div class="relative flex items-center">
+                    <input type="text" id="customStockInput" placeholder="股票代號/名稱" class="w-24 sm:w-28 bg-transparent text-white text-xs sm:text-sm font-bold px-2 outline-none placeholder-gray-500 text-center border-r border-gray-600" oninput="debounceTopSearchName()">
+                    <span id="topSymbolName" class="absolute -bottom-7 left-1/2 transform -translate-x-1/2 text-[10px] text-yellow-400 font-bold bg-gray-900 px-2 py-1 rounded hidden whitespace-nowrap z-50 border border-yellow-500/50 shadow-lg"></span>
+                </div>
+
+                <select id="sentimentSelector" onchange="triggerRepredict()" class="bg-purple-900/40 border border-purple-500/60 text-purple-300 text-xs sm:text-sm font-bold outline-none px-2 py-1 rounded cursor-pointer transition">
+                    <option value="-0.015">外在情緒: 極度恐慌</option>
+                    <option value="0" selected>外在情緒: 中性均衡</option>
+                    <option value="0.005">外在情緒: 樂觀擴散</option>
+                    <option value="0.015">外在情緒: 強力軋空</option>
+                </select>
+                <button onclick="searchCustomStock()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1 rounded text-xs sm:text-sm font-bold transition flex items-center gap-1 shadow-[0_0_10px_rgba(34,211,238,0.4)]">
+                    查詢 / 推演
+                </button>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button onclick="toggleAlarm()" id="alarmBtn" class="border border-yellow-500/60 text-yellow-400 hover:bg-yellow-900/30 px-3 py-1.5 rounded-md font-bold text-xs sm:text-sm transition flex items-center gap-1.5">
+                    🔔 警報
+                </button>
+                <button onclick="openCloudModal()" class="border border-purple-500/60 text-purple-400 hover:bg-purple-900/30 px-3 py-1.5 rounded-md font-bold text-xs sm:text-sm transition flex items-center gap-1.5">
+                    ☁️ 雲端
+                </button>
+                <button onclick="openTradeModal()" class="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white px-3 sm:px-4 py-1.5 rounded-md font-bold text-xs sm:text-sm transition shadow-lg flex items-center gap-1.5">
+                    ➕ 交易與建倉
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div id="loadingIndicator" class="hidden fixed top-16 left-1/2 transform -translate-x-1/2 bg-[#151924]/95 border border-cyan-500 px-4 py-2 rounded-full z-50 text-cyan-400 font-bold text-sm flex items-center gap-2 shadow-2xl backdrop-blur">
+        <span class="inline-block w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span> 系統讀取行情與推演演算法中...
+    </div>
+
+    <!-- ======================================================= -->
+    <!-- 頁面 1：即時監控與技術圖表 (Realtime Dashboard) -->
+    <!-- ======================================================= -->
+    <div id="viewRealtime" class="flex flex-col lg:flex-row gap-5 flex-grow w-full overflow-hidden">
+        
+        <!-- 左側圖表區 (60%) -->
+        <div class="card w-full lg:w-[62%] p-3 sm:p-4 relative flex flex-col min-h-[720px] lg:min-h-[1150px] shadow-lg border-gray-800">
+            <div class="flex flex-wrap gap-3 sm:gap-4 text-xs font-bold text-gray-400 mb-2 px-2 pt-1 overflow-x-auto">
+                <div class="flex items-center whitespace-nowrap"><span class="w-3.5 h-3.5 rounded-full bg-[#ef4444] text-white text-[9px] flex items-center justify-center font-bold mr-1">買</span>爆量承接</div>
+                <div class="flex items-center whitespace-nowrap"><span class="w-3.5 h-3.5 rounded-full bg-[#10b981] text-white text-[9px] flex items-center justify-center font-bold mr-1">賣</span>爆量籌碼</div>
+                <div class="flex items-center whitespace-nowrap"><span class="w-3.5 h-3.5 rounded-full bg-[#3b82f6] text-white text-[9px] flex items-center justify-center font-bold mr-1">縮</span>量縮洗盤</div>
+                <div class="flex items-center whitespace-nowrap"><span class="w-3.5 h-3.5 rounded-full bg-[#a855f7] text-white text-[9px] flex items-center justify-center font-bold mr-1 ml-1">會</span>股東常會</div>
+                <div class="flex items-center whitespace-nowrap"><span class="w-3.5 h-3.5 rounded-full bg-[#eab308] text-white text-[9px] flex items-center justify-center font-bold mr-1">息</span>除權息</div>
+                <div class="flex items-center whitespace-nowrap"><span class="w-3 h-1 bg-[#ffffff] opacity-40 mr-1 ml-1"></span>歷史收盤連線</div>
+                <div class="flex items-center whitespace-nowrap"><span class="w-3 h-1 bg-[#eab308] mr-1"></span>動態防守黃線</div>
+                <div class="flex items-center whitespace-nowrap"><span class="w-4 h-1 border-b-2 border-dashed border-[#22d3ee] mr-1"></span>AI 均值回歸跳躍推演</div>
+            </div>
+            
+            <div id="mainChart" class="w-full flex-grow min-h-[660px] lg:min-h-[1080px]"></div>
+        </div>
+
+        <!-- 右側戰略面板 (38%) -->
+        <div class="w-full lg:w-[38%] flex flex-col gap-4">
+            <!-- 標的現價與持股損益大卡 -->
+            <div class="card p-5 relative overflow-hidden bg-gradient-to-br from-[#151924] to-[#1a202f] border-gray-700/80 shadow-xl">
+                <div class="flex justify-between items-start mb-3">
+                    <div>
+                        <span id="panelStockName" class="text-xl sm:text-2xl font-black text-white tracking-wide">載入中...</span>
+                        <div class="flex items-center gap-2 mt-1">
+                            <span id="panelSymbolBadge" class="text-xs bg-gray-800 text-gray-300 font-mono px-2 py-0.5 rounded border border-gray-700">----</span>
+                            <span class="text-[11px] text-cyan-400 font-bold bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800/60">Fugle API 即時/歷史同步</span>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div id="panelChange" class="text-lg sm:text-2xl font-bold mb-0.5 text-gray-400">--</div>
+                        <span class="text-xs text-gray-400 font-bold">較前日收盤變化</span>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-baseline border-y border-gray-700/80 py-4 my-3">
+                    <div class="flex flex-col">
+                        <span class="text-xs text-gray-400 font-bold mb-1">盤中/收盤即時現價 (NTD)</span>
+                        <span id="panelPrice" class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight drop-shadow-md text-white">----</span>
+                    </div>
+                    <div class="flex flex-col items-end">
+                        <span class="text-xs text-gray-400 font-bold mb-1">現有庫存部位帳面損益</span>
+                        <span id="invPnl" class="text-2xl sm:text-4xl font-black tracking-wide text-gray-400">----</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 bg-[#0f131c] p-3.5 rounded-xl border border-gray-800 text-xs sm:text-sm">
+                    <div class="flex flex-col">
+                        <span class="text-gray-400">目前持股數 (累積成交)</span>
+                        <span class="text-white font-extrabold text-base mt-0.5"><span id="invShares">0</span> <span class="text-xs font-normal text-gray-400">股</span></span>
+                    </div>
+                    <div class="flex flex-col border-l border-gray-800 pl-3">
+                        <span class="text-gray-400">加權平均成本 (除息後校準)</span>
+                        <span class="text-yellow-400 font-extrabold text-base mt-0.5">$<span id="invCost">0.00</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- V2.2/V3.0 動態防守線戰略分析大卡 -->
+            <div id="strategyBox" class="card p-5 border-l-4 border-blue-500 bg-[#151924] shadow-xl flex flex-col gap-3">
+                <div class="flex justify-between items-center border-b border-gray-700/60 pb-2">
+                    <h4 class="text-white font-bold text-base sm:text-lg flex items-center gap-2">
+                        <span>🛡️ 動態移動防守線 (Hybrid Trailing Stop)</span>
+                    </h4>
+                    <span class="text-[10px] text-yellow-400 font-mono border border-yellow-500/50 px-2 py-0.5 rounded bg-yellow-950/30">V3.0 取高值模型</span>
+                </div>
+                <div id="strategyDesc" class="text-gray-300 text-xs sm:text-sm leading-relaxed">正在解析防守策略...</div>
+                <div class="bg-[#0b0e14] border border-gray-700/80 p-3.5 rounded-xl text-xs sm:text-sm flex flex-col gap-2.5 mt-1">
+                    <div class="flex justify-between items-center">
+                        <div class="flex flex-col">
+                            <span class="text-gray-400 font-bold">絕對防守黃線位階 (當日生效)</span>
+                            <span class="text-[10px] text-gray-500">若盤中/收盤有效跌破此防線應啟動檢討</span>
+                        </div>
+                        <div class="flex flex-col items-end">
+                            <span id="dynamicStopVal" class="text-yellow-400 font-black text-xl">$0</span>
+                            <span id="dynamicStopReason" class="text-[11px] text-yellow-500 font-medium">(演算法計算中...)</span>
+                        </div>
+                    </div>
+                    <div id="targetPriceRow" class="hidden justify-between border-t border-gray-800 pt-2 text-xs sm:text-sm">
+                        <span class="text-gray-400 font-bold">波段攻擊第一停利目標</span>
+                        <span id="targetPriceVal" class="text-teal-400 font-extrabold">$0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI 輿情解讀摘要 -->
+            <div id="aiSentimentSummary" class="text-xs sm:text-sm text-gray-300 leading-relaxed bg-blue-900/20 p-4 rounded-xl border border-blue-800/50 shadow-inner">
+                🌟 <strong>AI 輿情與均值回歸解讀：</strong> 讀取 K 線與技術動態中...
+            </div>
+
+            <!-- 即時全網新聞快訊卡 -->
+            <div class="card p-4 flex-grow flex flex-col shadow-xl bg-[#151924]">
+                <div class="flex justify-between items-center border-b border-gray-700/60 pb-2 mb-3">
+                    <h3 class="font-bold text-white text-sm sm:text-base flex items-center gap-2">
+                        <span>📰 全網個股即時輿情與重大快訊</span>
+                    </h3>
+                    <span class="text-[10px] text-gray-400 bg-gray-800 px-2 py-0.5 rounded border border-gray-700">依發布時間重排</span>
+                </div>
+                <div id="newsLinksBox" class="space-y-2 overflow-y-auto max-h-[380px] pr-1">
+                    <div class="text-center text-gray-500 text-xs py-6 animate-pulse">📡 正在透過 RSS 掃描近 7 天全網新聞...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================= -->
+    <!-- 頁面 2：盤後分析與 200 萬信貸專區 (Analytics & Cashflow Dashboard) -->
+    <!-- ======================================================= -->
+    <div id="viewAnalytics" class="hidden flex-col gap-6 w-full flex-grow">
+        
+        <!-- 信貸核心財務指標橫幅 -->
+        <div class="card p-5 sm:p-6 bg-gradient-to-r from-[#141b2d] via-[#1a233a] to-[#201c34] border-cyan-500/40 shadow-2xl relative overflow-hidden">
+            <div class="absolute -right-10 -top-10 w-60 h-60 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 relative z-10">
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="bg-cyan-500 text-black font-black text-xs px-2.5 py-0.5 rounded">信貸利率 3.68% (省息校準版)</span>
+                        <span class="bg-purple-600/30 text-purple-300 border border-purple-500/50 font-bold text-xs px-2.5 py-0.5 rounded">貸款總額 200 萬元 / 84 期</span>
+                    </div>
+                    <h2 class="text-xl sm:text-2xl font-black text-white tracking-wide">💰 200萬信貸槓桿與月月配現金流對沖儀表板</h2>
+                    <p class="text-xs sm:text-sm text-gray-300 mt-1">「用進階月月配現金流完美防守，用台灣 AI 晶片鐵三角強力進攻」— 100萬/90萬/10萬 鐵三角架構</p>
+                </div>
+                <div class="flex flex-wrap sm:flex-nowrap gap-4 w-full lg:w-auto">
+                    <div class="bg-[#0b0e14]/80 p-3.5 rounded-xl border border-gray-700 text-center flex-1 sm:w-36">
+                        <div class="text-xs text-gray-400 font-bold">銀行月攤還本息</div>
+                        <div class="text-red-400 font-black text-lg sm:text-xl mt-0.5">$27,044</div>
+                        <div class="text-[10px] text-gray-500">首年利息均每月 ~$5,742</div>
+                    </div>
+                    <div class="bg-[#0b0e14]/80 p-3.5 rounded-xl border border-gray-700 text-center flex-1 sm:w-36">
+                        <div class="text-xs text-gray-400 font-bold">ETF預估月領息</div>
+                        <div class="text-green-400 font-black text-lg sm:text-xl mt-0.5">~$8,419</div>
+                        <div class="text-[10px] text-gray-500">年領約 $101,029</div>
+                    </div>
+                    <div class="bg-[#0b0e14]/80 p-3.5 rounded-xl border border-cyan-500/60 text-center flex-1 sm:w-40 shadow-[0_0_15px_rgba(34,211,238,0.2)]">
+                        <div class="text-xs text-cyan-300 font-bold">薪資自繳實際負擔</div>
+                        <div class="text-cyan-400 font-black text-lg sm:text-xl mt-0.5">$18,625</div>
+                        <div class="text-[10px] text-cyan-500 font-bold">⚡ 減壓高達 31.1%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 利息對沖與自付比例條 -->
+            <div class="mt-6 border-t border-gray-700/60 pt-4">
+                <div class="flex justify-between text-xs font-bold text-gray-300 mb-2">
+                    <span>還款現金流組成分析： <span class="text-green-400 font-extrabold">月月配利息對沖 (~31.1%)</span> vs <span class="text-cyan-400 font-extrabold">個人薪資補貼 (~68.9%)</span></span>
+                    <span class="text-yellow-400">零利息成本！利息淨倒賺 +$2,677/月</span>
+                </div>
+                <div class="w-full h-3.5 bg-gray-800 rounded-full overflow-hidden flex shadow-inner">
+                    <div class="bg-gradient-to-r from-green-500 to-emerald-400 h-full transition-all duration-1000" style="width: 31.13%" title="ETF 股息對沖 $8,419"></div>
+                    <div class="bg-gradient-to-r from-blue-500 to-cyan-400 h-full transition-all duration-1000" style="width: 68.87%" title="薪資自繳 $18,625"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3 大投資引擎與零股複利飛輪分析 -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- 引擎 1：防守與現金流引擎 (100萬) -->
+            <div class="card p-5 border-t-4 border-green-500 flex flex-col justify-between bg-[#151924]">
+                <div>
+                    <div class="flex justify-between items-center border-b border-gray-700 pb-2.5 mb-3">
+                        <h3 class="font-black text-white text-base flex items-center gap-2">
+                            <span>🛡️ 防守引擎：月月配三劍客 (100萬)</span>
+                        </h3>
+                        <span class="text-[11px] font-bold text-green-400 bg-green-950/60 px-2 py-0.5 rounded border border-green-800">目標：配息率 10.10%</span>
+                    </div>
+                    <p class="text-xs text-gray-400 mb-4">利用除息月份互補特性，打造 12 個月無縫接息，且單筆配息嚴格低於 $20,000 二代健保補充保費門檻（0% 漏稅防禦）。</p>
+                    
+                    <div class="space-y-3">
+                        <div class="bg-[#0f131c] p-3 rounded-lg border border-gray-800 flex justify-between items-center">
+                            <div>
+                                <div class="font-bold text-white text-sm">00919 群益精選高息</div>
+                                <div class="text-[11px] text-gray-400">目前持有：<span class="text-green-400 font-bold">4.00 張</span> (@$29.70)</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs font-bold text-yellow-400">目標 16.67 張</div>
+                                <div class="text-[10px] text-gray-500">1/4/7/10月除息</div>
+                            </div>
+                        </div>
+                        <div class="bg-[#0f131c] p-3 rounded-lg border border-gray-800 flex justify-between items-center">
+                            <div>
+                                <div class="font-bold text-white text-sm">0056 元大高股息</div>
+                                <div class="text-[11px] text-gray-400">目前持有：<span class="text-green-400 font-bold">2.00 張</span> (@$51.70)</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs font-bold text-yellow-400">目標 4.69 張</div>
+                                <div class="text-[10px] text-gray-500">2/5/8/11月除息</div>
+                            </div>
+                        </div>
+                        <div class="bg-[#0f131c] p-3 rounded-lg border border-gray-800 flex justify-between items-center">
+                            <div>
+                                <div class="font-bold text-white text-sm">00878 國泰永續高息</div>
+                                <div class="text-[11px] text-gray-400">目前持有：<span class="text-green-400 font-bold">2.00 張</span> (@$32.75)</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs font-bold text-yellow-400">目標 7.50 張</div>
+                                <div class="text-[10px] text-gray-500">3/6/9/12月除息</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-gray-800 text-xs flex justify-between text-gray-400 font-bold">
+                    <span>累積投入防守金額： <span class="text-white">$287,690</span></span>
+                    <span>防守預算達成： <span class="text-green-400">28.77%</span></span>
+                </div>
+            </div>
+
+            <!-- 引擎 2：進攻與資本增值引擎 (90萬) -->
+            <div class="card p-5 border-t-4 border-blue-500 flex flex-col justify-between bg-[#151924]">
+                <div>
+                    <div class="flex justify-between items-center border-b border-gray-700 pb-2.5 mb-3">
+                        <h3 class="font-black text-white text-base flex items-center gap-2">
+                            <span>🚀 進攻引擎：台灣 AI 鐵三角 (90萬)</span>
+                        </h3>
+                        <span class="text-[11px] font-bold text-blue-400 bg-blue-950/60 px-2 py-0.5 rounded border border-blue-800">半導體 Alpha 核心</span>
+                    </div>
+                    <p class="text-xs text-gray-400 mb-4">集中佈局「晶圓製造 + 晶片設計 + 封裝載板」龍頭，掌握 CoWoS/CoPoS 與 ASIC/TPU 爆發紅利。嚴格分 4~6 個月零股定額佈局。</p>
+                    
+                    <div class="space-y-3">
+                        <div class="bg-[#0f131c] p-3 rounded-lg border border-gray-800 flex justify-between items-center">
+                            <div>
+                                <div class="font-bold text-white text-sm">2330 台積電 (50%)</div>
+                                <div class="text-[11px] text-gray-400">目前持有：<span class="text-blue-400 font-bold">20 股</span> (@$2,425)</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs font-bold text-yellow-400">目標 183 股</div>
+                                <div class="text-[10px] text-gray-500">外資目標 $3,000+</div>
+                            </div>
+                        </div>
+                        <div class="bg-[#0f131c] p-3 rounded-lg border border-gray-800 flex justify-between items-center">
+                            <div>
+                                <div class="font-bold text-white text-sm">2454 聯發科 (30%)</div>
+                                <div class="text-[11px] text-gray-400">目前持有：<span class="text-blue-400 font-bold">15 股</span> (@$3,833)</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs font-bold text-yellow-400">目標 65 股</div>
+                                <div class="text-[10px] text-gray-500">AI ASIC / TPU加速</div>
+                            </div>
+                        </div>
+                        <div class="bg-[#0f131c] p-3 rounded-lg border border-gray-800 flex justify-between items-center">
+                            <div>
+                                <div class="font-bold text-white text-sm">3037 欣興 (20%)</div>
+                                <div class="text-[11px] text-gray-400">目前持有：<span class="text-blue-400 font-bold">65 股</span> (@$876)</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs font-bold text-yellow-400">目標 187 股</div>
+                                <div class="text-[10px] text-gray-500">ABF 載板 / 先進封裝</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-gray-800 text-xs flex justify-between text-gray-400 font-bold">
+                    <span>累積投入進攻金額： <span class="text-white">$162,925</span></span>
+                    <span>進攻預算達成： <span class="text-blue-400">18.10%</span></span>
+                </div>
+            </div>
+
+            <!-- 引擎 3：安全氣囊與以息養股試算器 -->
+            <div class="card p-5 border-t-4 border-yellow-500 flex flex-col justify-between bg-[#151924]">
+                <div>
+                    <div class="flex justify-between items-center border-b border-gray-700 pb-2.5 mb-3">
+                        <h3 class="font-black text-white text-base flex items-center gap-2">
+                            <span>⚡ 以息養股零股複利試算</span>
+                        </h3>
+                        <span class="text-[11px] font-bold text-yellow-400 bg-yellow-950/60 px-2 py-0.5 rounded border border-yellow-800">無限複利飛輪</span>
+                    </div>
+                    <p class="text-xs text-gray-400 mb-3">首年每月 ETF 股息 ($8,419) 繳納貸款利息 ($5,742) 後，每月淨倒賺 <strong class="text-yellow-400 font-bold">+$2,677 元</strong>。可直接利用此筆零成本盈餘收購零股：</p>
+                    
+                    <div class="bg-[#0f131c] p-3.5 rounded-xl border border-yellow-500/30 space-y-2 text-xs mb-3">
+                        <div class="flex justify-between items-center border-b border-gray-800 pb-1.5">
+                            <span class="text-gray-300">每月可免費增持 2330 台積電</span>
+                            <span class="font-black text-yellow-400 text-sm">約 1.1 股 <span class="text-[10px] text-gray-500">/月</span></span>
+                        </div>
+                        <div class="flex justify-between items-center border-b border-gray-800 pb-1.5">
+                            <span class="text-gray-300">每月可免費增持 2454 聯發科</span>
+                            <span class="font-black text-yellow-400 text-sm">約 0.7 股 <span class="text-[10px] text-gray-500">/月</span></span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300">每月可免費增持 3037 欣興</span>
+                            <span class="font-black text-yellow-400 text-sm">約 3.0 股 <span class="text-[10px] text-gray-500">/月</span></span>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-800/40 p-3 rounded-lg border border-gray-700 text-xs">
+                        <div class="font-bold text-cyan-300 mb-1">🛡️ 10 萬還款安全氣囊 (高利活存)</div>
+                        <div class="text-gray-400 leading-snug">可支付 3.6 個月完整本息或 5.3 個月扣除配息後自繳額。確保絕不在大盤低點被迫賣股還本！</div>
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-gray-800 text-xs flex justify-between text-gray-400 font-bold">
+                    <span>總資金動用率： <span class="text-cyan-400">22.53% ($45.06萬)</span></span>
+                    <span>手頭現金彈藥： <span class="text-yellow-400">77.47% ($154.9萬)</span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 交易與建仓明細檢視與雲端同頻面板 -->
+        <div class="card p-5 bg-[#151924] shadow-xl">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-700 pb-3 mb-4 gap-2">
+                <div>
+                    <h3 class="text-base sm:text-lg font-black text-white flex items-center gap-2">
+                        <span>📋 200萬信貸建倉歷程與交易明細簿 (雙向快取)</span>
+                    </h3>
+                    <p class="text-xs text-gray-400 mt-0.5">系統自動將您的交易紀錄進行加權平均精算，並聯動即時防守黃線與成本安全邊際 (-5% Protection)。</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="openTradeModal()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded font-bold text-xs transition">
+                        + 新增買賣紀錄
+                    </button>
+                    <button onclick="openTotalSummaryModal()" class="bg-purple-600 hover:bg-purple-500 text-white px-3 py-1.5 rounded font-bold text-xs transition">
+                        📊 檢視全帳戶成本與盈虧總表
+                    </button>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                    <thead>
+                        <tr class="bg-[#1e2330] text-gray-400 border-b border-gray-700 font-bold">
+                            <th class="px-4 py-3">成交日期</th>
+                            <th class="px-4 py-3">交易動作</th>
+                            <th class="px-4 py-3">股票標的與代號</th>
+                            <th class="px-4 py-3 text-right">成交單價 (NTD)</th>
+                            <th class="px-4 py-3 text-right">成交股數</th>
+                            <th class="px-4 py-3 text-right">總成交金額 (NTD)</th>
+                            <th class="px-4 py-3 text-center">編輯 / 刪除</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tradeHistoryBody" class="divide-y divide-gray-800">
+                        <tr><td colspan="7" class="px-4 py-8 text-center text-gray-500 italic">載入信貸建倉紀錄中...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================= -->
+    <!-- 彈窗 1：新增 / 編輯交易紀錄 Modal -->
+    <!-- ======================================================= -->
+    <div id="tradeModal" class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50 transition-opacity duration-200 opacity-0 backdrop-blur-sm p-3">
+        <div class="card bg-[#151924] border border-gray-700 p-6 rounded-2xl w-full max-w-md shadow-2xl">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-700/80 pb-3">
+                <h3 id="formTitle" class="text-lg font-bold text-cyan-400">新增交易紀錄</h3>
+                <button onclick="closeTradeModal()" class="text-gray-400 hover:text-white text-xl font-bold">&times;</button>
+            </div>
+            <div class="space-y-4 text-sm">
+                <div>
+                    <label class="block text-gray-400 font-bold mb-1 text-xs">成交日期</label>
+                    <input type="date" id="tradeDate" class="w-full bg-[#0b0e14] border border-gray-700 text-white px-3 py-2 rounded focus:outline-none focus:border-cyan-500 font-mono">
+                </div>
+                <div>
+                    <label class="block text-gray-400 font-bold mb-1 text-xs">股票代號 (例: 00919, 2330)</label>
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="tradeSymbol" placeholder="請輸入股票代號" class="w-full bg-[#0b0e14] border border-gray-700 text-white px-3 py-2 rounded focus:outline-none focus:border-cyan-500 font-bold uppercase" oninput="debounceFetchSymbolName()">
+                        <span id="tradeSymbolName" class="text-xs text-yellow-400 font-bold whitespace-nowrap min-w-[70px]"></span>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-gray-400 font-bold mb-1 text-xs">成交單價 ($)</label>
+                        <input type="number" step="0.01" id="tradePrice" placeholder="單價" class="w-full bg-[#0b0e14] border border-gray-700 text-white px-3 py-2 rounded focus:outline-none focus:border-cyan-500 font-mono">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 font-bold mb-1 text-xs">成交股數 (1張=1000股)</label>
+                        <input type="number" id="tradeShares" placeholder="股數" class="w-full bg-[#0b0e14] border border-gray-700 text-white px-3 py-2 rounded focus:outline-none focus:border-cyan-500 font-mono">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-gray-400 font-bold mb-1 text-xs">交易方向</label>
+                    <div class="flex gap-4">
+                        <label class="flex items-center gap-2 text-white font-bold cursor-pointer"><input type="radio" name="tradeType" id="typeBuy" value="buy" checked class="accent-red-500"> 🔴 買進 (Buy)</label>
+                        <label class="flex items-center gap-2 text-white font-bold cursor-pointer"><input type="radio" name="tradeType" id="typeSell" value="sell" class="accent-green-500"> 🟢 賣出 (Sell)</label>
+                    </div>
+                </div>
+                <div class="pt-2 flex flex-col gap-2">
+                    <button id="saveTradeBtn" onclick="saveTrade()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2.5 rounded transition shadow-lg">寫入紀錄並重新精算防守點</button>
+                    <button id="cancelEditBtn" onclick="cancelEdit()" class="w-full bg-gray-700 hover:bg-gray-600 text-gray-300 font-bold py-2 rounded transition hidden">取消編輯</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================= -->
+    <!-- 彈窗 2：雲端同步設定與 API 狀態 Modal -->
+    <!-- ======================================================= -->
+    <div id="cloudModal" class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50 transition-opacity duration-200 opacity-0 backdrop-blur-sm p-3">
+        <div class="card bg-[#151924] border border-gray-700 p-6 rounded-2xl w-full max-w-lg shadow-2xl">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-700/80 pb-3">
+                <h3 class="text-lg font-bold text-purple-400">☁️ 跨裝置雲端同步與 API 設定</h3>
+                <button onclick="closeCloudModal()" class="text-gray-400 hover:text-white text-xl font-bold">&times;</button>
+            </div>
+            <div class="space-y-4 text-sm">
+                <p class="text-xs text-gray-300 leading-relaxed">
+                    透過 Firebase 與 LocalStorage 雙軌機制，您可隨時在筆電與手機端雙向同步建仓明細。如果遇到 Fugle API 限制，系統將自動啟動本地智慧快取與備援引擎。
+                </p>
+                <div>
+                    <label class="block text-gray-400 font-bold mb-1 text-xs">自訂雲端同步 ID (手機與電腦請填一致)</label>
+                    <input type="text" id="firebaseUserId" placeholder="例如: chiehyu_sentinel_200w" class="w-full bg-[#0b0e14] border border-gray-700 text-white px-3 py-2 rounded focus:outline-none focus:border-purple-500 font-mono text-sm">
+                </div>
+                <div>
+                    <label class="block text-gray-400 font-bold mb-1 text-xs">Firebase SDK JSON 設定 (非必要，預設用本地)</label>
+                    <textarea id="firebaseConfigInput" rows="3" placeholder='{"apiKey": "...", "projectId": "..."}' class="w-full bg-[#0b0e14] border border-gray-700 text-white p-3 rounded font-mono text-xs focus:outline-none focus:border-purple-500"></textarea>
+                </div>
+                <div class="pt-2 flex justify-end gap-3">
+                    <button onclick="closeCloudModal()" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded font-bold text-xs transition">關閉</button>
+                    <button onclick="saveCloudConfig()" class="bg-purple-600 hover:bg-purple-500 text-white px-5 py-2 rounded font-bold text-xs transition shadow-lg">儲存並立即連線同步</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================= -->
+    <!-- 彈窗 3：全帳戶總投入與盈虧明細表 Modal -->
+    <!-- ======================================================= -->
+    <div id="summaryModal" class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50 transition-opacity duration-200 opacity-0 backdrop-blur-sm p-3">
+        <div class="card bg-[#151924] border border-gray-700 p-6 rounded-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto shadow-2xl">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-700/80 pb-3">
+                <h3 class="text-lg font-bold text-cyan-400 flex items-center gap-2">
+                    <span>📊 200萬信貸投資組合帳面總覽</span>
+                </h3>
+                <button onclick="closeTotalSummaryModal()" class="text-gray-400 hover:text-white text-xl font-bold">&times;</button>
+            </div>
+            <div id="totalCostSummary" class="space-y-3">
+                <div class="text-cyan-400 text-center py-6 animate-pulse">精算各持股現價、成本與未實現損益中...</div>
+            </div>
+            <div class="mt-5 pt-3 border-t border-gray-800 text-right">
+                <button onclick="closeTotalSummaryModal()" class="bg-gray-700 hover:bg-gray-600 text-white px-5 py-2 rounded font-bold text-xs transition">關閉統計表</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 載入核心 JS -->
+    <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "DG AI Sentinel v3.0 | 200萬信貸投資計畫旗艦版",
+  "short_name": "DG Sentinel",
+  "description": "Dennis & Gemini 聯合量化分析與 200萬信貸現金流即時監控應用",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0b0e14",
+  "theme_color": "#0b0e14",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23151924' stroke='%232a2e39' stroke-width='2'/%3E%3Cpath d='M30 25 C45 20 55 20 70 25 C70 55 50 78 50 78 C50 78 30 55 30 25 Z' stroke='%233b82f6' stroke-width='4' fill='none'/%3E%3Cpath d='M40 35 H48 C56 35 56 55 48 55 H40 V35 Z' fill='none' stroke='%233b82f6' stroke-width='6'/%3E%3Cpath d='M62 45 H52 V51 H58 V57 H52 C46 57 46 51 46 51' fill='none' stroke='%2322d3ee' stroke-width='6'/%3E%3C/svg%3E",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
