@@ -106,6 +106,10 @@ let temporaryStockNames = {};
 let temporaryStockPrices = {};
 let cachedData = {};
 let chartInstance = null;
+let riskDonutInstance = null;
+let interestGaugeInstance = null;
+let deploymentGaugeInstance = null;
+let pnlRiskGaugeInstance = null;
 let editingTradeId = null;
 let isAlarmEnabled = false;
 
@@ -130,27 +134,48 @@ function saveBasePortfolioToLocal() {
 function switchTab(tabName) {
     const viewRealtime = document.getElementById('viewRealtime');
     const viewAnalytics = document.getElementById('viewAnalytics');
+    const realtimeContainer = document.getElementById('realtimeTabContainer') || viewRealtime;
+    const macroStrip = document.getElementById('macroWarRoomStrip');
     const btnRealtime = document.getElementById('tabBtnRealtime');
     const btnAnalytics = document.getElementById('tabBtnAnalytics');
 
     if (tabName === 'realtime') {
-        viewRealtime.classList.remove('hidden');
-        viewAnalytics.classList.add('hidden');
-        viewAnalytics.classList.remove('flex');
+        if (realtimeContainer) {
+            realtimeContainer.classList.remove('hidden');
+            realtimeContainer.classList.add('flex');
+        }
+        if (viewRealtime) viewRealtime.classList.remove('hidden');
+        if (macroStrip) macroStrip.classList.remove('hidden');
+        if (viewAnalytics) {
+            viewAnalytics.classList.add('hidden');
+            viewAnalytics.classList.remove('flex');
+        }
         
-        btnRealtime.className = "flex-1 sm:flex-none px-4 py-1.5 rounded-lg font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 bg-blue-600 text-white shadow-md";
-        btnAnalytics.className = "flex-1 sm:flex-none px-4 py-1.5 rounded-lg font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 text-gray-400 hover:text-white";
+        if (btnRealtime) btnRealtime.className = "flex-1 lg:flex-none px-4 sm:px-5 py-1.5 rounded-lg font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 bg-blue-600 text-white shadow-md";
+        if (btnAnalytics) btnAnalytics.className = "flex-1 lg:flex-none px-4 sm:px-5 py-1.5 rounded-lg font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 text-gray-400 hover:text-white";
         
         if (chartInstance) {
             setTimeout(() => chartInstance.resize(), 50);
         }
     } else {
-        viewRealtime.classList.add('hidden');
-        viewAnalytics.classList.remove('hidden');
-        viewAnalytics.classList.add('flex');
+        if (realtimeContainer) {
+            realtimeContainer.classList.add('hidden');
+            realtimeContainer.classList.remove('flex');
+        }
+        if (viewRealtime) viewRealtime.classList.add('hidden');
+        if (macroStrip) macroStrip.classList.add('hidden');
+        if (viewAnalytics) {
+            viewAnalytics.classList.remove('hidden');
+            viewAnalytics.classList.add('flex');
+        }
         
-        btnAnalytics.className = "flex-1 sm:flex-none px-4 py-1.5 rounded-lg font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 bg-cyan-600 text-white shadow-md";
-        btnRealtime.className = "flex-1 sm:flex-none px-4 py-1.5 rounded-lg font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 text-gray-400 hover:text-white";
+        if (btnAnalytics) btnAnalytics.className = "flex-1 lg:flex-none px-4 sm:px-5 py-1.5 rounded-lg font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 bg-cyan-600 text-white shadow-md";
+        if (btnRealtime) btnRealtime.className = "flex-1 lg:flex-none px-4 sm:px-5 py-1.5 rounded-lg font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 text-gray-400 hover:text-white";
+
+        // 觸發或重繪 V4.0 專業分析師動態 ECharts 風控儀表板
+        setTimeout(() => {
+            renderAnalyticsRiskDashboard();
+        }, 50);
     }
 }
 
@@ -2263,6 +2288,192 @@ function downloadFullWargameLog(symbol, symName) {
 }
 
 // ============================================================================
+// 7-C. V4.0 專業分析師動態 ECharts 風控中心與資產配置儀表板
+// ============================================================================
+function renderAnalyticsRiskDashboard() {
+    if (typeof echarts === 'undefined') return;
+
+    // 1. 玫瑰環形圖：資產進退攻防比例與預算對衝
+    const domDonut = document.getElementById('riskDonutChart');
+    if (domDonut) {
+        if (riskDonutInstance) riskDonutInstance.dispose();
+        riskDonutInstance = echarts.init(domDonut);
+        riskDonutInstance.setOption({
+            backgroundColor: 'transparent',
+            tooltip: {
+                trigger: 'item',
+                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                borderColor: '#22d3ee',
+                borderWidth: 1,
+                textStyle: { color: '#f8fafc', fontSize: 12 },
+                formatter: '{b}: <br/><b>${c}萬</b> ({d}%)'
+            },
+            legend: {
+                bottom: 0,
+                itemWidth: 10,
+                itemHeight: 10,
+                textStyle: { color: '#9ca3af', fontSize: 11 }
+            },
+            series: [
+                {
+                    name: '200萬信貸組合架構',
+                    type: 'pie',
+                    radius: ['45%', '72%'],
+                    center: ['50%', '44%'],
+                    avoidLabelOverlap: true,
+                    roseType: 'radius',
+                    itemStyle: {
+                        borderRadius: 6,
+                        borderColor: '#0b0e14',
+                        borderWidth: 2
+                    },
+                    label: { show: false },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: 13,
+                            fontWeight: 'bold',
+                            color: '#fff',
+                            formatter: '{b}\n{d}%'
+                        },
+                        itemStyle: {
+                            shadowBlur: 15,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(34, 211, 238, 0.6)'
+                        }
+                    },
+                    data: [
+                        { value: 100, name: '🛡️ 防守部位 (高息ETF)', itemStyle: { color: '#10b981' } },
+                        { value: 90, name: '🚀 進攻部位 (AI鐵三角)', itemStyle: { color: '#3b82f6' } },
+                        { value: 10, name: '⚡ 安全氣囊 (高利活存)', itemStyle: { color: '#eab308' } }
+                    ]
+                }
+            ]
+        });
+    }
+
+    // 2. 儀表板 A：月息對沖覆蓋率 (滿水位 146.6%)
+    const domInterest = document.getElementById('interestGaugeChart');
+    if (domInterest) {
+        if (interestGaugeInstance) interestGaugeInstance.dispose();
+        interestGaugeInstance = echarts.init(domInterest);
+        interestGaugeInstance.setOption({
+            backgroundColor: 'transparent',
+            series: [
+                {
+                    type: 'gauge',
+                    radius: '92%',
+                    center: ['50%', '55%'],
+                    startAngle: 210,
+                    endAngle: -30,
+                    min: 0,
+                    max: 200,
+                    splitNumber: 4,
+                    itemStyle: { color: '#10b981', shadowColor: 'rgba(16,185,129,0.45)', shadowBlur: 10 },
+                    progress: { show: true, width: 12 },
+                    pointer: { show: true, length: '60%', width: 5, itemStyle: { color: '#34d399' } },
+                    axisLine: { lineStyle: { width: 12, color: [[0.5, '#ef4444'], [0.6, '#f59e0b'], [1, '#1e293b']] } },
+                    axisTick: { distance: -18, splitNumber: 5, lineStyle: { width: 1, color: '#64748b' } },
+                    splitLine: { distance: -20, length: 12, lineStyle: { width: 2, color: '#94a3b8' } },
+                    axisLabel: { distance: 16, color: '#9ca3af', fontSize: 10, formatter: '{value}%' },
+                    anchor: { show: true, showAbove: true, size: 10, itemStyle: { color: '#10b981' } },
+                    title: { show: true, offsetCenter: [0, '82%'], fontSize: 11, color: '#cbd5e1', fontWeight: 'bold' },
+                    detail: {
+                        valueAnimation: true,
+                        fontSize: 20,
+                        fontWeight: 'black',
+                        color: '#34d399',
+                        offsetCenter: [0, '45%'],
+                        formatter: '{value}%'
+                    },
+                    data: [{ value: 146.6, name: '月領 $8,419 / 利息 $5,742' }]
+                }
+            ]
+        });
+    }
+
+    // 3. 儀表板 B：預算建倉動用進度 (22.53%)
+    const domDeploy = document.getElementById('deploymentGaugeChart');
+    if (domDeploy) {
+        if (deploymentGaugeInstance) deploymentGaugeInstance.dispose();
+        deploymentGaugeInstance = echarts.init(domDeploy);
+        deploymentGaugeInstance.setOption({
+            backgroundColor: 'transparent',
+            series: [
+                {
+                    type: 'gauge',
+                    radius: '92%',
+                    center: ['50%', '55%'],
+                    startAngle: 210,
+                    endAngle: -30,
+                    min: 0,
+                    max: 100,
+                    splitNumber: 5,
+                    itemStyle: { color: '#22d3ee', shadowColor: 'rgba(34,211,238,0.45)', shadowBlur: 10 },
+                    progress: { show: true, width: 12 },
+                    pointer: { show: true, length: '60%', width: 5, itemStyle: { color: '#38bdf8' } },
+                    axisLine: { lineStyle: { width: 12, color: [[1, '#1e293b']] } },
+                    axisTick: { distance: -18, splitNumber: 4, lineStyle: { width: 1, color: '#64748b' } },
+                    splitLine: { distance: -20, length: 12, lineStyle: { width: 2, color: '#94a3b8' } },
+                    axisLabel: { distance: 16, color: '#9ca3af', fontSize: 10, formatter: '{value}%' },
+                    anchor: { show: true, showAbove: true, size: 10, itemStyle: { color: '#22d3ee' } },
+                    title: { show: true, offsetCenter: [0, '82%'], fontSize: 11, color: '#cbd5e1', fontWeight: 'bold' },
+                    detail: {
+                        valueAnimation: true,
+                        fontSize: 20,
+                        fontWeight: 'black',
+                        color: '#22d3ee',
+                        offsetCenter: [0, '45%'],
+                        formatter: '{value}%'
+                    },
+                    data: [{ value: 22.53, name: '累積已投 $45.06 萬元' }]
+                }
+            ]
+        });
+    }
+
+    // 4. 儀表板 C：壓力測試與黃線緩衝溫度計 (+8.4% 緩衝空間)
+    const domPnl = document.getElementById('pnlRiskGaugeChart');
+    if (domPnl) {
+        if (pnlRiskGaugeInstance) pnlRiskGaugeInstance.dispose();
+        pnlRiskGaugeInstance = echarts.init(domPnl);
+        pnlRiskGaugeInstance.setOption({
+            backgroundColor: 'transparent',
+            series: [
+                {
+                    type: 'gauge',
+                    radius: '92%',
+                    center: ['50%', '55%'],
+                    startAngle: 210,
+                    endAngle: -30,
+                    min: -20,
+                    max: 20,
+                    splitNumber: 4,
+                    itemStyle: { color: '#c084fc', shadowColor: 'rgba(192,132,252,0.45)', shadowBlur: 10 },
+                    progress: { show: true, width: 12 },
+                    pointer: { show: true, length: '60%', width: 5, itemStyle: { color: '#e879f9' } },
+                    axisLine: { lineStyle: { width: 12, color: [[0.375, '#ef4444'], [0.5, '#f59e0b'], [1, '#1e293b']] } },
+                    axisTick: { distance: -18, splitNumber: 5, lineStyle: { width: 1, color: '#64748b' } },
+                    splitLine: { distance: -20, length: 12, lineStyle: { width: 2, color: '#94a3b8' } },
+                    axisLabel: { distance: 16, color: '#9ca3af', fontSize: 10, formatter: '{value}%' },
+                    anchor: { show: true, showAbove: true, size: 10, itemStyle: { color: '#c084fc' } },
+                    title: { show: true, offsetCenter: [0, '82%'], fontSize: 11, color: '#cbd5e1', fontWeight: 'bold' },
+                    detail: {
+                        valueAnimation: true,
+                        fontSize: 20,
+                        fontWeight: 'black',
+                        color: '#e879f9',
+                        offsetCenter: [0, '45%'],
+                        formatter: '+{value}%'
+                    },
+                    data: [{ value: 8.4, name: '距防守黃線安全邊際' }]
+                }
+            ]
+        });
+    }
+}
+
+// ============================================================================
 // 8. V4.0 戰情室專屬控制：多週期切換、自選群組監控、宏觀儀表板、五檔與每日推播
 // ============================================================================
 let currentChartTimeframe = 'day';
@@ -2484,4 +2695,8 @@ window.addEventListener('load', async () => {
 window.addEventListener('resize', () => {
     applyResponsiveViewportScaling();
     if (chartInstance) chartInstance.resize();
+    if (riskDonutInstance) riskDonutInstance.resize();
+    if (interestGaugeInstance) interestGaugeInstance.resize();
+    if (deploymentGaugeInstance) deploymentGaugeInstance.resize();
+    if (pnlRiskGaugeInstance) pnlRiskGaugeInstance.resize();
 });

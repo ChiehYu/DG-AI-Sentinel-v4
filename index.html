@@ -46,7 +46,6 @@
                     <div class="flex items-center gap-2 flex-wrap">
                         <h1 class="text-xl sm:text-2xl font-black text-white tracking-widest glow-text">DG AI Sentinel</h1>
                         <span class="bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 text-white font-extrabold text-[10px] px-2 py-0.5 rounded-full shadow-md whitespace-nowrap">v4.0 專業戰情室</span>
-                        <span class="bg-yellow-500/20 text-yellow-400 border border-yellow-500/40 text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">200萬信貸專用</span>
                         <span id="deviceResolutionChip" class="bg-cyan-950/80 text-cyan-300 border border-cyan-500/50 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full whitespace-nowrap shadow-sm flex items-center gap-1">🖥️ 偵測螢幕解析度中...</span>
                     </div>
                     <p class="text-[10px] sm:text-xs text-gray-400 font-bold tracking-wider sm:whitespace-nowrap">為姜杰佑 (ChiehYu) 打造之全螢幕即時監控與盤後分析系統</p>
@@ -59,7 +58,7 @@
                     ⚡ 即時行情與 K 線防守
                 </button>
                 <button onclick="switchTab('analytics')" id="tabBtnAnalytics" class="flex-1 lg:flex-none px-4 sm:px-5 py-1.5 rounded-lg font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 text-gray-400 hover:text-white">
-                    📊 盤後與 200 萬信貸流速
+                    📊 盤後與風控中心
                 </button>
             </div>
         </div>
@@ -102,9 +101,12 @@
     </header>
 
     <!-- ======================================================= -->
-    <!-- 區塊 1：宏觀與國際市場儀表板 (Top Macro War Room Strip) -->
+    <!-- 即時行情分頁總容器 (包含宏觀儀表板 + K線防守圖表區) -->
     <!-- ======================================================= -->
-    <div id="macroWarRoomStrip" class="mb-4 flex-shrink-0 card p-3 sm:p-3.5 bg-gradient-to-r from-[#111726] via-[#151d30] to-[#111726] border border-cyan-500/40 shadow-xl overflow-x-auto">
+    <div id="realtimeTabContainer" class="flex flex-col gap-0 w-full flex-grow">
+        <!-- 區塊 1：宏觀與國際市場儀表板 (Top Macro War Room Strip) -->
+        <!-- ======================================================= -->
+        <div id="macroWarRoomStrip" class="mb-4 flex-shrink-0 card p-3 sm:p-3.5 bg-gradient-to-r from-[#111726] via-[#151d30] to-[#111726] border border-cyan-500/40 shadow-xl overflow-x-auto">
         <div class="flex items-center justify-between gap-5 min-w-[960px] text-xs sm:text-sm font-bold">
             <div class="flex flex-col items-start justify-center gap-1.5 text-cyan-400 border-r border-gray-700/80 pr-3 flex-shrink-0">
                 <div class="flex items-center gap-1.5">
@@ -540,12 +542,90 @@
             </div><!-- 結束右欄雙欄對照網格 -->
         </div>
     </div>
+    </div><!-- 結束 realtimeTabContainer -->
 
     <!-- ======================================================= -->
-    <!-- 頁面 2：盤後分析與 200 萬信貸專區 (Analytics & Cashflow Dashboard) -->
+    <!-- 頁面 2：盤後分析與風控中心 (Analytics & Risk Control Center) -->
     <!-- ======================================================= -->
-    <div id="viewAnalytics" class="hidden flex-col gap-6 w-full flex-grow">
+    <div id="viewAnalytics" class="hidden flex-col gap-6 w-full flex-grow animate-fade-in">
         
+        <!-- 專業分析師動態 ECharts 風控儀表板 (4-Grid Visual Risk Control Center) -->
+        <div class="card p-4 sm:p-5 bg-gradient-to-r from-[#0d121f] via-[#141b2d] to-[#0f1523] border border-cyan-500/40 shadow-2xl relative overflow-hidden">
+            <div class="absolute -left-16 -top-16 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -right-16 -bottom-16 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-gray-800 pb-3 mb-4 relative z-10">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-3 h-3 rounded-full bg-cyan-400 animate-pulse flex-shrink-0"></span>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-black text-white tracking-wide glow-text flex items-center gap-2">
+                            <span>👑 專業分析師視覺化風控與資產配置儀表板</span>
+                        </h3>
+                        <p class="text-xs text-gray-400 mt-0.5">「資金達成率」、「利息與本息覆蓋率」與「壓力測試回撤邊際」三維度全時監控</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <span class="bg-green-950/80 text-green-400 border border-green-500/50 font-bold text-xs px-2.5 py-1 rounded-lg flex items-center gap-1 shadow">
+                        🛡️ 零股息漏稅防禦 (0%)
+                    </span>
+                    <span class="bg-cyan-950/80 text-cyan-300 border border-cyan-500/50 font-bold text-xs px-2.5 py-1 rounded-lg flex items-center gap-1 shadow">
+                        ⚡ 動態 ECharts 即時重繪
+                    </span>
+                </div>
+            </div>
+
+            <!-- 4-Subplot 風控儀表板網格 -->
+            <div id="analyticsRiskChartsGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 relative z-10">
+                <!-- 1. 資產配置與進退攻防玫瑰圖 -->
+                <div class="bg-[#0b0e14]/90 p-3.5 rounded-xl border border-gray-800/80 hover:border-cyan-500/50 transition-all flex flex-col justify-between shadow-inner">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-black text-gray-200">🛡️ vs 🚀 資產比例配置</span>
+                        <span class="text-[10px] font-bold text-cyan-400 bg-cyan-950/60 px-1.5 py-0.5 rounded border border-cyan-800">100萬/90萬/10萬</span>
+                    </div>
+                    <div id="riskDonutChart" class="w-full h-52 sm:h-56"></div>
+                    <div class="text-[11px] text-center text-gray-400 border-t border-gray-800/60 pt-1.5 font-bold">
+                        防守月月配 <span class="text-green-400">51.9%</span> | 進攻 AI <span class="text-blue-400">29.4%</span>
+                    </div>
+                </div>
+
+                <!-- 2. 月息對沖覆蓋率圓環儀表板 -->
+                <div class="bg-[#0b0e14]/90 p-3.5 rounded-xl border border-gray-800/80 hover:border-green-500/50 transition-all flex flex-col justify-between shadow-inner">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-black text-gray-200">🔄 月息對沖覆蓋率</span>
+                        <span class="text-[10px] font-bold text-green-400 bg-green-950/60 px-1.5 py-0.5 rounded border border-green-800">安全 > 100%</span>
+                    </div>
+                    <div id="interestGaugeChart" class="w-full h-52 sm:h-56"></div>
+                    <div class="text-[11px] text-center text-gray-400 border-t border-gray-800/60 pt-1.5 font-bold">
+                        領息 $8,419 / 利息 $5,742 淨賺 <span class="text-green-400">+$2,677/月</span>
+                    </div>
+                </div>
+
+                <!-- 3. 預算動用進度雙向儀表板 -->
+                <div class="bg-[#0b0e14]/90 p-3.5 rounded-xl border border-gray-800/80 hover:border-yellow-500/50 transition-all flex flex-col justify-between shadow-inner">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-black text-gray-200">💰 200萬預算動用進度</span>
+                        <span class="text-[10px] font-bold text-yellow-400 bg-yellow-950/60 px-1.5 py-0.5 rounded border border-yellow-800">分批嚴格紀律</span>
+                    </div>
+                    <div id="deploymentGaugeChart" class="w-full h-52 sm:h-56"></div>
+                    <div class="text-[11px] text-center text-gray-400 border-t border-gray-800/60 pt-1.5 font-bold">
+                        已投入 <span class="text-cyan-400">$45.06萬</span> | 現金彈藥 <span class="text-yellow-400">77.47%</span>
+                    </div>
+                </div>
+
+                <!-- 4. 壓力測試與黃線緩衝溫度計 -->
+                <div class="bg-[#0b0e14]/90 p-3.5 rounded-xl border border-gray-800/80 hover:border-purple-500/50 transition-all flex flex-col justify-between shadow-inner">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-black text-gray-200">⚖️ 風險溫度計與緩衝</span>
+                        <span class="text-[10px] font-bold text-purple-400 bg-purple-950/60 px-1.5 py-0.5 rounded border border-purple-800">安全氣囊合格</span>
+                    </div>
+                    <div id="pnlRiskGaugeChart" class="w-full h-52 sm:h-56"></div>
+                    <div class="text-[11px] text-center text-gray-400 border-t border-gray-800/60 pt-1.5 font-bold">
+                        安全氣囊支撐 <span class="text-purple-400">5.3 個月</span> 自繳本息極致緩衝
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- 信貸核心財務指標橫幅 -->
         <div class="card p-5 sm:p-6 bg-gradient-to-r from-[#141b2d] via-[#1a233a] to-[#201c34] border-cyan-500/40 shadow-2xl relative overflow-hidden">
             <div class="absolute -right-10 -top-10 w-60 h-60 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -883,6 +963,6 @@
     </div>
 
     <!-- 載入核心 JS -->
-    <script src="js/app.js?v=4.3.0_dialogues"></script>
+    <script src="js/app.js?v=4.4.0_risk_center"></script>
 </body>
 </html>
