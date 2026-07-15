@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DG AI Sentinel v3.0 | 200萬信貸投資計畫旗艦版</title>
+    <title>DG AI Sentinel v4.0 | 專業分析師資訊戰情室旗艦版</title>
     <!-- PWA Manifest & Icons -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0b0e14">
@@ -19,6 +19,16 @@
         window.firebaseModules = { initializeApp, getFirestore, doc, setDoc, getDoc };
     </script>
     <link rel="stylesheet" href="css/style.css">
+    <script>
+        // v4.0 快取清除與更新防衛：若是 file:// 或帶有 nocache 參數或偵測到版本更新，立即清除舊版 Cache 與註冊
+        if ('serviceWorker' in navigator && (location.protocol === 'file:' || location.search.includes('nocache') || localStorage.getItem('dg_sentinel_ver') !== '4.0')) {
+            localStorage.setItem('dg_sentinel_ver', '4.0');
+            navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
+            if ('caches' in window) {
+                caches.keys().then(names => names.forEach(n => { if (n.includes('v3') || n !== 'dg-sentinel-v4-cache-v4.0') caches.delete(n); }));
+            }
+        }
+    </script>
 </head>
 <body class="p-3 sm:p-4 min-h-screen flex flex-col bg-[#0b0e14] text-[#e2e8f0]">
 
@@ -43,8 +53,9 @@
                 <div class="flex-grow">
                     <div class="flex items-center gap-2 flex-wrap">
                         <h1 class="text-xl sm:text-2xl font-black text-white tracking-widest glow-text">DG AI Sentinel</h1>
-                        <span class="bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 text-white font-extrabold text-[10px] px-2 py-0.5 rounded-full shadow-md whitespace-nowrap">v3.0 旗艦版</span>
+                        <span class="bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 text-white font-extrabold text-[10px] px-2 py-0.5 rounded-full shadow-md whitespace-nowrap">v4.0 專業戰情室</span>
                         <span class="bg-yellow-500/20 text-yellow-400 border border-yellow-500/40 text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">200萬信貸專用</span>
+                        <span id="deviceResolutionChip" class="bg-cyan-950/80 text-cyan-300 border border-cyan-500/50 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full whitespace-nowrap shadow-sm flex items-center gap-1">🖥️ 偵測螢幕解析度中...</span>
                     </div>
                     <p class="text-[10px] sm:text-xs text-gray-400 font-bold tracking-wider sm:whitespace-nowrap">為姜杰佑 (ChiehYu) 打造之全螢幕即時監控與盤後分析系統</p>
                 </div>
@@ -98,6 +109,66 @@
         </div>
     </header>
 
+    <!-- ======================================================= -->
+    <!-- 區塊 1：宏觀與國際市場儀表板 (Top Macro War Room Strip) -->
+    <!-- ======================================================= -->
+    <div id="macroWarRoomStrip" class="mb-4 flex-shrink-0 card p-3 sm:p-3.5 bg-gradient-to-r from-[#111726] via-[#151d30] to-[#111726] border border-cyan-500/40 shadow-xl overflow-x-auto">
+        <div class="flex items-center justify-between gap-5 min-w-[960px] text-xs sm:text-sm font-bold">
+            <div class="flex flex-col items-start justify-center gap-1.5 text-cyan-400 border-r border-gray-700/80 pr-3 flex-shrink-0">
+                <div class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse flex-shrink-0"></span>
+                    <span class="whitespace-nowrap">🌐 總經與熱錢指南針：</span>
+                </div>
+                <span id="macroTimeBadge" class="text-[10px] text-yellow-300 bg-gray-900/90 border border-yellow-500/40 px-2 py-0.5 rounded font-mono font-bold whitespace-nowrap">⏳ 快照同步中...</span>
+            </div>
+            
+            <div class="flex items-center gap-5 flex-grow justify-around text-gray-200">
+                <!-- 美股道瓊 -->
+                <div class="flex items-center gap-2 bg-[#0b0e14]/80 px-3 py-1.5 rounded-lg border border-gray-800 shadow-sm">
+                    <span class="text-gray-400">🇺🇸 道瓊期指</span>
+                    <span id="macroDjiVal" class="text-white font-mono font-black text-sm">----</span>
+                    <span id="macroDjiChg" class="text-gray-400 font-mono text-xs">--</span>
+                </div>
+                <!-- 費半指數 -->
+                <div class="flex items-center gap-2 bg-[#0b0e14]/80 px-3 py-1.5 rounded-lg border border-gray-800 shadow-sm">
+                    <span class="text-gray-400">⚡ 費半 SOX</span>
+                    <span id="macroSoxVal" class="text-white font-mono font-black text-sm">----</span>
+                    <span id="macroSoxChg" class="text-gray-400 font-mono text-xs">--</span>
+                </div>
+                <!-- 台積電 ADR -->
+                <div class="flex items-center gap-2 bg-[#0b0e14]/80 px-3 py-1.5 rounded-lg border border-cyan-500/50 shadow-md">
+                    <span class="text-cyan-300 font-extrabold">👑 台積電 ADR</span>
+                    <span id="macroTsmVal" class="text-white font-mono font-black text-sm">----</span>
+                    <span id="macroTsmChg" class="text-gray-400 font-mono text-xs">--</span>
+                </div>
+                <!-- 輝達 -->
+                <div class="flex items-center gap-2 bg-[#0b0e14]/80 px-3 py-1.5 rounded-lg border border-gray-800 shadow-sm">
+                    <span class="text-gray-400">🔥 輝達 NVDA</span>
+                    <span id="macroNvdaVal" class="text-white font-mono font-black text-sm">----</span>
+                    <span id="macroNvdaChg" class="text-gray-400 font-mono text-xs">--</span>
+                </div>
+                <!-- 美元兌台幣 -->
+                <div class="flex items-center gap-2 bg-[#0b0e14]/80 px-3 py-1.5 rounded-lg border border-gray-800 shadow-sm">
+                    <span class="text-gray-400">💵 美元/台幣</span>
+                    <span id="macroUsdTwdVal" class="text-white font-mono font-black text-sm">----</span>
+                    <span id="macroUsdTwdChg" class="text-yellow-400 font-mono text-xs">熱錢觀測</span>
+                </div>
+                <!-- VIX 恐慌 -->
+                <div class="flex items-center gap-2 bg-[#0b0e14]/80 px-3 py-1.5 rounded-lg border border-gray-800 shadow-sm">
+                    <span class="text-gray-400">🦢 VIX 恐慌</span>
+                    <span id="macroVixVal" class="text-white font-mono font-black text-sm">----</span>
+                    <span id="macroVixChg" class="text-gray-400 font-mono text-xs">--</span>
+                </div>
+                <!-- 日經 225 -->
+                <div class="flex items-center gap-2 bg-[#0b0e14]/80 px-3 py-1.5 rounded-lg border border-gray-800 shadow-sm">
+                    <span class="text-gray-400">🇯🇵 日經 225</span>
+                    <span id="macroNikkeiVal" class="text-white font-mono font-black text-sm">----</span>
+                    <span id="macroNikkeiChg" class="text-gray-400 font-mono text-xs">--</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="loadingIndicator" class="hidden fixed top-16 left-1/2 transform -translate-x-1/2 bg-[#151924]/95 border border-cyan-500 px-4 py-2 rounded-full z-50 text-cyan-400 font-bold text-sm flex items-center gap-2 shadow-2xl backdrop-blur">
         <span class="inline-block w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span> 系統讀取行情與推演演算法中...
     </div>
@@ -105,109 +176,376 @@
     <!-- ======================================================= -->
     <!-- 頁面 1：即時監控與技術圖表 (Realtime Dashboard) -->
     <!-- ======================================================= -->
-    <div id="viewRealtime" class="flex flex-col lg:flex-row gap-5 flex-grow w-full overflow-hidden">
+    <div id="viewRealtime" class="flex flex-col lg:flex-row gap-3 sm:gap-4 flex-grow w-full items-stretch">
         
-        <!-- 左側圖表區 (60%) -->
-        <div class="card w-full lg:w-[62%] p-3 sm:p-4 relative flex flex-col min-h-[720px] lg:min-h-[1150px] shadow-lg border-gray-800">
-            <div class="flex flex-wrap gap-3 sm:gap-4 text-xs font-bold text-gray-400 mb-2 px-2 pt-1 overflow-x-auto">
+        <!-- ======================================================= -->
+        <!-- 左欄 (精簡 15%~17% 消除空白)：即時報價、自選清單、五檔深度與快訊 -->
+        <!-- ======================================================= -->
+        <div class="w-full lg:w-[17%] xl:w-[15%] 2xl:max-w-[360px] flex flex-col gap-3.5 flex-shrink-0">
+            <!-- 1. 標的即時報價與部位損益頭部卡 -->
+            <div id="panelStockHeaderCard" class="card p-3.5 bg-gradient-to-br from-[#151924] to-[#1a202f] border-cyan-500/40 shadow-lg relative overflow-hidden flex flex-col gap-2.5">
+                <!-- Row 1: 標的完整名稱 (獨立一列，自動多行換行呈顯，絕不裁切為「群...」) -->
+                <div class="w-full border-b border-gray-800/80 pb-1.5">
+                    <span id="panelStockName" class="text-sm sm:text-base font-black text-white tracking-wide block break-words leading-snug">載入中...</span>
+                </div>
+
+                <!-- Row 2: 徽章代號與現價漲跌 (左右對立，上方釋放後擁有充足空間，絕不重疊) -->
+                <div class="flex justify-between items-end gap-2 border-b border-gray-800/80 pb-2">
+                    <div class="flex flex-col gap-1 items-start">
+                        <span id="panelSymbolBadge" class="text-xs bg-gray-800 text-gray-200 font-mono font-bold px-2 py-0.5 rounded border border-gray-700">----</span>
+                        <span class="text-[10px] text-cyan-400 font-bold bg-cyan-950/60 px-1.5 py-0.5 rounded border border-cyan-800/60 whitespace-nowrap">⚡ 即時連線</span>
+                    </div>
+                    <div class="text-right flex-shrink-0 flex flex-col items-end">
+                        <div id="panelPrice" class="text-2xl sm:text-3xl font-black font-mono text-white tracking-tight drop-shadow leading-none">----</div>
+                        <div id="panelChange" class="text-xs sm:text-sm font-bold font-mono text-gray-400 mt-1 whitespace-nowrap">--</div>
+                    </div>
+                </div>
+
+                <!-- Row 3: 部位成本與未實現帳面損益 -->
+                <div class="flex flex-wrap justify-between items-center text-xs gap-1 pt-0.5">
+                    <div class="text-gray-400 font-bold truncate text-[11px] sm:text-xs">
+                        持有: <span id="invShares" class="text-white font-mono font-bold">0</span>股 <span class="text-gray-500">(@$<span id="invCost">0</span>)</span>
+                    </div>
+                    <div class="font-mono font-black text-xs sm:text-sm whitespace-nowrap" id="invPnl">+0</div>
+                </div>
+            </div>
+
+            <!-- 2. 自選清單與產業族群快選分頁卡 -->
+            <div id="watchlistGroupCard" class="card p-3 bg-[#111726]/95 border-gray-800 shadow">
+                <div class="flex justify-between items-center mb-2 border-b border-gray-800 pb-1.5 gap-1">
+                    <span class="text-xs font-black text-gray-300 flex items-center gap-1 truncate">📑 核心自選與族群</span>
+                    <div class="flex gap-1 text-[10px] flex-shrink-0">
+                        <button onclick="toggleWatchlistGroup('semi')" id="btnGroupSemi" class="px-2 py-0.5 rounded font-bold bg-cyan-600 text-white transition">⚡ 半導體</button>
+                        <button onclick="toggleWatchlistGroup('div')" id="btnGroupDiv" class="px-2 py-0.5 rounded font-bold bg-gray-800 text-gray-400 hover:text-white transition">🛡️ 高息</button>
+                    </div>
+                </div>
+                <!-- 半導體與 AI 鏈 -->
+                <div id="watchlistGroupSemi" class="grid grid-cols-2 gap-1.5 text-xs font-bold">
+                    <button onclick="switchWatchlistStock('2330')" class="flex justify-between items-center bg-[#0b0e14]/80 hover:bg-cyan-950/50 p-1.5 rounded border border-gray-800 hover:border-cyan-500/60 transition overflow-hidden gap-1">
+                        <span class="text-white truncate text-[11px] sm:text-xs">2330 台積電</span><span id="wlChg_2330" class="text-[#ef4444] font-mono text-[10px] sm:text-[11px] flex-shrink-0">--</span>
+                    </button>
+                    <button onclick="switchWatchlistStock('2454')" class="flex justify-between items-center bg-[#0b0e14]/80 hover:bg-cyan-950/50 p-1.5 rounded border border-gray-800 hover:border-cyan-500/60 transition overflow-hidden gap-1">
+                        <span class="text-white truncate text-[11px] sm:text-xs">2454 聯發科</span><span id="wlChg_2454" class="text-[#ef4444] font-mono text-[10px] sm:text-[11px] flex-shrink-0">--</span>
+                    </button>
+                    <button onclick="switchWatchlistStock('3037')" class="flex justify-between items-center bg-[#0b0e14]/80 hover:bg-cyan-950/50 p-1.5 rounded border border-gray-800 hover:border-cyan-500/60 transition overflow-hidden gap-1">
+                        <span class="text-white truncate text-[11px] sm:text-xs">3037 欣興</span><span id="wlChg_3037" class="text-[#ef4444] font-mono text-[10px] sm:text-[11px] flex-shrink-0">--</span>
+                    </button>
+                    <button onclick="switchWatchlistStock('2382')" class="flex justify-between items-center bg-[#0b0e14]/80 hover:bg-cyan-950/50 p-1.5 rounded border border-gray-800 hover:border-cyan-500/60 transition overflow-hidden gap-1">
+                        <span class="text-white truncate text-[11px] sm:text-xs">2382 廣達</span><span id="wlChg_2382" class="text-[#ef4444] font-mono text-[10px] sm:text-[11px] flex-shrink-0">--</span>
+                    </button>
+                </div>
+                <!-- 核心高息與防禦鏈 -->
+                <div id="watchlistGroupDiv" class="hidden grid grid-cols-2 gap-1.5 text-xs font-bold">
+                    <button onclick="switchWatchlistStock('00919')" class="flex justify-between items-center bg-[#0b0e14]/80 hover:bg-cyan-950/50 p-1.5 rounded border border-gray-800 hover:border-cyan-500/60 transition overflow-hidden gap-1">
+                        <span class="text-white truncate text-[11px] sm:text-xs">00919 群益高息</span><span id="wlChg_00919" class="text-[#ef4444] font-mono text-[10px] sm:text-[11px] flex-shrink-0">--</span>
+                    </button>
+                    <button onclick="switchWatchlistStock('0056')" class="flex justify-between items-center bg-[#0b0e14]/80 hover:bg-cyan-950/50 p-1.5 rounded border border-gray-800 hover:border-cyan-500/60 transition overflow-hidden gap-1">
+                        <span class="text-white truncate text-[11px] sm:text-xs">0056 元大高息</span><span id="wlChg_0056" class="text-[#ef4444] font-mono text-[10px] sm:text-[11px] flex-shrink-0">--</span>
+                    </button>
+                    <button onclick="switchWatchlistStock('00878')" class="flex justify-between items-center bg-[#0b0e14]/80 hover:bg-cyan-950/50 p-1.5 rounded border border-gray-800 hover:border-cyan-500/60 transition">
+                        <span class="text-white">00878 國泰永續</span><span id="wlChg_00878" class="text-[#ef4444] font-mono text-[11px]">--</span>
+                    </button>
+                    <button onclick="switchWatchlistStock('0050')" class="flex justify-between items-center bg-[#0b0e14]/80 hover:bg-cyan-950/50 p-1.5 rounded border border-gray-800 hover:border-cyan-500/60 transition">
+                        <span class="text-white">0050 元大台灣</span><span id="wlChg_0050" class="text-[#ef4444] font-mono text-[11px]">--</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3. 五檔委買委賣價量深度 (5-Level Order Book Depth) -->
+            <div id="orderBookCard" class="card p-3 bg-[#111726]/95 border-gray-800 shadow text-xs font-mono">
+                <div class="flex justify-between items-center mb-2 pb-1 border-b border-gray-800 font-sans font-bold">
+                    <span class="text-gray-300 flex items-center gap-1">📊 最佳五檔委買委賣明細</span>
+                    <span class="text-[10px] text-cyan-400 bg-cyan-950/80 px-1.5 py-0.5 rounded border border-cyan-800">盤口模擬對接</span>
+                </div>
+                <!-- 委賣 5 檔 (由高至低) -->
+                <div id="orderBookAskRows" class="space-y-1 text-gray-300 mb-2 border-b border-gray-800/80 pb-2">
+                    <div class="flex justify-between items-center py-0.5 px-1 rounded bg-[#ef4444]/10">
+                        <span class="text-gray-400">賣五</span><span class="text-[#ef4444] font-bold" id="askP_5">----</span>
+                        <div class="flex items-center gap-1.5"><div class="w-16 bg-gray-800 h-1.5 rounded overflow-hidden"><div class="bg-[#ef4444] h-full" id="askBar_5" style="width: 65%;"></div></div><span class="w-8 text-right font-bold" id="askV_5">--</span></div>
+                    </div>
+                    <div class="flex justify-between items-center py-0.5 px-1 rounded bg-[#ef4444]/10">
+                        <span class="text-gray-400">賣四</span><span class="text-[#ef4444] font-bold" id="askP_4">----</span>
+                        <div class="flex items-center gap-1.5"><div class="w-16 bg-gray-800 h-1.5 rounded overflow-hidden"><div class="bg-[#ef4444] h-full" id="askBar_4" style="width: 45%;"></div></div><span class="w-8 text-right font-bold" id="askV_4">--</span></div>
+                    </div>
+                    <div class="flex justify-between items-center py-0.5 px-1 rounded bg-[#ef4444]/10">
+                        <span class="text-gray-400">賣三</span><span class="text-[#ef4444] font-bold" id="askP_3">----</span>
+                        <div class="flex items-center gap-1.5"><div class="w-16 bg-gray-800 h-1.5 rounded overflow-hidden"><div class="bg-[#ef4444] h-full" id="askBar_3" style="width: 80%;"></div></div><span class="w-8 text-right font-bold" id="askV_3">--</span></div>
+                    </div>
+                    <div class="flex justify-between items-center py-0.5 px-1 rounded bg-[#ef4444]/10">
+                        <span class="text-gray-400">賣二</span><span class="text-[#ef4444] font-bold" id="askP_2">----</span>
+                        <div class="flex items-center gap-1.5"><div class="w-16 bg-gray-800 h-1.5 rounded overflow-hidden"><div class="bg-[#ef4444] h-full" id="askBar_2" style="width: 55%;"></div></div><span class="w-8 text-right font-bold" id="askV_2">--</span></div>
+                    </div>
+                    <div class="flex justify-between items-center py-0.5 px-1 rounded bg-[#ef4444]/20 border border-[#ef4444]/30">
+                        <span class="text-gray-300 font-bold">賣一</span><span class="text-[#ef4444] font-black" id="askP_1">----</span>
+                        <div class="flex items-center gap-1.5"><div class="w-16 bg-gray-800 h-1.5 rounded overflow-hidden"><div class="bg-[#ef4444] h-full" id="askBar_1" style="width: 90%;"></div></div><span class="w-8 text-right font-bold text-white" id="askV_1">--</span></div>
+                    </div>
+                </div>
+                <!-- 委買 5 檔 (由高至低) -->
+                <div id="orderBookBidRows" class="space-y-1 text-gray-300">
+                    <div class="flex justify-between items-center py-0.5 px-1 rounded bg-[#10b981]/20 border border-[#10b981]/30">
+                        <span class="text-gray-300 font-bold">買一</span><span class="text-[#10b981] font-black" id="bidP_1">----</span>
+                        <div class="flex items-center gap-1.5"><div class="w-16 bg-gray-800 h-1.5 rounded overflow-hidden"><div class="bg-[#10b981] h-full" id="bidBar_1" style="width: 85%;"></div></div><span class="w-8 text-right font-bold text-white" id="bidV_1">--</span></div>
+                    </div>
+                    <div class="flex justify-between items-center py-0.5 px-1 rounded bg-[#10b981]/10">
+                        <span class="text-gray-400">買二</span><span class="text-[#10b981] font-bold" id="bidP_2">----</span>
+                        <div class="flex items-center gap-1.5"><div class="w-16 bg-gray-800 h-1.5 rounded overflow-hidden"><div class="bg-[#10b981] h-full" id="bidBar_2" style="width: 60%;"></div></div><span class="w-8 text-right font-bold" id="bidV_2">--</span></div>
+                    </div>
+                    <div class="flex justify-between items-center py-0.5 px-1 rounded bg-[#10b981]/10">
+                        <span class="text-gray-400">買三</span><span class="text-[#10b981] font-bold" id="bidP_3">----</span>
+                        <div class="flex items-center gap-1.5"><div class="w-16 bg-gray-800 h-1.5 rounded overflow-hidden"><div class="bg-[#10b981] h-full" id="bidBar_3" style="width: 75%;"></div></div><span class="w-8 text-right font-bold" id="bidV_3">--</span></div>
+                    </div>
+                    <div class="flex justify-between items-center py-0.5 px-1 rounded bg-[#10b981]/10">
+                        <span class="text-gray-400">買四</span><span class="text-[#10b981] font-bold" id="bidP_4">----</span>
+                        <div class="flex items-center gap-1.5"><div class="w-16 bg-gray-800 h-1.5 rounded overflow-hidden"><div class="bg-[#10b981] h-full" id="bidBar_4" style="width: 50%;"></div></div><span class="w-8 text-right font-bold" id="bidV_4">--</span></div>
+                    </div>
+                    <div class="flex justify-between items-center py-0.5 px-1 rounded bg-[#10b981]/10">
+                        <span class="text-gray-400">買五</span><span class="text-[#10b981] font-bold" id="bidP_5">----</span>
+                        <div class="flex items-center gap-1.5"><div class="w-16 bg-gray-800 h-1.5 rounded overflow-hidden"><div class="bg-[#10b981] h-full" id="bidBar_5" style="width: 70%;"></div></div><span class="w-8 text-right font-bold" id="bidV_5">--</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. 內外盤買賣氣比 (Bid-Ask Strength Ratio) -->
+            <div id="bidAskRatioCard" class="card p-3 bg-[#111726]/95 border-gray-800 shadow">
+                <div class="flex justify-between items-center text-xs font-bold mb-1.5">
+                    <span class="text-[#ef4444] flex items-center gap-1">🔥 外盤買氣 <span id="outerRatioText">58%</span></span>
+                    <span class="text-gray-400 font-mono text-[10px]">內外盤力道比</span>
+                    <span class="text-[#10b981] flex items-center gap-1"><span id="innerRatioText">42%</span> 內盤賣壓 ❄️</span>
+                </div>
+                <div class="w-full bg-[#10b981] h-2.5 rounded-full overflow-hidden flex shadow-inner">
+                    <div id="outerRatioBar" class="bg-[#ef4444] h-full transition-all duration-500" style="width: 58%;"></div>
+                </div>
+            </div>
+
+            <!-- 5. 單筆主力大單與跳動明細快訊 (`Tick Stream`) -->
+            <div id="tickStreamCard" class="card p-3 bg-[#111726]/95 border-gray-800 shadow flex-grow flex flex-col min-h-[140px] max-h-[220px]">
+                <div class="flex justify-between items-center text-xs font-bold mb-2 pb-1 border-b border-gray-800">
+                    <span class="text-gray-300 flex items-center gap-1">⚡ 盤中主力單筆大單快訊</span>
+                    <span class="text-[10px] text-yellow-400 font-mono">即時滾動</span>
+                </div>
+                <div id="tickStreamList" class="space-y-1.5 text-[11px] font-mono overflow-y-auto pr-1 flex-grow">
+                    <div class="flex justify-between items-center text-gray-300"><span class="text-gray-500">13:25:04</span><span class="text-[#ef4444] font-bold">🟢 外盤大買 +180張</span><span>@現價</span></div>
+                    <div class="flex justify-between items-center text-gray-300"><span class="text-gray-500">13:24:12</span><span class="text-[#ef4444] font-bold">🟢 法人敲進 +320張</span><span>@現價</span></div>
+                    <div class="flex justify-between items-center text-gray-300"><span class="text-gray-500">13:21:45</span><span class="text-[#10b981]">🔴 內盤調節 -110張</span><span>@現價</span></div>
+                    <div class="flex justify-between items-center text-gray-300"><span class="text-gray-500">13:18:30</span><span class="text-[#ef4444] font-bold">🟢 連續外買 +250張</span><span>@現價</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================================================= -->
+        <!-- 中欄 (彈性自動擴展不吃畫面)：中央核心主視覺 K 線與多週期快選系統 -->
+        <!-- ======================================================= -->
+        <div class="card w-full lg:w-[45%] xl:flex-1 min-w-0 p-3 sm:p-4 relative flex flex-col min-h-[600px] lg:min-h-[820px] shadow-xl border-gray-800 flex-shrink">
+            
+            <!-- 頂部多週期快捷按鈕組與策略監控列 -->
+            <div id="chartHeaderBar" class="flex flex-col gap-2.5 mb-2.5 pb-2.5 border-b border-gray-800/80">
+                <div class="flex flex-wrap justify-between items-center gap-2">
+                    <div class="flex items-center gap-1 text-xs font-bold">
+                        <span class="text-gray-400 mr-1">📐 多週期切換：</span>
+                        <button onclick="switchChartTimeframe('month')" id="tfBtn_month" class="px-2 py-0.5 rounded border border-gray-700 bg-[#0b0e14] text-gray-400 hover:text-white hover:border-cyan-500 transition">月K (大勢)</button>
+                        <button onclick="switchChartTimeframe('week')" id="tfBtn_week" class="px-2 py-0.5 rounded border border-gray-700 bg-[#0b0e14] text-gray-400 hover:text-white hover:border-cyan-500 transition">週K (波段)</button>
+                        <button onclick="switchChartTimeframe('day')" id="tfBtn_day" class="px-2.5 py-0.5 rounded border border-cyan-500 bg-cyan-950 text-cyan-300 font-extrabold shadow">日K (預設)</button>
+                        <button onclick="switchChartTimeframe('60m')" id="tfBtn_60m" class="px-2 py-0.5 rounded border border-gray-700 bg-[#0b0e14] text-gray-400 hover:text-white hover:border-cyan-500 transition">60分K</button>
+                        <button onclick="switchChartTimeframe('15m')" id="tfBtn_15m" class="px-2 py-0.5 rounded border border-gray-700 bg-[#0b0e14] text-gray-400 hover:text-white hover:border-cyan-500 transition">15分K (進出)</button>
+                    </div>
+                    <div class="text-[11px] text-gray-400 bg-gray-900 px-2 py-0.5 rounded border border-gray-800 font-mono">
+                        已載入六層技術指標與動態防守黃線
+                    </div>
+                </div>
+
+                <!-- 戰略防守黃線位階摘要 -->
+                <div class="flex flex-wrap items-baseline justify-between gap-2 bg-[#0e131f]/90 p-2.5 rounded-lg border border-gray-800/80 text-xs">
+                    <div class="flex items-center gap-2 font-bold">
+                        <span class="w-2 h-2 rounded-full bg-yellow-400 animate-ping"></span>
+                        <span class="text-yellow-400">🛡️ 動態策略與黃線位階：</span>
+                        <span id="dynamicStopVal" class="text-base font-black text-yellow-400 ml-1">$----</span>
+                        <span id="dynamicStopReason" class="text-gray-400 text-[11px] ml-1">(--)</span>
+                    </div>
+                    <div id="targetPriceRow" class="hidden items-baseline gap-1">
+                        <span class="text-gray-400">目標上軌:</span>
+                        <span id="targetPriceVal" class="text-base font-black text-cyan-400 ml-1">$----</span>
+                    </div>
+                </div>
+
+                <!-- AI 輿情與均線觀點 -->
+                <div id="aiSentimentSummary" class="text-xs text-gray-300 bg-[#111726] px-3 py-2 rounded-lg border border-gray-800 leading-relaxed">
+                    🌟 <strong>AI 輿情與多頭判定：</strong> 正在綜合評定均線排列與籌碼動能...
+                </div>
+            </div>
+
+            <!-- 圖例與標籤 -->
+            <div class="flex flex-wrap gap-2 text-xs font-bold text-gray-400 mb-2 px-1 overflow-x-auto">
                 <div class="flex items-center whitespace-nowrap"><span class="w-3.5 h-3.5 rounded-full bg-[#ef4444] text-white text-[9px] flex items-center justify-center font-bold mr-1">買</span>爆量承接</div>
                 <div class="flex items-center whitespace-nowrap"><span class="w-3.5 h-3.5 rounded-full bg-[#10b981] text-white text-[9px] flex items-center justify-center font-bold mr-1">賣</span>爆量籌碼</div>
                 <div class="flex items-center whitespace-nowrap"><span class="w-3.5 h-3.5 rounded-full bg-[#3b82f6] text-white text-[9px] flex items-center justify-center font-bold mr-1">縮</span>量縮洗盤</div>
-                <div class="flex items-center whitespace-nowrap"><span class="w-3.5 h-3.5 rounded-full bg-[#a855f7] text-white text-[9px] flex items-center justify-center font-bold mr-1 ml-1">會</span>股東常會</div>
-                <div class="flex items-center whitespace-nowrap"><span class="w-3.5 h-3.5 rounded-full bg-[#eab308] text-white text-[9px] flex items-center justify-center font-bold mr-1">息</span>除權息</div>
-                <div class="flex items-center whitespace-nowrap"><span class="w-3 h-1 bg-[#ffffff] opacity-40 mr-1 ml-1"></span>歷史收盤連線</div>
-                <div class="flex items-center whitespace-nowrap"><span class="w-3 h-1 bg-[#eab308] mr-1"></span>動態防守黃線</div>
+                <div class="flex items-center whitespace-nowrap"><span class="w-3 h-1 bg-[#eab308] mr-1 ml-1"></span>動態防守黃線</div>
                 <div class="flex items-center whitespace-nowrap"><span class="w-4 h-1 border-b-2 border-dashed border-[#22d3ee] mr-1"></span>AI 均值回歸跳躍推演</div>
             </div>
             
-            <div id="mainChart" class="w-full flex-grow min-h-[660px] lg:min-h-[1080px]"></div>
+            <div id="mainChart" class="w-full flex-grow min-h-[500px] lg:min-h-[700px]"></div>
         </div>
 
-        <!-- 右側戰略面板 (38%) -->
-        <div class="w-full lg:w-[38%] flex flex-col gap-4">
-            <!-- 標的現價與持股損益大卡 -->
-            <div class="card p-5 relative overflow-hidden bg-gradient-to-br from-[#151924] to-[#1a202f] border-gray-700/80 shadow-xl">
-                <div class="flex justify-between items-start mb-3">
-                    <div>
-                        <span id="panelStockName" class="text-xl sm:text-2xl font-black text-white tracking-wide">載入中...</span>
-                        <div class="flex items-center gap-2 mt-1">
-                            <span id="panelSymbolBadge" class="text-xs bg-gray-800 text-gray-300 font-mono px-2 py-0.5 rounded border border-gray-700">----</span>
-                            <span class="text-[11px] text-cyan-400 font-bold bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800/60">Fugle API 即時/歷史同步</span>
+        <!-- ======================================================= -->
+        <!-- 右欄 (佔比 32%)：籌碼動態、法人追蹤與 Wargame 沙盤推演總指揮 -->
+        <!-- ======================================================= -->
+        <div class="w-full lg:w-[38%] xl:w-[42%] 2xl:w-[44%] flex flex-col gap-3.5 flex-shrink-0">
+            <div class="grid grid-cols-1 2xl:grid-cols-12 gap-3.5 w-full flex-grow items-stretch">
+                <!-- 【右左區塊 col-span-5】4大市場維度、分析師佐證卡、個股輿情快訊卡 -->
+                <div class="flex flex-col gap-3.5 w-full 2xl:col-span-5 flex-grow">
+                    <!-- 1. 4 大市場核心維度快覽矩陣 (2x2 Grid) -->
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <!-- 維度 1：台指夜盤 -->
+                        <div class="card p-3 sm:p-3.5 bg-[#111726]/95 border-gray-800 hover:border-cyan-500/60 transition shadow flex flex-col justify-between min-h-[96px]">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-xs font-bold text-gray-300">🌙 1. 台指夜盤與期貨</span>
+                                <span id="pillar1Status" class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-800 flex-shrink-0">載入中</span>
+                            </div>
+                            <div id="pillar1Value" class="text-sm sm:text-base font-black text-white mt-1">----</div>
+                            <div id="pillar1Desc" class="text-[11px] text-gray-300 mt-1 leading-relaxed break-words whitespace-normal max-h-[52px] overflow-y-auto custom-scrollbar">外資夜盤連動中...</div>
+                        </div>
+                        <!-- 維度 2：費半/輝達/ADR -->
+                        <div class="card p-3 sm:p-3.5 bg-[#111726]/95 border-gray-800 hover:border-cyan-500/60 transition shadow flex flex-col justify-between min-h-[96px]">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-xs font-bold text-gray-300">🇺🇸 2. 費半/ADR溢價</span>
+                                <span id="pillar2Status" class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-800 flex-shrink-0">載入中</span>
+                            </div>
+                            <div id="pillar2Value" class="text-sm sm:text-base font-black text-white mt-1">----</div>
+                            <div id="pillar2Desc" class="text-[11px] text-gray-300 mt-1 leading-relaxed break-words whitespace-normal max-h-[52px] overflow-y-auto custom-scrollbar">半導體科技領頭評定...</div>
+                        </div>
+                        <!-- 維度 3：黑天鵝/外匯 -->
+                        <div class="card p-3 sm:p-3.5 bg-[#111726]/95 border-gray-800 hover:border-cyan-500/60 transition shadow flex flex-col justify-between min-h-[96px]">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-xs font-bold text-gray-300">🦢 3. 總經黑天鵝/匯率</span>
+                                <span id="pillar3Status" class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 flex-shrink-0">安全區間</span>
+                            </div>
+                            <div id="pillar3Value" class="text-sm sm:text-base font-black text-white mt-1">----</div>
+                            <div id="pillar3Desc" class="text-[11px] text-gray-300 mt-1 leading-relaxed break-words whitespace-normal max-h-[52px] overflow-y-auto custom-scrollbar">VIX/匯率防衛...</div>
+                        </div>
+                        <!-- 維度 4：籌碼維持率 -->
+                        <div class="card p-3 sm:p-3.5 bg-[#111726]/95 border-gray-800 hover:border-cyan-500/60 transition shadow flex flex-col justify-between min-h-[96px]">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-xs font-bold text-gray-300">⚖️ 4. 融資與籌碼壓力</span>
+                                <span id="pillar4Status" class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-800 flex-shrink-0">載入中</span>
+                            </div>
+                            <div id="pillar4Value" class="text-sm sm:text-base font-black text-white mt-1">----</div>
+                            <div id="pillar4Desc" class="text-[11px] text-gray-300 mt-1 leading-relaxed break-words whitespace-normal max-h-[52px] overflow-y-auto custom-scrollbar">融資增減與籌碼沉澱...</div>
                         </div>
                     </div>
-                    <div class="text-right">
-                        <div id="panelChange" class="text-lg sm:text-2xl font-bold mb-0.5 text-gray-400">--</div>
-                        <span class="text-xs text-gray-400 font-bold">較前日收盤變化</span>
-                    </div>
-                </div>
 
-                <div class="flex justify-between items-baseline border-y border-gray-700/80 py-4 my-3">
-                    <div class="flex flex-col">
-                        <span class="text-xs text-gray-400 font-bold mb-1">盤中/收盤即時現價 (NTD)</span>
-                        <span id="panelPrice" class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight drop-shadow-md text-white">----</span>
-                    </div>
-                    <div class="flex flex-col items-end">
-                        <span class="text-xs text-gray-400 font-bold mb-1">現有庫存部位帳面損益</span>
-                        <span id="invPnl" class="text-2xl sm:text-4xl font-black tracking-wide text-gray-400">----</span>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3 bg-[#0f131c] p-3.5 rounded-xl border border-gray-800 text-xs sm:text-sm">
-                    <div class="flex flex-col">
-                        <span class="text-gray-400">目前持股數 (累積成交)</span>
-                        <span class="text-white font-extrabold text-base mt-0.5"><span id="invShares">0</span> <span class="text-xs font-normal text-gray-400">股</span></span>
-                    </div>
-                    <div class="flex flex-col border-l border-gray-800 pl-3">
-                        <span class="text-gray-400">加權平均成本 (除息後校準)</span>
-                        <span class="text-yellow-400 font-extrabold text-base mt-0.5">$<span id="invCost">0.00</span></span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- V2.2/V3.0 動態防守線戰略分析大卡 -->
-            <div id="strategyBox" class="card p-5 border-l-4 border-blue-500 bg-[#151924] shadow-xl flex flex-col gap-3">
-                <div class="flex justify-between items-center border-b border-gray-700/60 pb-2">
-                    <h4 class="text-white font-bold text-base sm:text-lg flex items-center gap-2">
-                        <span>🛡️ 動態移動防守線 (Hybrid Trailing Stop)</span>
-                    </h4>
-                    <span class="text-[10px] text-yellow-400 font-mono border border-yellow-500/50 px-2 py-0.5 rounded bg-yellow-950/30">V3.0 取高值模型</span>
-                </div>
-                <div id="strategyDesc" class="text-gray-300 text-xs sm:text-sm leading-relaxed">正在解析防守策略...</div>
-                <div class="bg-[#0b0e14] border border-gray-700/80 p-3.5 rounded-xl text-xs sm:text-sm flex flex-col gap-2.5 mt-1">
-                    <div class="flex justify-between items-center">
-                        <div class="flex flex-col">
-                            <span class="text-gray-400 font-bold">絕對防守黃線位階 (當日生效)</span>
-                            <span class="text-[10px] text-gray-500">若盤中/收盤有效跌破此防線應啟動檢討</span>
+                    <!-- 2. 近期籌碼、法人進出與分析師評級佐證卡 (#supportingDataCard) -->
+                    <div id="supportingDataCard" class="card p-3.5 sm:p-4 bg-gradient-to-br from-[#121824] via-[#161d2d] to-[#1a2234] border-cyan-500/40 shadow-xl relative overflow-hidden flex-shrink-0">
+                        <div class="flex justify-between items-center border-b border-gray-700/80 pb-2.5 mb-3">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-base">📊</span>
+                                <h3 class="font-bold text-white text-xs sm:text-sm tracking-wide">個股近期法人進出與分析師佐證</h3>
+                            </div>
+                            <span class="text-[10px] text-cyan-400 bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-800 font-mono">Evidence</span>
                         </div>
-                        <div class="flex flex-col items-end">
-                            <span id="dynamicStopVal" class="text-yellow-400 font-black text-xl">$0</span>
-                            <span id="dynamicStopReason" class="text-[11px] text-yellow-500 font-medium">(演算法計算中...)</span>
+
+                        <div class="space-y-2.5 text-xs sm:text-[13px]">
+                            <!-- 法人動態 -->
+                            <div class="bg-[#0b0e14]/80 p-2.5 rounded-lg border border-gray-800">
+                                <div class="font-bold text-cyan-400 mb-1 flex items-center justify-between">
+                                    <span>⚖️ 三大法人與大戶動向：</span>
+                                    <span class="text-[10px] text-gray-400 font-mono">分點主力監控</span>
+                                </div>
+                                <div id="evidenceFlow" class="text-gray-200 leading-relaxed break-words whitespace-normal max-h-[140px] overflow-y-auto custom-scrollbar">載入近期籌碼動態中...</div>
+                            </div>
+
+                            <!-- 融資融券 -->
+                            <div class="bg-[#0b0e14]/80 p-2.5 rounded-lg border border-gray-800">
+                                <div class="font-bold text-amber-400 mb-1 flex items-center justify-between">
+                                    <span>🏦 信用維持率與資券防守：</span>
+                                    <span class="text-[10px] text-gray-400 font-mono">信用資警網</span>
+                                </div>
+                                <div id="evidenceMargin" class="text-gray-200 leading-relaxed break-words whitespace-normal max-h-[140px] overflow-y-auto custom-scrollbar">載入信用資實況中...</div>
+                            </div>
+
+                            <!-- 評級共識 -->
+                            <div class="bg-[#0b0e14]/80 p-2.5 rounded-lg border border-gray-800">
+                                <div class="font-bold text-purple-400 mb-1 flex items-center justify-between">
+                                    <span>🎯 券商共識目標價區間：</span>
+                                    <span class="text-[10px] text-gray-400 font-mono">法人研究報告</span>
+                                </div>
+                                <div id="evidenceConsensus" class="text-gray-200 leading-relaxed break-words whitespace-normal max-h-[140px] overflow-y-auto custom-scrollbar">彙整內外資均值中...</div>
+                            </div>
+
+                            <!-- 核心催化劑 -->
+                            <div class="bg-[#0b0e14]/80 p-2.5 rounded-lg border border-gray-800">
+                                <div class="font-bold text-teal-400 mb-1 flex items-center justify-between">
+                                    <span>🔥 關鍵催化事件與排程展望：</span>
+                                    <span class="text-[10px] text-gray-400 font-mono">法說/營收/除息</span>
+                                </div>
+                                <div id="evidenceCatalyst" class="text-gray-200 leading-relaxed break-words whitespace-normal max-h-[140px] overflow-y-auto custom-scrollbar">載入重要時程中...</div>
+                            </div>
                         </div>
                     </div>
-                    <div id="targetPriceRow" class="hidden justify-between border-t border-gray-800 pt-2 text-xs sm:text-sm">
-                        <span class="text-gray-400 font-bold">波段攻擊第一停利目標</span>
-                        <span id="targetPriceVal" class="text-teal-400 font-extrabold">$0</span>
+
+                    <!-- 3. 即時全網新聞快訊卡 (挪至佐證卡正下方，徹底充實高度消除空白) -->
+                    <div class="card p-3.5 flex-grow flex flex-col shadow-xl bg-[#151924] min-h-[220px]">
+                        <div class="flex justify-between items-center border-b border-gray-700/80 pb-2 mb-2.5">
+                            <h3 class="font-bold text-white text-xs sm:text-sm flex items-center gap-1.5">
+                                <span>📰 個股即時輿情與重大快訊</span>
+                            </h3>
+                            <span class="text-[9px] text-gray-400 bg-gray-800 px-1.5 py-0.5 rounded border border-gray-700">依發布時間</span>
+                        </div>
+                        <div id="newsLinksBox" class="space-y-2 overflow-y-auto max-h-[280px] pr-1 text-xs">
+                            <div class="text-center text-gray-500 text-xs py-4 animate-pulse">📡 正在透過 RSS 掃描全網新聞...</div>
+                        </div>
                     </div>
-                </div>
-            </div>
+                </div><!-- 結束右左區塊 -->
 
-            <!-- AI 輿情解讀摘要 -->
-            <div id="aiSentimentSummary" class="text-xs sm:text-sm text-gray-300 leading-relaxed bg-blue-900/20 p-4 rounded-xl border border-blue-800/50 shadow-inner">
-                🌟 <strong>AI 輿情與均值回歸解讀：</strong> 讀取 K 線與技術動態中...
-            </div>
+                <!-- 【右右區塊 col-span-7】Wargame Council 10 輪對抗沙盤推演中心 (預設直接展開到底) -->
+                <div class="flex flex-col gap-3.5 w-full 2xl:col-span-7 flex-grow">
+                    <!-- Wargame Council 10 輪沙盤推演與 CIO 指令卡 -->
+                    <div id="wargameCouncilCard" class="card p-3.5 sm:p-4 bg-gradient-to-r from-[#121824] via-[#161d2d] to-[#1a2032] border-cyan-500/50 shadow-2xl relative overflow-hidden flex-grow flex flex-col justify-between">
+                        <div>
+                            <div class="flex flex-wrap justify-between items-center gap-2 border-b border-gray-700/80 pb-2.5 mb-3">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-lg">👑</span>
+                                    <div>
+                                        <div class="flex items-center gap-1.5">
+                                            <h3 class="font-black text-white text-xs sm:text-sm tracking-wide">Wargame Council 10 輪推演中心</h3>
+                                            <span id="wargameSymbolTitleBadge" class="bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-black text-[10px] px-1.5 py-0.5 rounded shadow">00919 專屬</span>
+                                        </div>
+                                        <div class="text-[10px] text-gray-400 mt-0.5">每日早晨全自動推演 · 5 大決策辯論</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="text-right">
+                                        <div class="text-[9px] text-gray-400 font-bold">信心評級</div>
+                                        <div id="wargameConfidenceScore" class="text-base font-black text-yellow-400">87%</div>
+                                    </div>
+                                    <span id="wargameTimeBadge" class="bg-cyan-950 text-cyan-300 border border-cyan-800 text-[10px] font-bold px-2 py-0.5 rounded">今日結案</span>
+                                </div>
+                            </div>
 
-            <!-- 即時全網新聞快訊卡 -->
-            <div class="card p-4 flex-grow flex flex-col shadow-xl bg-[#151924]">
-                <div class="flex justify-between items-center border-b border-gray-700/60 pb-2 mb-3">
-                    <h3 class="font-bold text-white text-sm sm:text-base flex items-center gap-2">
-                        <span>📰 全網個股即時輿情與重大快訊</span>
-                    </h3>
-                    <span class="text-[10px] text-gray-400 bg-gray-800 px-2 py-0.5 rounded border border-gray-700">依發布時間重排</span>
-                </div>
-                <div id="newsLinksBox" class="space-y-2 overflow-y-auto max-h-[380px] pr-1">
-                    <div class="text-center text-gray-500 text-xs py-6 animate-pulse">📡 正在透過 RSS 掃描近 7 天全網新聞...</div>
-                </div>
-            </div>
+                            <!-- CIO 指令與推論 -->
+                            <div class="bg-[#090d15]/80 p-3 rounded-xl border border-cyan-500/40 mb-3 shadow">
+                                <div id="cioDirectiveHeader" class="text-[11px] font-black text-cyan-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                                    CIO 今日核心戰略指令
+                                </div>
+                                <div id="cioDirectiveText" class="text-xs sm:text-sm font-black text-white leading-relaxed">載入中...</div>
+                                <div class="mt-2 pt-2 border-t border-gray-800 text-xs text-gray-300 leading-relaxed">
+                                    <strong class="text-yellow-400">對抗辯論共識推論：</strong> <span id="cioRationaleText">載入中...</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 10 輪對抗沙盤推演會議記錄面板 (預設展開，高度拉長到底) -->
+                        <div class="relative z-10 pt-1 flex-grow flex flex-col">
+                            <button onclick="toggleWargameDebateLog()" class="w-full bg-[#111726] hover:bg-[#161e31] border border-gray-700 hover:border-cyan-500 text-gray-200 hover:text-white text-xs font-bold py-2 px-3 rounded-lg transition flex items-center justify-between shadow flex-shrink-0">
+                                <span class="flex items-center gap-1.5"><span id="wargameLogBtnText">👑 10 輪對抗沙盤推演會議完整紀錄 (點擊可收合/展開)</span></span>
+                                <span id="wargameToggleArrow" class="text-cyan-400 font-mono">▲</span>
+                            </button>
+                            <div id="wargameDebateContainer" class="mt-2 space-y-2 flex-grow overflow-y-auto pr-1 text-xs border border-gray-800 bg-[#090c12] p-3 rounded-xl min-h-[420px] 2xl:min-h-[560px]">
+                                <div class="text-center text-gray-500 py-4">⏳ 載入 10 輪推演紀錄中...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- 結束右右區塊 -->
+            </div><!-- 結束右欄雙欄對照網格 -->
         </div>
     </div>
 
@@ -460,7 +798,7 @@
     <!-- ======================================================= -->
     <!-- 彈窗 1：新增 / 編輯交易紀錄 Modal -->
     <!-- ======================================================= -->
-    <div id="tradeModal" class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50 transition-opacity duration-200 opacity-0 backdrop-blur-sm p-3">
+    <div id="tradeModal" onclick="if(event.target === this) closeTradeModal()" class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50 transition-opacity duration-200 opacity-0 backdrop-blur-sm p-3">
         <div class="card bg-[#151924] border border-gray-700 p-6 rounded-2xl w-full max-w-md shadow-2xl">
             <div class="flex justify-between items-center mb-4 border-b border-gray-700/80 pb-3">
                 <h3 id="formTitle" class="text-lg font-bold text-cyan-400">新增交易紀錄</h3>
@@ -506,7 +844,7 @@
     <!-- ======================================================= -->
     <!-- 彈窗 2：雲端同步設定與 API 狀態 Modal -->
     <!-- ======================================================= -->
-    <div id="cloudModal" class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50 transition-opacity duration-200 opacity-0 backdrop-blur-sm p-3">
+    <div id="cloudModal" onclick="if(event.target === this) closeCloudModal()" class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50 transition-opacity duration-200 opacity-0 backdrop-blur-sm p-3">
         <div class="card bg-[#151924] border border-gray-700 p-6 rounded-2xl w-full max-w-lg shadow-2xl">
             <div class="flex justify-between items-center mb-4 border-b border-gray-700/80 pb-3">
                 <h3 class="text-lg font-bold text-purple-400">☁️ 跨裝置雲端同步與 API 設定</h3>
@@ -535,7 +873,7 @@
     <!-- ======================================================= -->
     <!-- 彈窗 3：全帳戶總投入與盈虧明細表 Modal -->
     <!-- ======================================================= -->
-    <div id="summaryModal" class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50 transition-opacity duration-200 opacity-0 backdrop-blur-sm p-3">
+    <div id="summaryModal" onclick="if(event.target === this) closeTotalSummaryModal()" class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50 transition-opacity duration-200 opacity-0 backdrop-blur-sm p-3">
         <div class="card bg-[#151924] border border-gray-700 p-6 rounded-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto shadow-2xl">
             <div class="flex justify-between items-center mb-4 border-b border-gray-700/80 pb-3">
                 <h3 class="text-lg font-bold text-cyan-400 flex items-center gap-2">
@@ -553,6 +891,6 @@
     </div>
 
     <!-- 載入核心 JS -->
-    <script src="js/app.js?v=3.3"></script>
+    <script src="js/app.js?v=4.0_layout2"></script>
 </body>
 </html>

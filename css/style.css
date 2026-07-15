@@ -61,3 +61,37 @@ select option {
         min-height: 520px !important;
     }
 }
+
+/* 自訂捲軸與卡片自適應 (防止被截斷與遮蔽) */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.4);
+    border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(34, 211, 238, 0.4);
+    border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(34, 211, 238, 0.8);
+}
+
+/* 智能螢幕比例保護區：確保筆電或中等視窗下左側卡片具有充裕最小寬度，絕不擠壓字體 */
+@media (min-width: 1024px) and (max-width: 1600px) {
+    #viewRealtime > div:first-child {
+        min-width: 255px !important;
+    }
+}
+
+/* 筆電與中等解析度視窗適配 (防止字級過大變形與跳行) */
+@media (max-width: 1440px) and (max-height: 900px) {
+    .card {
+        padding: 0.75rem !important;
+    }
+    #mainChart {
+        min-height: 480px !important;
+    }
+}
