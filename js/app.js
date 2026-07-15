@@ -75,23 +75,30 @@ const defaultItemizedTrades = [
 ];
 
 async function seedDefaultItemizedTradesIfNeeded() {
-    if (localStorage.getItem('dg_sentinel_v3_seeded_12itemized') !== 'v3.3') {
-        localStorage.removeItem('dg_sentinel_v3_portfolio');
+    // V3 到 V4 LocalStorage 數據無縫遷移與相容
+    if (!localStorage.getItem('dg_sentinel_v4_trades') && localStorage.getItem('dg_sentinel_v3_trades')) {
+        localStorage.setItem('dg_sentinel_v4_trades', localStorage.getItem('dg_sentinel_v3_trades'));
+    }
+    if (!localStorage.getItem('dg_sentinel_v4_portfolio') && localStorage.getItem('dg_sentinel_v3_portfolio')) {
+        localStorage.setItem('dg_sentinel_v4_portfolio', localStorage.getItem('dg_sentinel_v3_portfolio'));
+    }
+    if (localStorage.getItem('dg_sentinel_v4_seeded_12itemized') !== 'v4.0') {
+        localStorage.removeItem('dg_sentinel_v4_portfolio');
         try {
             const res = await fetch('data/trades.json');
             if (res.ok) {
                 const jsonTrades = await res.json();
                 if (Array.isArray(jsonTrades) && jsonTrades.length > 0) {
-                    localStorage.setItem('dg_sentinel_v3_trades', JSON.stringify(jsonTrades));
-                    localStorage.setItem('dg_sentinel_v3_seeded_12itemized', 'v3.3');
+                    localStorage.setItem('dg_sentinel_v4_trades', JSON.stringify(jsonTrades));
+                    localStorage.setItem('dg_sentinel_v4_seeded_12itemized', 'v4.0');
                     return;
                 }
             }
         } catch (e) {
             // 離線或讀取失敗時，自動使用內建 defaultItemizedTrades 備援
         }
-        localStorage.setItem('dg_sentinel_v3_trades', JSON.stringify(defaultItemizedTrades));
-        localStorage.setItem('dg_sentinel_v3_seeded_12itemized', 'v3.3');
+        localStorage.setItem('dg_sentinel_v4_trades', JSON.stringify(defaultItemizedTrades));
+        localStorage.setItem('dg_sentinel_v4_seeded_12itemized', 'v4.0');
     }
 }
 
@@ -105,7 +112,7 @@ let isAlarmEnabled = false;
 // 載入本地保存之交易與持股設定
 function loadBasePortfolioFromLocal() {
     try {
-        const saved = localStorage.getItem('dg_sentinel_v3_portfolio');
+        const saved = localStorage.getItem('dg_sentinel_v4_portfolio');
         if (saved) {
             const parsed = JSON.parse(saved);
             basePortfolio = { ...basePortfolio, ...parsed };
@@ -114,7 +121,7 @@ function loadBasePortfolioFromLocal() {
 }
 
 function saveBasePortfolioToLocal() {
-    localStorage.setItem('dg_sentinel_v3_portfolio', JSON.stringify(basePortfolio));
+    localStorage.setItem('dg_sentinel_v4_portfolio', JSON.stringify(basePortfolio));
 }
 
 // ============================================================================
@@ -336,7 +343,7 @@ function calculateRSI(closePrices, period = 14) {
     return rsi;
 }
 
-// 核心資料加載與 V3.0 動態防守線演算法
+// 核心資料加載與 V4.0 動態防守線演算法
 async function fetchStockData(symbol) {
     if (cachedData[symbol]) return cachedData[symbol];
     document.getElementById('loadingIndicator').classList.remove('hidden');
@@ -413,7 +420,7 @@ async function fetchStockData(symbol) {
     avgVol = avgVol / rawData.length;
 
     // ==========================================
-    // V3.0 升級：動態移動停利防守線演算法 (Hybrid Trailing Stop)
+    // V4.0 升級：動態移動停利防守線演算法 (Hybrid Trailing Stop)
     // ==========================================
     let ma20Data = calculateSMA(realCloses, 20);
     let currentPrice = realCloses[realCloses.length - 1];
@@ -601,7 +608,7 @@ async function fetchLiveNews(symbol, name) {
 // ============================================================================
 function getDynamicPortfolio() {
     let dynamicPort = JSON.parse(JSON.stringify(basePortfolio));
-    let trades = JSON.parse(localStorage.getItem('dg_sentinel_v3_trades')) || [];
+    let trades = JSON.parse(localStorage.getItem('dg_sentinel_v4_trades')) || [];
     let cronTrades = [...trades].reverse();
     cronTrades.forEach(t => {
         if (!dynamicPort[t.symbol]) {
@@ -1042,7 +1049,7 @@ async function saveTrade() {
         return alert("請填寫正確且有效的成交日期、價格與股數！");
     }
 
-    let trades = JSON.parse(localStorage.getItem('dg_sentinel_v3_trades')) || [];
+    let trades = JSON.parse(localStorage.getItem('dg_sentinel_v4_trades')) || [];
     if (editingTradeId !== null) {
         const idx = trades.findIndex(t => t.id === editingTradeId);
         if (idx !== -1) trades[idx] = { id: editingTradeId, date, symbol, type, price, shares };
@@ -1052,7 +1059,7 @@ async function saveTrade() {
     }
 
     trades.sort((a, b) => new Date(b.date) - new Date(a.date));
-    localStorage.setItem('dg_sentinel_v3_trades', JSON.stringify(trades));
+    localStorage.setItem('dg_sentinel_v4_trades', JSON.stringify(trades));
 
     document.getElementById('tradePrice').value = '';
     document.getElementById('tradeShares').value = '';
@@ -1067,7 +1074,7 @@ async function saveTrade() {
 }
 
 function editTrade(id) {
-    let trades = JSON.parse(localStorage.getItem('dg_sentinel_v3_trades')) || [];
+    let trades = JSON.parse(localStorage.getItem('dg_sentinel_v4_trades')) || [];
     const t = trades.find(item => item.id === id);
     if (!t) return;
     editingTradeId = id;
@@ -1092,9 +1099,9 @@ function cancelEdit() {
 
 async function deleteTrade(id) {
     if (!confirm('確定要刪除這筆交易紀錄嗎？系統將自動重算加權平均成本與防守線。')) return;
-    let trades = JSON.parse(localStorage.getItem('dg_sentinel_v3_trades')) || [];
+    let trades = JSON.parse(localStorage.getItem('dg_sentinel_v4_trades')) || [];
     trades = trades.filter(t => t.id !== id);
-    localStorage.setItem('dg_sentinel_v3_trades', JSON.stringify(trades));
+    localStorage.setItem('dg_sentinel_v4_trades', JSON.stringify(trades));
     if (editingTradeId === id) cancelEdit();
 
     renderTradeHistory();
@@ -1106,7 +1113,7 @@ async function deleteTrade(id) {
 }
 
 function renderTradeHistory() {
-    let trades = JSON.parse(localStorage.getItem('dg_sentinel_v3_trades')) || [];
+    let trades = JSON.parse(localStorage.getItem('dg_sentinel_v4_trades')) || [];
     const tbody = document.getElementById('tradeHistoryBody');
     const mobileCardContainer = document.getElementById('tradeHistoryMobileCards');
     
@@ -1176,7 +1183,7 @@ function renderTradeHistory() {
 }
 
 function exportTradesCSV() {
-    const trades = JSON.parse(localStorage.getItem('dg_sentinel_v3_trades')) || [];
+    const trades = JSON.parse(localStorage.getItem('dg_sentinel_v4_trades')) || [];
     if (trades.length === 0) return alert("目前尚無交易紀錄可導出！");
     let csv = "\uFEFF成交日期,交易方向,股票代號,標的名目,成交單價,成交股數,成交總額\n";
     trades.forEach(t => {
@@ -1195,7 +1202,7 @@ function exportTradesCSV() {
 }
 
 function exportTradesJSON() {
-    const trades = JSON.parse(localStorage.getItem('dg_sentinel_v3_trades')) || [];
+    const trades = JSON.parse(localStorage.getItem('dg_sentinel_v4_trades')) || [];
     if (trades.length === 0) return alert("目前尚無交易紀錄可導出！");
     const blob = new Blob([JSON.stringify(trades, null, 4)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -1240,10 +1247,10 @@ function importTradesFromFile(event) {
             }
             if (importedTrades.length > 0) {
                 if (confirm(`成功解析 ${importedTrades.length} 筆交易紀錄！\n點按「確定」將覆蓋目前紀錄；點按「取消」則合併加入現有紀錄中。`)) {
-                    localStorage.setItem('dg_sentinel_v3_trades', JSON.stringify(importedTrades));
+                    localStorage.setItem('dg_sentinel_v4_trades', JSON.stringify(importedTrades));
                 } else {
-                    const existing = JSON.parse(localStorage.getItem('dg_sentinel_v3_trades')) || [];
-                    localStorage.setItem('dg_sentinel_v3_trades', JSON.stringify([...existing, ...importedTrades]));
+                    const existing = JSON.parse(localStorage.getItem('dg_sentinel_v4_trades')) || [];
+                    localStorage.setItem('dg_sentinel_v4_trades', JSON.stringify([...existing, ...importedTrades]));
                 }
                 renderTradeHistory();
                 const currSymbol = document.getElementById('customStockInput').value || '00919';
@@ -1858,7 +1865,7 @@ function renderSupportingEvidence(symbol, symReport) {
     } else if (ev.analyst_consensus) {
         consensusEl.innerHTML = `<span class="text-cyan-300 font-bold">綜合評級：${ev.analyst_consensus.rating}</span> | <span class="text-yellow-400 font-extrabold">均價目標 $${ev.analyst_consensus.target_mean}</span> <div class="text-[11px] text-gray-300 mt-0.5">${ev.analyst_consensus.range} (來源：${ev.analyst_consensus.sources})</div>`;
     } else {
-        consensusEl.innerHTML = `<span class="text-cyan-300 font-bold">綜合評級：逢均線或防守線分批承接</span> | <span class="text-yellow-400 font-extrabold">目標價參照波段技術上軌</span> <div class="text-[11px] text-gray-300 mt-0.5">(來源：DG AI Sentinel V3.0 多角化量化估值模型)</div>`;
+        consensusEl.innerHTML = `<span class="text-cyan-300 font-bold">綜合評級：逢均線或防守線分批承接</span> | <span class="text-yellow-400 font-extrabold">目標價參照波段技術上軌</span> <div class="text-[11px] text-gray-300 mt-0.5">(來源：DG AI Sentinel V4.0 多角化量化估值模型)</div>`;
     }
 
     // 4. 核心催化劑

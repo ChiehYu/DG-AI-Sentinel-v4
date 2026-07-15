@@ -2,7 +2,7 @@
 """
 run_daily_sentinel.py
 =====================
-DG AI Sentinel V3.0 主控總指揮腳本 (Daily Master Orchestrator)
+DG AI Sentinel V4.0 主控總指揮腳本 (Daily Master Orchestrator)
 
 功能概要：
 每日清晨（如 08:15）自動化調度中心，依序執行：
@@ -36,7 +36,7 @@ import notifier
 
 def run_pipeline(is_test=False):
     print("=" * 60)
-    print(f"🚀 【DG AI Sentinel V3.0 早晨 08:15 自動化推演總指揮啟動】")
+    print(f"🚀 【DG AI Sentinel V4.0 早晨 08:15 自動化推演總指揮啟動】")
     print(f"⏰ 執行時間：{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {'(測試驗證模式)' if is_test else ''}")
     print("=" * 60)
     start_time = time.time()
@@ -67,7 +67,7 @@ def run_pipeline(is_test=False):
 
     total_time = round(time.time() - start_time, 2)
     print("\n" + "=" * 60)
-    print(f"🎉 【DG AI Sentinel V3.0 當日推演與推播工作流完美完結】")
+    print(f"🎉 【DG AI Sentinel V4.0 當日推演與推播工作流完美完結】")
     print(f"⏱️ 總共耗時：{total_time} 秒 | 產出報告：data/wargame_report.json")
     print("=" * 60 + "\n")
     return True
