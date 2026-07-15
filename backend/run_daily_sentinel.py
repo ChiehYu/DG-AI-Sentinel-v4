@@ -35,8 +35,15 @@ import notifier
 
 
 def run_pipeline(is_test=False):
+    from datetime import timezone, timedelta
+    tz_tw = timezone(timedelta(hours=8))
+    now_tw = datetime.now(tz_tw)
+    if now_tw.weekday() in [5, 6] and not is_test and "--force" not in sys.argv:
+        print(f"\n☀️ [Weekend Guard] 今日為星期{['一','二','三','四','五','六','日'][now_tw.weekday()]} (周末休市日)。為不打擾 Boss 週末休息，系統自動略過沙盤推演與推播！\n")
+        return True
+
     print("=" * 60)
-    print(f"🚀 【DG AI Sentinel V4.0 早晨 08:15 自動化推演總指揮啟動】")
+    print(f"🚀 【DG AI Sentinel V4.0 早晨 08:30 自動化推演總指揮啟動】")
     print(f"⏰ 執行時間：{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {'(測試驗證模式)' if is_test else ''}")
     print("=" * 60)
     start_time = time.time()

@@ -273,7 +273,29 @@ ai_words: 850
         pass
 
 
+def wait_until_taiwan_time_if_early(target_hour=8, target_minute=30):
+    from datetime import timezone, timedelta
+    import time
+    tz_tw = timezone(timedelta(hours=8))
+    now_tw = datetime.now(tz_tw)
+    if now_tw.hour == target_hour and now_tw.minute < target_minute and "--now" not in sys.argv and "--test" not in sys.argv:
+        target_tw = now_tw.replace(hour=target_hour, minute=target_minute, second=0, microsecond=0)
+        sleep_seconds = (target_tw - now_tw).total_seconds()
+        if sleep_seconds > 0:
+            print(f"⏰ [Notifier] 當前台灣時間 {now_tw.strftime('%H:%M:%S')}，為維持 Boss 睡眠品質，推播進入倒數...")
+            print(f"⏳ 將在 {int(sleep_seconds)} 秒後（準時 {target_hour:02d}:{target_minute:02d}:00）發送手機推文卡片！")
+            time.sleep(sleep_seconds)
+            print(f"🔔 [Notifier] 台灣時間 {datetime.now(tz_tw).strftime('%H:%M:%S')} 已達！立刻發送推播！\n")
+
+
 def run_notifier():
+    from datetime import timezone, timedelta
+    tz_tw = timezone(timedelta(hours=8))
+    now_tw = datetime.now(tz_tw)
+    if now_tw.weekday() in [5, 6] and "--force" not in sys.argv and "--test" not in sys.argv:
+        print(f"☀️ [Weekend Guard] 今日為星期{['一','二','三','四','五','六','日'][now_tw.weekday()]} (周末休市日)。略過手機推文推播！")
+        return True
+
     print("⏳ [Notifier] 載入沙盤推演報告與市場 context...")
     report = load_json(WARGAME_REPORT_PATH)
     context = load_json(MARKET_CONTEXT_PATH)
@@ -289,6 +311,8 @@ def run_notifier():
         print(f"\n--- [卡片 {idx}] ---")
         print(card)
     print("====================================================\n")
+
+    wait_until_taiwan_time_if_early(target_hour=8, target_minute=30)
 
     pushed_line = send_line_messaging_api(cards)
     if not pushed_line:
