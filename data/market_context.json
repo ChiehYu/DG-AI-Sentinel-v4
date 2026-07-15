@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-15 21:28:05",
+  "timestamp": "2026-07-15 14:01:23",
   "version": "DG AI Sentinel V3.0 Wargame Data Engine",
   "categories": {
     "cat1_taifex_night": {
@@ -11,7 +11,7 @@
         "change": 145.0,
         "change_pct": 0.62,
         "status": "success",
-        "updated_at": "2026-07-15 21:28"
+        "updated_at": "2026-07-15 14:01"
       },
       "institutional_oi": {
         "foreign_net_oi": 3250,
@@ -28,84 +28,84 @@
         "sp500": {
           "symbol": "^GSPC",
           "name": "標普500指數 (S&P 500)",
-          "price": 7515.34,
-          "change": -60.05,
-          "change_pct": -0.79,
+          "price": 7574.85,
+          "change": 59.51,
+          "change_pct": 0.79,
           "status": "success",
-          "updated_at": "2026-07-15 21:28"
+          "updated_at": "2026-07-15 14:01"
         },
         "nasdaq": {
           "symbol": "^IXIC",
           "name": "那斯達克綜合指數 (Nasdaq)",
-          "price": 25873.18,
-          "change": -408.43,
-          "change_pct": -1.55,
+          "price": 26264.72,
+          "change": 391.54,
+          "change_pct": 1.51,
           "status": "success",
-          "updated_at": "2026-07-15 21:28"
+          "updated_at": "2026-07-15 14:01"
         },
         "sox": {
           "symbol": "^SOX",
           "name": "費城半導體指數 (SOX)",
-          "price": 12347.78,
-          "change": -619.38,
-          "change_pct": -4.78,
+          "price": 12611.52,
+          "change": 263.74,
+          "change_pct": 2.14,
           "status": "success",
-          "updated_at": "2026-07-15 21:28"
+          "updated_at": "2026-07-15 14:01"
         },
         "dow_jones": {
           "symbol": "^DJI",
           "name": "道瓊工業指數 (Dow Jones)",
-          "price": 52498.64,
-          "change": -138.37,
-          "change_pct": -0.26,
+          "price": 52727.2,
+          "change": 228.56,
+          "change_pct": 0.44,
           "status": "success",
-          "updated_at": "2026-07-15 21:28"
+          "updated_at": "2026-07-15 14:01"
         }
       },
       "tech_leaders": {
         "tsm_adr": {
           "symbol": "TSM",
           "name": "台積電 ADR (TSM)",
-          "price": 421.58,
-          "change": -12.53,
-          "change_pct": -2.89,
+          "price": 423.46,
+          "change": 1.88,
+          "change_pct": 0.45,
           "status": "success",
-          "updated_at": "2026-07-15 21:28"
+          "updated_at": "2026-07-15 14:01"
         },
         "nvda": {
           "symbol": "NVDA",
           "name": "輝達 (NVIDIA)",
-          "price": 203.53,
-          "change": -7.43,
-          "change_pct": -3.52,
+          "price": 211.69,
+          "change": 8.16,
+          "change_pct": 4.01,
           "status": "success",
-          "updated_at": "2026-07-15 21:28"
+          "updated_at": "2026-07-15 14:01"
         },
-        "tsm_adr_implied_twd": 2713.8,
-        "tsm_adr_premium_pct": 11.22,
+        "tsm_adr_implied_twd": 2724.5,
+        "tsm_adr_premium_pct": 11.66,
         "tsmc_tw_price": 2440.0
       },
-      "summary_assessment": "費半近一交易日收 12347.78 (-4.78%)，且台積電 ADR 換算現價折合台幣約 2713.8 元 (較現貨 2440.0 元溢價 11.22%)，提供底層半導體與 AI 供應鏈重要參考。"
+      "summary_assessment": "費半近一交易日收 12611.52 (2.14%)，且台積電 ADR 換算現價折合台幣約 2724.5 元 (較現貨 2440.0 元溢價 11.66%)，提供底層半導體與 AI 供應鏈重要參考。"
     },
     "cat3_macro_black_swan": {
       "category": "3. 宏觀黑天鵝與外匯殖利率 (Macro VIX, Yields & Forex)",
       "vix": {
         "symbol": "^VIX",
         "name": "CBOE 恐慌指數 (VIX)",
-        "price": 16.17,
-        "change": -0.99,
-        "change_pct": -5.77,
+        "price": 16.25,
+        "change": -0.91,
+        "change_pct": -5.3,
         "status": "success",
-        "updated_at": "2026-07-15 21:28"
+        "updated_at": "2026-07-15 14:01"
       },
       "usd_twd": {
         "symbol": "TWD=X",
         "name": "美元兌新台幣匯率 (USD/TWD)",
-        "price": 32.186,
-        "change": 0.024,
-        "change_pct": 0.07,
+        "price": 32.17,
+        "change": 0.008,
+        "change_pct": 0.02,
         "status": "success",
-        "updated_at": "2026-07-15 21:28"
+        "updated_at": "2026-07-15 14:01"
       },
       "us10y_yield": {
         "symbol": "^TNX",
@@ -114,13 +114,13 @@
         "change": -0.04,
         "change_pct": -0.95,
         "status": "success",
-        "updated_at": "2026-07-15 21:28"
+        "updated_at": "2026-07-15 14:01"
       },
       "status_alerts": {
         "vix_status": "安全區間 (平穩)",
         "forex_status": "匯率穩定"
       },
-      "summary_assessment": "當前 VIX 為 16.17 (安全區間 (平穩))，新台幣匯率收 32.186 (匯率穩定)，宏觀環境未見急遽黑天鵝流動性風險，信貸組合安全邊際穩固。"
+      "summary_assessment": "當前 VIX 為 16.25 (安全區間 (平穩))，新台幣匯率收 32.17 (匯率穩定)，宏觀環境未見急遽黑天鵝流動性風險，信貸組合安全邊際穩固。"
     },
     "cat4_taiwan_margin": {
       "category": "4. 台股市場盤後融資變化與籌碼壓力 (Taiwan Margin Trading Balance)",
