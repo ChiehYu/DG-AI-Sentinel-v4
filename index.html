@@ -6,9 +6,12 @@
     <title>DG AI Sentinel v4.0 | 專業分析師資訊戰情室旗艦版</title>
     <!-- PWA Manifest & Icons -->
     <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
     <meta name="theme-color" content="#0b0e14">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="DG Sentinel">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Apache ECharts v5.5.0 -->
@@ -20,12 +23,12 @@
     </script>
     <link rel="stylesheet" href="css/style.css">
     <script>
-        // v4.0 快取清除與更新防衛：若是 file:// 或帶有 nocache 參數或偵測到版本更新，立即清除舊版 Cache 與註冊
-        if ('serviceWorker' in navigator && (location.protocol === 'file:' || location.search.includes('nocache') || localStorage.getItem('dg_sentinel_ver') !== '4.0')) {
-            localStorage.setItem('dg_sentinel_ver', '4.0');
+        // v4.1 快取清除與更新防衛：若是 file:// 或帶有 nocache 參數或偵測到版本更新，立即清除舊版 Cache 與註冊
+        if ('serviceWorker' in navigator && (location.protocol === 'file:' || location.search.includes('nocache') || localStorage.getItem('dg_sentinel_ver') !== '4.1')) {
+            localStorage.setItem('dg_sentinel_ver', '4.1');
             navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
             if ('caches' in window) {
-                caches.keys().then(names => names.forEach(n => { if (n.includes('v3') || n !== 'dg-sentinel-v4-cache-v4.0') caches.delete(n); }));
+                caches.keys().then(names => names.forEach(n => { if (n.includes('v3') || n !== 'dg-sentinel-v4-cache-v4.1') caches.delete(n); }));
             }
         }
     </script>
@@ -38,18 +41,7 @@
     <header class="flex flex-col gap-3.5 mb-4 flex-shrink-0 border-b border-gray-800 pb-3.5">
         <div class="flex flex-col lg:flex-row items-center justify-between gap-4 w-full">
             <div class="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-start">
-                <svg class="w-10 h-10 filter drop-shadow-[0_0_8px_rgba(34,211,238,0.6)] flex-shrink-0" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="100" height="100" rx="22" fill="#151924" stroke="#2a2e39" stroke-width="2"/>
-                    <path d="M30 25 C45 20 55 20 70 25 C70 55 50 78 50 78 C50 78 30 55 30 25 Z" stroke="url(#dgGlow)" stroke-width="4" stroke-linejoin="round" fill="none"/>
-                    <path d="M40 35 H48 C56 35 56 55 48 55 H40 V35 Z" fill="none" stroke="#3b82f6" stroke-width="6" stroke-linecap="round"/>
-                    <path d="M62 45 H52 V51 H58 V57 H52 C46 57 46 51 46 51" fill="none" stroke="#22d3ee" stroke-width="6" stroke-linecap="round"/>
-                    <circle cx="50" cy="50" r="3" fill="#ffffff" class="animate-ping"/>
-                    <defs>
-                        <linearGradient id="dgGlow" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#3b82f6" /><stop offset="50%" stop-color="#a855f7" /><stop offset="100%" stop-color="#22d3ee" />
-                        </linearGradient>
-                    </defs>
-                </svg>
+                <img src="icons/icon.png" class="w-11 h-11 rounded-2xl object-cover filter drop-shadow-[0_0_10px_rgba(34,211,238,0.7)] flex-shrink-0 border border-cyan-500/30" alt="DG AI Sentinel Icon">
                 <div class="flex-grow">
                     <div class="flex items-center gap-2 flex-wrap">
                         <h1 class="text-xl sm:text-2xl font-black text-white tracking-widest glow-text">DG AI Sentinel</h1>

@@ -1,10 +1,14 @@
-const CACHE_NAME = 'dg-sentinel-v4-cache-v4.0';
+const CACHE_NAME = 'dg-sentinel-v4-cache-v4.1';
 const ASSETS_TO_CACHE = [
   './index.html',
   './css/style.css',
   './js/app.js?v=4.0',
   './data/trades.json',
-  './manifest.json'
+  './manifest.json',
+  './icons/icon.png',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/apple-touch-icon.png'
 ];
 
 self.addEventListener('install', event => {
