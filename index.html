@@ -23,12 +23,12 @@
     </script>
     <link rel="stylesheet" href="css/style.css">
     <script>
-        // v4.1 快取清除與更新防衛：若是 file:// 或帶有 nocache 參數或偵測到版本更新，立即清除舊版 Cache 與註冊
-        if ('serviceWorker' in navigator && (location.protocol === 'file:' || location.search.includes('nocache') || localStorage.getItem('dg_sentinel_ver') !== '4.1')) {
-            localStorage.setItem('dg_sentinel_ver', '4.1');
+        // v4.1.1 快取清除與更新防衛：若是 file:// 或帶有 nocache 參數或偵測到版本更新，立即清除舊版 Cache 與註冊
+        if ('serviceWorker' in navigator && (location.protocol === 'file:' || location.search.includes('nocache') || localStorage.getItem('dg_sentinel_ver') !== '4.1.1')) {
+            localStorage.setItem('dg_sentinel_ver', '4.1.1');
             navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
             if ('caches' in window) {
-                caches.keys().then(names => names.forEach(n => { if (n.includes('v3') || n !== 'dg-sentinel-v4-cache-v4.1') caches.delete(n); }));
+                caches.keys().then(names => names.forEach(n => { if (n.includes('v3') || n !== 'dg-sentinel-v4-cache-v4.1.1') caches.delete(n); }));
             }
         }
     </script>
@@ -883,6 +883,6 @@
     </div>
 
     <!-- 載入核心 JS -->
-    <script src="js/app.js?v=4.0_layout2"></script>
+    <script src="js/app.js?v=4.1_icon"></script>
 </body>
 </html>

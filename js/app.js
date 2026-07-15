@@ -10,17 +10,11 @@ if ('serviceWorker' in navigator && location.protocol !== 'file:') {
     });
 }
 
-// 自動載入專屬標籤 Favicon SVG
+// 自動載入專屬標籤 Favicon PNG (隱晦 DG 滿版盾牌)
 (function() {
-    const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-        <rect width="100" height="100" rx="22" fill="#151924" stroke="#2a2e39" stroke-width="2"/>
-        <path d="M30 25 C45 20 55 20 70 25 C70 55 50 78 50 78 C50 78 30 55 30 25 Z" stroke="#3b82f6" stroke-width="6" fill="none"/>
-        <path d="M40 35 H48 C56 35 56 55 48 55 H40 V35 Z" fill="none" stroke="#3b82f6" stroke-width="8"/>
-        <path d="M62 45 H52 V51 H58 V57 H52 C46 57 46 51 46 51" fill="none" stroke="#22d3ee" stroke-width="8"/>
-    </svg>`;
     let link = document.querySelector("link[rel*='icon']") || document.createElement('link');
-    link.type = 'image/svg+xml'; link.rel = 'shortcut icon';
-    link.href = URL.createObjectURL(new Blob([svgIcon], { type: 'image/svg+xml' }));
+    link.type = 'image/png'; link.rel = 'shortcut icon';
+    link.href = 'icons/icon-192.png';
     document.head.appendChild(link);
 })();
 
