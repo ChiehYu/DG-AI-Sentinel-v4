@@ -1,8 +1,8 @@
-const CACHE_NAME = 'dg-sentinel-v4-cache-v4.1.1';
+const CACHE_NAME = 'dg-sentinel-v4-cache-v4.2.0';
 const ASSETS_TO_CACHE = [
   './index.html',
   './css/style.css',
-  './js/app.js?v=4.1_icon',
+  './js/app.js?v=4.2.0_wargame',
   './data/trades.json',
   './manifest.json',
   './icons/icon.png',
@@ -37,7 +37,7 @@ self.addEventListener('activate', event => {
 
 // 採用 Network-First (網路優先，離線備援) 策略，確保每次有網路皆能取得最新程式碼與交易紀錄
 self.addEventListener('fetch', event => {
-  if (event.request.url.includes('api.fugle.tw') || event.request.url.includes('news.google.com') || event.request.url.startsWith('file:')) {
+  if (event.request.url.includes('api.fugle.tw') || event.request.url.includes('news.google.com') || event.request.url.includes('wargame_report.json') || event.request.url.includes('market_context.json') || event.request.url.startsWith('file:')) {
     return;
   }
   event.respondWith(

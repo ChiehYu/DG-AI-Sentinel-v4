@@ -1493,8 +1493,8 @@ async function loadWargameAndMarketContext(targetSymbol = '00919') {
 
     try {
         const [reportRes, contextRes] = await Promise.all([
-            fetch('data/wargame_report.json').catch(() => null),
-            fetch('data/market_context.json').catch(() => null)
+            fetch(`data/wargame_report.json?t=${Date.now()}`).catch(() => null),
+            fetch(`data/market_context.json?t=${Date.now()}`).catch(() => null)
         ]);
         if (reportRes && reportRes.ok) report = await reportRes.json();
         if (contextRes && contextRes.ok) context = await contextRes.json();
