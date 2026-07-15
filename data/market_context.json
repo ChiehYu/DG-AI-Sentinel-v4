@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-15 15:43:35",
+  "timestamp": "2026-07-15 21:28:05",
   "version": "DG AI Sentinel V3.0 Wargame Data Engine",
   "categories": {
     "cat1_taifex_night": {
@@ -11,7 +11,7 @@
         "change": 145.0,
         "change_pct": 0.62,
         "status": "success",
-        "updated_at": "2026-07-15 15:43"
+        "updated_at": "2026-07-15 21:28"
       },
       "institutional_oi": {
         "foreign_net_oi": 3250,
@@ -32,7 +32,7 @@
           "change": -60.05,
           "change_pct": -0.79,
           "status": "success",
-          "updated_at": "2026-07-15 15:43"
+          "updated_at": "2026-07-15 21:28"
         },
         "nasdaq": {
           "symbol": "^IXIC",
@@ -41,7 +41,7 @@
           "change": -408.43,
           "change_pct": -1.55,
           "status": "success",
-          "updated_at": "2026-07-15 15:43"
+          "updated_at": "2026-07-15 21:28"
         },
         "sox": {
           "symbol": "^SOX",
@@ -50,7 +50,7 @@
           "change": -619.38,
           "change_pct": -4.78,
           "status": "success",
-          "updated_at": "2026-07-15 15:43"
+          "updated_at": "2026-07-15 21:28"
         },
         "dow_jones": {
           "symbol": "^DJI",
@@ -59,7 +59,7 @@
           "change": -138.37,
           "change_pct": -0.26,
           "status": "success",
-          "updated_at": "2026-07-15 15:43"
+          "updated_at": "2026-07-15 21:28"
         }
       },
       "tech_leaders": {
@@ -70,7 +70,7 @@
           "change": -12.53,
           "change_pct": -2.89,
           "status": "success",
-          "updated_at": "2026-07-15 15:43"
+          "updated_at": "2026-07-15 21:28"
         },
         "nvda": {
           "symbol": "NVDA",
@@ -79,48 +79,48 @@
           "change": -7.43,
           "change_pct": -3.52,
           "status": "success",
-          "updated_at": "2026-07-15 15:43"
+          "updated_at": "2026-07-15 21:28"
         },
-        "tsm_adr_implied_twd": 2714.7,
-        "tsm_adr_premium_pct": 11.26,
+        "tsm_adr_implied_twd": 2713.8,
+        "tsm_adr_premium_pct": 11.22,
         "tsmc_tw_price": 2440.0
       },
-      "summary_assessment": "費半近一交易日收 12347.78 (-4.78%)，且台積電 ADR 換算現價折合台幣約 2714.7 元 (較現貨 2440.0 元溢價 11.26%)，提供底層半導體與 AI 供應鏈重要參考。"
+      "summary_assessment": "費半近一交易日收 12347.78 (-4.78%)，且台積電 ADR 換算現價折合台幣約 2713.8 元 (較現貨 2440.0 元溢價 11.22%)，提供底層半導體與 AI 供應鏈重要參考。"
     },
     "cat3_macro_black_swan": {
       "category": "3. 宏觀黑天鵝與外匯殖利率 (Macro VIX, Yields & Forex)",
       "vix": {
         "symbol": "^VIX",
         "name": "CBOE 恐慌指數 (VIX)",
-        "price": 16.34,
-        "change": -0.82,
-        "change_pct": -4.78,
+        "price": 16.17,
+        "change": -0.99,
+        "change_pct": -5.77,
         "status": "success",
-        "updated_at": "2026-07-15 15:43"
+        "updated_at": "2026-07-15 21:28"
       },
       "usd_twd": {
         "symbol": "TWD=X",
         "name": "美元兌新台幣匯率 (USD/TWD)",
-        "price": 32.197,
-        "change": 0.035,
-        "change_pct": 0.11,
+        "price": 32.186,
+        "change": 0.024,
+        "change_pct": 0.07,
         "status": "success",
-        "updated_at": "2026-07-15 15:43"
+        "updated_at": "2026-07-15 21:28"
       },
       "us10y_yield": {
         "symbol": "^TNX",
         "name": "美國10年期公債殖利率 (US 10Y Yield)",
-        "price": 4.61,
-        "change": 0.04,
-        "change_pct": 0.88,
+        "price": 4.57,
+        "change": -0.04,
+        "change_pct": -0.95,
         "status": "success",
-        "updated_at": "2026-07-15 15:43"
+        "updated_at": "2026-07-15 21:28"
       },
       "status_alerts": {
         "vix_status": "安全區間 (平穩)",
         "forex_status": "匯率穩定"
       },
-      "summary_assessment": "當前 VIX 為 16.34 (安全區間 (平穩))，新台幣匯率收 32.197 (匯率穩定)，宏觀環境未見急遽黑天鵝流動性風險，信貸組合安全邊際穩固。"
+      "summary_assessment": "當前 VIX 為 16.17 (安全區間 (平穩))，新台幣匯率收 32.186 (匯率穩定)，宏觀環境未見急遽黑天鵝流動性風險，信貸組合安全邊際穩固。"
     },
     "cat4_taiwan_margin": {
       "category": "4. 台股市場盤後融資變化與籌碼壓力 (Taiwan Margin Trading Balance)",

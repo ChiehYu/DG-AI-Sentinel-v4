@@ -2,14 +2,18 @@ name: DG AI Sentinel Daily Wargame & Push Notification
 
 on:
   schedule:
-    # 台灣時間每日早晨 08:15 = UTC 00:15 (週一至週五開盤前)
-    - cron: '15 0 * * 1-5'
+    # 台灣時間每日早晨 08:12 = UTC 00:12 (週一至週五開盤前，保留推演緩衝於 08:30 準時推播)
+    - cron: '12 0 * * 1-5'
   workflow_dispatch:
     # 支援 GitHub 後台手動觸發測試
 
 jobs:
   run-sentinel-council:
     runs-on: ubuntu-latest
+    # 【關鍵修復】賦予 GITHUB_TOKEN 寫入儲存庫的權限，避免 step 5 git push 發生 exit code 128 錯誤
+    permissions:
+      contents: write
+
     steps:
       - name: 1. 檢出專案程式碼
         uses: actions/checkout@v4
@@ -26,9 +30,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
 
-      - name: 4. 執行 4 大市場數據抓取、10 輪沙盤推演與手機早晨快報推播
+      - name: 4. 執行 4 大市場數據抓取、多標的 10 輪沙盤推演與 LINE 早晨策略快報推播
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
+          LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
           LINE_NOTIFY_TOKEN: ${{ secrets.LINE_NOTIFY_TOKEN }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -45,6 +51,6 @@ jobs:
           if git diff --staged --quiet; then
             echo "沒有資料變更，略過提交。"
           else
-            git commit -m "🤖 [AI Wargame] 更新當日 4 大市場與沙盤推演數據 [skip ci]"
+            git commit -m "🤖 [AI Wargame] 更新當日 6 大個股沙盤推演與 Actionable Plan 數據 [skip ci]"
             git push
           fi
