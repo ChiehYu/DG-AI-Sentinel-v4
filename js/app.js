@@ -718,7 +718,7 @@ function updateRightPanel(symbol, dataObj) {
     }
 
     fetchLiveNews(symbol, sName);
-    updateOrderBookAndTicks(symbol, price);
+    updateOrderBookAndTicks(symbol, price, dataObj);
 }
 
 function renderChart(symbol, data) {
@@ -2702,42 +2702,50 @@ function switchChartTimeframe(tf) {
     }
 }
 
-function updateOrderBookAndTicks(symbol, currentPrice) {
+let activeTickerInterval = null;
+let currentOrderBookSymbol = null;
+let currentOrderBookPrice = 0;
+let currentOrderBookTick = 0.05;
+
+function getStockTickStep(p) {
+    if (p >= 1000) return 5;
+    if (p >= 500) return 1;
+    if (p >= 100) return 0.5;
+    if (p >= 50) return 0.1;
+    if (p >= 10) return 0.05;
+    return 0.01;
+}
+
+function updateOrderBookAndTicks(symbol, currentPrice, dataObj) {
     if (!currentPrice || isNaN(currentPrice)) return;
-    const tick = currentPrice > 1000 ? 5 : (currentPrice > 500 ? 1 : (currentPrice > 100 ? 0.5 : 0.05));
-    
-    // Ask 1~5
-    for (let i = 1; i <= 5; i++) {
-        const askPEl = document.getElementById(`askP_${i}`);
-        const askVEl = document.getElementById(`askV_${i}`);
-        const askBarEl = document.getElementById(`askBar_${i}`);
-        if (askPEl && askVEl && askBarEl) {
-            const p = Math.round((currentPrice + tick * i) * 100) / 100;
-            const v = Math.floor(Math.random() * 180 + 30);
-            const barW = Math.min(95, Math.floor((v / 220) * 100));
-            askPEl.textContent = p.toLocaleString();
-            askVEl.textContent = v;
-            askBarEl.style.width = `${barW}%`;
-        }
-    }
-    // Bid 1~5
-    for (let i = 1; i <= 5; i++) {
-        const bidPEl = document.getElementById(`bidP_${i}`);
-        const bidVEl = document.getElementById(`bidV_${i}`);
-        const bidBarEl = document.getElementById(`bidBar_${i}`);
-        if (bidPEl && bidVEl && bidBarEl) {
-            const p = Math.round((currentPrice - tick * (i - 1)) * 100) / 100;
-            const v = Math.floor(Math.random() * 220 + 40);
-            const barW = Math.min(95, Math.floor((v / 260) * 100));
-            bidPEl.textContent = p.toLocaleString();
-            bidVEl.textContent = v;
-            bidBarEl.style.width = `${barW}%`;
-        }
+    const tick = getStockTickStep(currentPrice);
+    const isNewSymbol = (currentOrderBookSymbol !== symbol);
+    currentOrderBookSymbol = symbol;
+    currentOrderBookPrice = currentPrice;
+    currentOrderBookTick = tick;
+
+    // 取得日成交總量與前日收盤價來精算五檔與內外盤買氣
+    let prevClose = currentPrice;
+    let dailyVolume = 30000;
+    let priceDiff = 0;
+    if (dataObj && dataObj.rawData && dataObj.rawData.length >= 2) {
+        prevClose = dataObj.rawData[dataObj.rawData.length - 2].close;
+        const latest = dataObj.rawData[dataObj.rawData.length - 1];
+        if (latest.volume) dailyVolume = latest.volume;
+        priceDiff = currentPrice - prevClose;
     }
 
-    // Bid-Ask Ratio
-    const outerRatio = symbol === '2330' ? 62 : (symbol === '2454' ? 58 : (symbol === '00919' ? 56 : 52));
+    // 動態精算內外盤買賣氣比 (Bid-Ask Ratio)
+    let outerRatio = 50;
+    if (prevClose > 0 && priceDiff !== 0) {
+        const pctChg = (priceDiff / prevClose) * 100;
+        outerRatio = Math.round(50 + pctChg * 12 + (symbol.charCodeAt(0) % 5 - 2));
+    } else {
+        outerRatio = symbol === '2330' ? 62 : (symbol === '2454' ? 58 : (symbol === '00919' ? 56 : 52));
+    }
+    outerRatio = Math.max(25, Math.min(85, outerRatio));
     const innerRatio = 100 - outerRatio;
+
     const oText = document.getElementById('outerRatioText');
     const iText = document.getElementById('innerRatioText');
     const oBar = document.getElementById('outerRatioBar');
@@ -2745,20 +2753,112 @@ function updateOrderBookAndTicks(symbol, currentPrice) {
     if (iText) iText.textContent = `${innerRatio}%`;
     if (oBar) oBar.style.width = `${outerRatio}%`;
 
-    // Tick Stream
+    // 依該標的日成交量動態計算五檔基準委託量
+    const baseVol = Math.max(15, Math.min(800, Math.round(dailyVolume / 350)));
+    const isHighPriced = currentPrice > 500; // 500元以上高價股(如2330, 2454)委託量通常較為精實
+
+    // 更新五檔委賣 (由高至低：Ask 5 ~ Ask 1)
+    for (let i = 1; i <= 5; i++) {
+        const askPEl = document.getElementById(`askP_${i}`);
+        const askVEl = document.getElementById(`askV_${i}`);
+        const askBarEl = document.getElementById(`askBar_${i}`);
+        if (askPEl && askVEl && askBarEl) {
+            const p = Math.round((currentPrice + tick * i) * 100) / 100;
+            const v = Math.max(5, Math.round(baseVol * (0.6 + Math.random() * 0.8) * (isHighPriced ? 0.35 : 1)));
+            const barW = Math.min(95, Math.max(15, Math.floor((v / (baseVol * 1.4)) * 100)));
+            askPEl.textContent = p.toLocaleString();
+            askVEl.textContent = v;
+            askBarEl.style.width = `${barW}%`;
+        }
+    }
+
+    // 更新五檔委買 (由高至低：Bid 1 ~ Bid 5)
+    for (let i = 1; i <= 5; i++) {
+        const bidPEl = document.getElementById(`bidP_${i}`);
+        const bidVEl = document.getElementById(`bidV_${i}`);
+        const bidBarEl = document.getElementById(`bidBar_${i}`);
+        if (bidPEl && bidVEl && bidBarEl) {
+            const p = Math.round((currentPrice - tick * (i - 1)) * 100) / 100;
+            const v = Math.max(5, Math.round(baseVol * (0.7 + Math.random() * 0.9) * (isHighPriced ? 0.35 : 1)));
+            const barW = Math.min(95, Math.max(15, Math.floor((v / (baseVol * 1.5)) * 100)));
+            bidPEl.textContent = p.toLocaleString();
+            bidVEl.textContent = v;
+            bidBarEl.style.width = `${barW}%`;
+        }
+    }
+
+    // 盤中主力單筆大單快訊 (Tick Stream) 初始化與更新
     const tickStream = document.getElementById('tickStreamList');
     if (tickStream) {
-        const now = new Date();
-        const timeStr = now.toTimeString().split(' ')[0];
-        const isBuy = Math.random() > 0.38;
-        const vol = Math.floor(Math.random() * 180 + 20);
-        const colorClass = isBuy ? 'text-[#ef4444]' : 'text-[#10b981]';
-        const actionText = isBuy ? `🟢 外盤敲進 +${vol}張` : `🔴 內盤調節 -${vol}張`;
-        const newRow = document.createElement('div');
-        newRow.className = "flex justify-between items-center text-gray-300 animate-fade-in";
-        newRow.innerHTML = `<span class="text-gray-500">${timeStr}</span><span class="${colorClass} font-bold">${actionText}</span><span>@$${currentPrice.toLocaleString()}</span>`;
-        tickStream.insertBefore(newRow, tickStream.firstChild);
-        if (tickStream.children.length > 8) tickStream.removeChild(tickStream.lastChild);
+        if (isNewSymbol) {
+            tickStream.innerHTML = ''; // 切換股票時清除舊股票快訊
+            const unitName = isHighPriced ? '張' : '張';
+            const now = new Date();
+            // 自動生成最近 6 筆大單明細，打造即時真實盤口感受
+            for (let k = 5; k >= 0; k--) {
+                const pastTime = new Date(now.getTime() - k * 8000);
+                const tStr = pastTime.toTimeString().split(' ')[0];
+                const isBuy = Math.random() * 100 < outerRatio;
+                const pStep = Math.floor(Math.random() * 3) - 1;
+                const tickPrice = Math.round((currentPrice + pStep * tick) * 100) / 100;
+                const vol = Math.max(10, Math.round((baseVol * 0.4 + Math.random() * baseVol * 0.8) * (isHighPriced ? 0.4 : 1)));
+                const colorClass = isBuy ? 'text-[#ef4444]' : 'text-[#10b981]';
+                const actionText = isBuy ? `🟢 外盤敲進 +${vol}${unitName}` : `🔴 內盤調節 -${vol}${unitName}`;
+                const row = document.createElement('div');
+                row.className = "flex justify-between items-center text-gray-300 py-0.5 border-b border-gray-800/40";
+                row.innerHTML = `<span class="text-gray-500 font-mono">${tStr}</span><span class="${colorClass} font-bold">${actionText}</span><span class="font-mono">@$${tickPrice.toLocaleString()}</span>`;
+                tickStream.insertBefore(row, tickStream.firstChild);
+            }
+        }
+    }
+
+    // 啟動全時即時盤口滾動引擎 (模擬真實盤中委託單與成交快訊跳動)
+    if (!activeTickerInterval) {
+        activeTickerInterval = setInterval(() => {
+            if (!currentOrderBookSymbol || !currentOrderBookPrice) return;
+            const streamEl = document.getElementById('tickStreamList');
+            if (!streamEl) return;
+
+            // 隨機產生一筆最新單筆主力快訊
+            const now = new Date();
+            const timeStr = now.toTimeString().split(' ')[0];
+            const isHigh = currentOrderBookPrice > 500;
+            const isBuyOrder = Math.random() > 0.42;
+            const pOffset = Math.floor(Math.random() * 3) - 1;
+            const simPrice = Math.round((currentOrderBookPrice + pOffset * currentOrderBookTick) * 100) / 100;
+            const simVol = Math.max(8, Math.round((20 + Math.random() * 120) * (isHigh ? 0.35 : 1)));
+            const colorClass = isBuyOrder ? 'text-[#ef4444]' : 'text-[#10b981]';
+            const actionLabel = isBuyOrder ? `🟢 外盤大買 +${simVol}張` : `🔴 內盤調節 -${simVol}張`;
+
+            const newRow = document.createElement('div');
+            newRow.className = "flex justify-between items-center text-gray-300 py-0.5 border-b border-gray-800/40 animate-fade-in";
+            newRow.innerHTML = `<span class="text-gray-500 font-mono">${timeStr}</span><span class="${colorClass} font-bold">${actionLabel}</span><span class="font-mono">@$${simPrice.toLocaleString()}</span>`;
+            streamEl.insertBefore(newRow, streamEl.firstChild);
+            while (streamEl.children.length > 10) {
+                streamEl.removeChild(streamEl.lastChild);
+            }
+
+            // 同步微調五檔委買委賣數量，模擬真實委託單跳動
+            const randAskIdx = Math.floor(Math.random() * 5) + 1;
+            const randBidIdx = Math.floor(Math.random() * 5) + 1;
+            const askV = document.getElementById(`askV_${randAskIdx}`);
+            const askBar = document.getElementById(`askBar_${randAskIdx}`);
+            const bidV = document.getElementById(`bidV_${randBidIdx}`);
+            const bidBar = document.getElementById(`bidBar_${randBidIdx}`);
+
+            if (askV && askBar) {
+                let v = parseInt(askV.textContent) || 50;
+                v = Math.max(5, v + Math.floor(Math.random() * 15) - 7);
+                askV.textContent = v;
+                askBar.style.width = `${Math.min(95, Math.max(15, Math.floor((v / 300) * 100)))}%`;
+            }
+            if (bidV && bidBar) {
+                let v = parseInt(bidV.textContent) || 50;
+                v = Math.max(5, v + Math.floor(Math.random() * 15) - 7);
+                bidV.textContent = v;
+                bidBar.style.width = `${Math.min(95, Math.max(15, Math.floor((v / 300) * 100)))}%`;
+            }
+        }, 2600);
     }
 }
 
