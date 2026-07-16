@@ -375,6 +375,7 @@ def fetch_taiwan_margin_trading_balance():
     etf_margin_change = -320
     etf_short_shares = 1240
     etf_short_change = 85
+    stocks_margin = {}
 
     try:
         req_margin = urllib.request.Request('https://www.twse.com.tw/exchangeReport/MI_MARGN?response=json&selectType=ALL', headers={
@@ -395,7 +396,6 @@ def fetch_taiwan_margin_trading_balance():
                             except ValueError:
                                 pass
                 # 表格 1: 個股信用交易
-                stocks_margin = {}
                 target_symbols = {
                     '00919': '群益台灣精選高息 ETF',
                     '2330': '台積電',
