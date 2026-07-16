@@ -1140,6 +1140,7 @@ async function deleteTrade(id) {
 }
 
 function renderTradeHistory() {
+    if (typeof syncAllDashboardCardsAndCharts === 'function') syncAllDashboardCardsAndCharts();
     let trades = JSON.parse(localStorage.getItem('dg_sentinel_v4_trades')) || [];
     const tbody = document.getElementById('tradeHistoryBody');
     const mobileCardContainer = document.getElementById('tradeHistoryMobileCards');
@@ -2292,10 +2293,183 @@ function downloadFullWargameLog(symbol, symName) {
 }
 
 // ============================================================================
+// ============================================================================
+// 7-B2. 動態同步更新三大防守進攻引擎卡片及風控指標 (Dynamic Portfolio Engine & UI Sync)
+// ============================================================================
+function syncAllDashboardCardsAndCharts() {
+    const dynPort = typeof getDynamicPortfolio === 'function' ? getDynamicPortfolio() : basePortfolio;
+    
+    // 計算防守三劍客金額
+    const p00919 = dynPort['00919'] || { shares: 4000, cost: 29.70 };
+    const p0056 = dynPort['0056'] || { shares: 2000, cost: 51.70 };
+    const p00878 = dynPort['00878'] || { shares: 2000, cost: 32.75 };
+    const defenseInvested = Math.round(p00919.shares * p00919.cost + p0056.shares * p0056.cost + p00878.shares * p00878.cost);
+    const defenseProgress = ((defenseInvested / 1000000) * 100).toFixed(2);
+
+    // 計算進攻鐵三角金額
+    const p2330 = dynPort['2330'] || { shares: 20, cost: 2425 };
+    const p2454 = dynPort['2454'] || { shares: 15, cost: 3833 };
+    const p3037 = dynPort['3037'] || { shares: 65, cost: 876 };
+    const offenseInvested = Math.round(p2330.shares * p2330.cost + p2454.shares * p2454.cost + p3037.shares * p3037.cost);
+    const offenseProgress = ((offenseInvested / 900000) * 100).toFixed(2);
+
+    const totalInvested = defenseInvested + offenseInvested;
+    const remainingCash = Math.max(0, 2000000 - totalInvested);
+    const totalUtilRate = ((totalInvested / 2000000) * 100).toFixed(2);
+    const remainingCashRate = ((remainingCash / 2000000) * 100).toFixed(2);
+    const totWan = (totalInvested / 10000).toFixed(2);
+    const remWan = (remainingCash / 10000).toFixed(2);
+
+    // 更新防守卡片 DOM
+    const elShares00919 = document.getElementById('card-shares-00919');
+    if (elShares00919) elShares00919.textContent = `${(p00919.shares / 1000).toFixed(2)} 張`;
+    const elCost00919 = document.getElementById('card-cost-00919');
+    if (elCost00919) elCost00919.textContent = `@$${p00919.cost.toFixed(2)}`;
+
+    const elShares0056 = document.getElementById('card-shares-0056');
+    if (elShares0056) elShares0056.textContent = `${(p0056.shares / 1000).toFixed(2)} 張`;
+    const elCost0056 = document.getElementById('card-cost-0056');
+    if (elCost0056) elCost0056.textContent = `@$${p0056.cost.toFixed(2)}`;
+
+    const elShares00878 = document.getElementById('card-shares-00878');
+    if (elShares00878) elShares00878.textContent = `${(p00878.shares / 1000).toFixed(2)} 張`;
+    const elCost00878 = document.getElementById('card-cost-00878');
+    if (elCost00878) elCost00878.textContent = `@$${p00878.cost.toFixed(2)}`;
+
+    const elDefInv = document.getElementById('card-defense-invested');
+    if (elDefInv) elDefInv.textContent = `$${defenseInvested.toLocaleString()}`;
+    const elDefProg = document.getElementById('card-defense-progress');
+    if (elDefProg) elDefProg.textContent = `${defenseProgress}%`;
+
+    // 更新進攻卡片 DOM
+    const elShares2330 = document.getElementById('card-shares-2330');
+    if (elShares2330) elShares2330.textContent = `${p2330.shares} 股`;
+    const elCost2330 = document.getElementById('card-cost-2330');
+    if (elCost2330) elCost2330.textContent = `@$${Math.round(p2330.cost).toLocaleString()}`;
+
+    const elShares2454 = document.getElementById('card-shares-2454');
+    if (elShares2454) elShares2454.textContent = `${p2454.shares} 股`;
+    const elCost2454 = document.getElementById('card-cost-2454');
+    if (elCost2454) elCost2454.textContent = `@$${Math.round(p2454.cost).toLocaleString()}`;
+
+    const elShares3037 = document.getElementById('card-shares-3037');
+    if (elShares3037) elShares3037.textContent = `${p3037.shares} 股`;
+    const elCost3037 = document.getElementById('card-cost-3037');
+    if (elCost3037) elCost3037.textContent = `@$${Math.round(p3037.cost).toLocaleString()}`;
+
+    const elOffInv = document.getElementById('card-offense-invested');
+    if (elOffInv) elOffInv.textContent = `$${offenseInvested.toLocaleString()}`;
+    const elOffProg = document.getElementById('card-offense-progress');
+    if (elOffProg) elOffProg.textContent = `${offenseProgress}%`;
+
+    // 計算配息與以息養股零股複利試算
+    const effectiveMonthlyDiv = Math.round(8419 + Math.max(0, (defenseInvested - 287690) * 0.101 / 12));
+    const effectiveNetProfit = effectiveMonthlyDiv - 5742;
+
+    const elCalcDiv = document.getElementById('calc-monthly-div');
+    if (elCalcDiv) elCalcDiv.textContent = `$${effectiveMonthlyDiv.toLocaleString()}`;
+    const elCalcNet = document.getElementById('calc-monthly-net');
+    if (elCalcNet) elCalcNet.textContent = `${effectiveNetProfit >= 0 ? '+' : ''}$${effectiveNetProfit.toLocaleString()} 元`;
+
+    const price2330 = cachedData['2330']?.rawData?.slice(-1)[0]?.close || p2330.cost || 2425;
+    const price2454 = cachedData['2454']?.rawData?.slice(-1)[0]?.close || p2454.cost || 3833;
+    const price3037 = cachedData['3037']?.rawData?.slice(-1)[0]?.close || p3037.cost || 876;
+
+    const elShare2330 = document.getElementById('calc-share-2330');
+    if (elShare2330) elShare2330.textContent = (Math.max(0, effectiveNetProfit) / price2330).toFixed(1);
+    const elShare2454 = document.getElementById('calc-share-2454');
+    if (elShare2454) elShare2454.textContent = (Math.max(0, effectiveNetProfit) / price2454).toFixed(1);
+    const elShare3037 = document.getElementById('calc-share-3037');
+    if (elShare3037) elShare3037.textContent = (Math.max(0, effectiveNetProfit) / price3037).toFixed(1);
+
+    const cushionMonths = Math.round((100000 / Math.max(1, 28000 - effectiveMonthlyDiv)) * 10) / 10;
+    const elCushion = document.getElementById('calc-cushion-text');
+    if (elCushion) {
+        elCushion.textContent = `可支付 ${(100000 / 28000).toFixed(1)} 個月完整本息或 ${cushionMonths} 個月扣除配息後自繳額。確保絕不在大盤低點被迫賣股還本！`;
+    }
+
+    const elUtilRate = document.getElementById('card-total-util-rate');
+    if (elUtilRate) elUtilRate.textContent = `${totalUtilRate}% ($${totWan}萬)`;
+    const elRemCash = document.getElementById('card-remaining-cash');
+    if (elRemCash) elRemCash.textContent = `${remainingCashRate}% ($${remWan}萬)`;
+}
+
+// ============================================================================
 // 7-C. V4.0 專業分析師動態 ECharts 風控中心與資產配置儀表板
 // ============================================================================
 function renderAnalyticsRiskDashboard() {
     if (typeof echarts === 'undefined') return;
+    syncAllDashboardCardsAndCharts();
+
+    const dynPort = typeof getDynamicPortfolio === 'function' ? getDynamicPortfolio() : basePortfolio;
+    const p00919 = dynPort['00919'] || { shares: 4000, cost: 29.70 };
+    const p0056 = dynPort['0056'] || { shares: 2000, cost: 51.70 };
+    const p00878 = dynPort['00878'] || { shares: 2000, cost: 32.75 };
+    const defenseInvested = Math.round(p00919.shares * p00919.cost + p0056.shares * p0056.cost + p00878.shares * p00878.cost);
+
+    const p2330 = dynPort['2330'] || { shares: 20, cost: 2425 };
+    const p2454 = dynPort['2454'] || { shares: 15, cost: 3833 };
+    const p3037 = dynPort['3037'] || { shares: 65, cost: 876 };
+    const offenseInvested = Math.round(p2330.shares * p2330.cost + p2454.shares * p2454.cost + p3037.shares * p3037.cost);
+
+    const totalInvested = defenseInvested + offenseInvested;
+    const remainingCash = Math.max(0, 2000000 - totalInvested);
+
+    const defWan = Math.round(defenseInvested / 100) / 100;
+    const offWan = Math.round(offenseInvested / 100) / 100;
+    const remWan = Math.round(remainingCash / 100) / 100;
+    const totWan = Math.round(totalInvested / 100) / 100;
+
+    const defPct = totalInvested > 0 ? ((defenseInvested / totalInvested) * 100).toFixed(1) : '50.0';
+    const offPct = totalInvested > 0 ? ((offenseInvested / totalInvested) * 100).toFixed(1) : '50.0';
+    const utilRate = Math.round((totalInvested / 2000000) * 10000) / 100;
+    const cashRate = Math.round((remainingCash / 2000000) * 10000) / 100;
+
+    const effectiveMonthlyDiv = Math.round(8419 + Math.max(0, (defenseInvested - 287690) * 0.101 / 12));
+    const effectiveNetProfit = effectiveMonthlyDiv - 5742;
+    const covRate = Math.round((effectiveMonthlyDiv / 5742) * 1000) / 10;
+    const cushionMonths = Math.round((100000 / Math.max(1, 28000 - effectiveMonthlyDiv)) * 10) / 10;
+
+    // 計算未實現獲利緩衝空間
+    let riskBufferPct = 8.4;
+    try {
+        let totalCostVal = 0;
+        let totalCurrVal = 0;
+        Object.keys(dynPort).forEach(sym => {
+            const p = dynPort[sym];
+            if (p.shares > 0 && p.cost > 0) {
+                const cPrice = cachedData[sym]?.rawData?.slice(-1)[0]?.close || p.cost;
+                totalCostVal += p.shares * p.cost;
+                totalCurrVal += p.shares * cPrice;
+            }
+        });
+        if (totalCostVal > 0) {
+            const pnlPct = ((totalCurrVal - totalCostVal) / totalCostVal) * 100;
+            riskBufferPct = Math.round((pnlPct + 5.0) * 10) / 10;
+        }
+    } catch(e) {}
+
+    // 更新風控儀表板文字說明
+    const elDonutRatioText = document.getElementById('donutRatioText');
+    if (elDonutRatioText) {
+        elDonutRatioText.innerHTML = `防守月月配 <span class="text-green-400">${defPct}%</span> | 進攻 AI <span class="text-blue-400">${offPct}%</span>`;
+    }
+    const elInterestCoverageBadge = document.getElementById('interestCoverageBadge');
+    if (elInterestCoverageBadge) {
+        elInterestCoverageBadge.textContent = `安全 > ${covRate}%`;
+    }
+    const elInterestCoverageText = document.getElementById('interestCoverageText');
+    if (elInterestCoverageText) {
+        elInterestCoverageText.innerHTML = `領息 $${effectiveMonthlyDiv.toLocaleString()} / 利息 $5,742 淨賺 <span class="text-green-400">+$${effectiveNetProfit.toLocaleString()}/月</span>`;
+    }
+    const elDeploySummary = document.getElementById('deploymentSummaryText');
+    if (elDeploySummary) {
+        elDeploySummary.innerHTML = `已投入 <span class="text-cyan-400">$${totWan}萬</span> | 現金彈藥 <span class="text-yellow-400">${cashRate}%</span>`;
+    }
+    const elPnlRiskSummary = document.getElementById('pnlRiskSummaryText');
+    if (elPnlRiskSummary) {
+        elPnlRiskSummary.innerHTML = `安全氣囊支撐 <span class="text-purple-400">${cushionMonths} 個月</span> 自繳本息極致緩衝`;
+    }
 
     // 1. 玫瑰環形圖：資產進退攻防比例與預算對衝
     const domDonut = document.getElementById('riskDonutChart');
@@ -2347,16 +2521,16 @@ function renderAnalyticsRiskDashboard() {
                         }
                     },
                     data: [
-                        { value: 100, name: '🛡️ 防守部位 (高息ETF)', itemStyle: { color: '#10b981' } },
-                        { value: 90, name: '🚀 進攻部位 (AI鐵三角)', itemStyle: { color: '#3b82f6' } },
-                        { value: 10, name: '⚡ 安全氣囊 (高利活存)', itemStyle: { color: '#eab308' } }
+                        { value: defWan, name: `🛡️ 防守部位 ($${defWan}萬)`, itemStyle: { color: '#10b981' } },
+                        { value: offWan, name: `🚀 進攻部位 ($${offWan}萬)`, itemStyle: { color: '#3b82f6' } },
+                        { value: remWan, name: `⚡ 安全氣囊 ($${remWan}萬)`, itemStyle: { color: '#eab308' } }
                     ]
                 }
             ]
         });
     }
 
-    // 2. 儀表板 A：月息對沖覆蓋率 (滿水位 146.6%)
+    // 2. 儀表板 A：月息對沖覆蓋率
     const domInterest = document.getElementById('interestGaugeChart');
     if (domInterest) {
         if (interestGaugeInstance) interestGaugeInstance.dispose();
@@ -2390,13 +2564,13 @@ function renderAnalyticsRiskDashboard() {
                         offsetCenter: [0, '45%'],
                         formatter: '{value}%'
                     },
-                    data: [{ value: 146.6, name: '月領 $8,419 / 利息 $5,742' }]
+                    data: [{ value: covRate, name: `月領 $${effectiveMonthlyDiv.toLocaleString()} / 利息 $5,742` }]
                 }
             ]
         });
     }
 
-    // 3. 儀表板 B：預算建倉動用進度 (22.53%)
+    // 3. 儀表板 B：預算建倉動用進度
     const domDeploy = document.getElementById('deploymentGaugeChart');
     if (domDeploy) {
         if (deploymentGaugeInstance) deploymentGaugeInstance.dispose();
@@ -2430,13 +2604,13 @@ function renderAnalyticsRiskDashboard() {
                         offsetCenter: [0, '45%'],
                         formatter: '{value}%'
                     },
-                    data: [{ value: 22.53, name: '累積已投 $45.06 萬元' }]
+                    data: [{ value: utilRate, name: `累積已投 $${totWan} 萬元` }]
                 }
             ]
         });
     }
 
-    // 4. 儀表板 C：壓力測試與黃線緩衝溫度計 (+8.4% 緩衝空間)
+    // 4. 儀表板 C：壓力測試與黃線緩衝溫度計
     const domPnl = document.getElementById('pnlRiskGaugeChart');
     if (domPnl) {
         if (pnlRiskGaugeInstance) pnlRiskGaugeInstance.dispose();
@@ -2470,7 +2644,7 @@ function renderAnalyticsRiskDashboard() {
                         offsetCenter: [0, '45%'],
                         formatter: '+{value}%'
                     },
-                    data: [{ value: 8.4, name: '距防守黃線安全邊際' }]
+                    data: [{ value: riskBufferPct, name: '距防守黃線安全邊際' }]
                 }
             ]
         });
@@ -2630,6 +2804,7 @@ async function loadDashboard(symbol) {
     if (data) {
         updateRightPanel(symbol, data);
         renderChart(symbol, data);
+        syncAllDashboardCardsAndCharts();
         await loadWargameAndMarketContext(symbol);
         setTimeout(() => { if (chartInstance) chartInstance.resize(); }, 120);
     }
