@@ -1822,31 +1822,34 @@ async function loadWargameAndMarketContext(targetSymbol = '00919') {
     if (p1Status && p1Value && p1Desc) {
         const chg = cat1.night_futures?.change || 145;
         const pct = cat1.night_futures?.change_pct || 0.62;
-        const oi = cat1.institutional_oi?.foreign_net_change || 1420;
-        p1Status.textContent = oi > 0 ? `偏多 (+${oi}口)` : `調節 (${oi}口)`;
+        const oi = cat1.institutional_oi?.foreign_net_change !== undefined ? cat1.institutional_oi.foreign_net_change : 1192;
+        const spot = cat1.institutional_oi?.foreign_spot_buy_sell_amt !== undefined ? cat1.institutional_oi.foreign_spot_buy_sell_amt : -14.15;
+        p1Status.textContent = oi >= 0 ? `偏多 (+${oi}口)` : `調節 (${oi}口)`;
         p1Value.textContent = `夜盤 ${chg >= 0 ? '+' : ''}${chg} 點 (${pct >= 0 ? '+' : ''}${pct}%)`;
-        p1Desc.textContent = `外資多單淨增 +${oi} 口，現貨買超 ${cat1.institutional_oi?.foreign_spot_buy_sell_amt || 125.4} 億，開盤具強勢支撐。`;
+        p1Desc.textContent = `外資多單淨${oi >= 0 ? '增 +' : '減 '}${oi} 口，現貨買賣超 ${spot >= 0 ? '+' : ''}${spot} 億，期現貨即時聯動。`;
     }
 
     const p2Status = document.getElementById('pillar2Status');
     const p2Value = document.getElementById('pillar2Value');
     const p2Desc = document.getElementById('pillar2Desc');
     if (p2Status && p2Value && p2Desc) {
-        const soxPct = cat2.indices?.sox?.change_pct || 2.18;
-        const nvdaPct = cat2.tech_leaders?.nvda?.change_pct || 3.30;
-        const prem = cat2.tech_leaders?.tsm_adr_premium_pct || 2.4;
+        const soxPct = cat2.indices?.sox?.change_pct !== undefined ? cat2.indices.sox.change_pct : -2.08;
+        const nvdaPct = cat2.tech_leaders?.nvda?.change_pct !== undefined ? cat2.tech_leaders.nvda.change_pct : 0.33;
+        const prem = cat2.tech_leaders?.tsm_adr_premium_pct !== undefined ? cat2.tech_leaders.tsm_adr_premium_pct : 10.77;
+        const soxStr = `${soxPct >= 0 ? '+' : ''}${soxPct}%`;
+        const nvdaStr = `${nvdaPct >= 0 ? '+' : ''}${nvdaPct}%`;
         if (targetSymbol === "2330") {
             p2Status.textContent = `ADR 溢價 ${prem}%`;
-            p2Value.textContent = `費半 +${soxPct}% | 輝達 +${nvdaPct}%`;
-            p2Desc.textContent = `台積電 ADR 折合現貨 ~$${cat2.tech_leaders?.tsm_adr_implied_twd || 1055} 元，電子權值動能充裕。`;
+            p2Value.textContent = `費半 ${soxStr} | 輝達 ${nvdaStr}`;
+            p2Desc.textContent = `台積電 ADR 折合現貨 ~$${cat2.tech_leaders?.tsm_adr_implied_twd || 2697} 元，電子權值動能充裕。`;
         } else if (targetSymbol === "2454") {
-            p2Status.textContent = `SOX +${soxPct}%`;
-            p2Value.textContent = `輝達 +${nvdaPct}% | 天璣高動能`;
-            p2Desc.textContent = `費半大漲與 AI ASIC 客製化專案雙引擎驅動，聯發科高階天璣晶片需求強韌。`;
+            p2Status.textContent = `SOX ${soxStr}`;
+            p2Value.textContent = `輝達 ${nvdaStr} | 天璣高動能`;
+            p2Desc.textContent = `費半與 AI ASIC 客製化專案雙引擎驅動，聯發科高階天璣晶片需求強韌。`;
         } else {
             p2Status.textContent = `ADR 溢價 ${prem}%`;
-            p2Value.textContent = `費半 +${soxPct}% | 輝達 +${nvdaPct}%`;
-            p2Desc.textContent = `台積電 ADR 折合現貨 ~$${cat2.tech_leaders?.tsm_adr_implied_twd || 1055} 元，半導體領航帶動大盤動能。`;
+            p2Value.textContent = `費半 ${soxStr} | 輝達 ${nvdaStr}`;
+            p2Desc.textContent = `台積電 ADR 折合現貨 ~$${cat2.tech_leaders?.tsm_adr_implied_twd || 2697} 元，半導體領航帶動大盤動能。`;
         }
     }
 
@@ -1866,21 +1869,20 @@ async function loadWargameAndMarketContext(targetSymbol = '00919') {
     const p4Desc = document.getElementById('pillar4Desc');
     if (p4Status && p4Value && p4Desc) {
         const mRate = cat4.margin_analysis?.market_margin_maintenance_rate || 168.4;
-        const mChg = cat4.margin_analysis?.market_daily_margin_change_twd || -1.8;
+        const mChg = cat4.margin_analysis?.market_daily_margin_change_twd !== undefined ? cat4.margin_analysis.market_daily_margin_change_twd : 113.34;
+        const stocksMargin = cat4.margin_analysis?.stocks_margin || {};
+        const symMargin = stocksMargin[targetSymbol] || (targetSymbol === "00919" ? cat4.margin_analysis?.core_flagship_margin : null);
+        const symChg = symMargin ? symMargin.margin_shares_daily_change : 0;
+        const symChgStr = `${symChg >= 0 ? '+' : ''}${symChg}`;
+        const mChgStr = `${mChg >= 0 ? '+' : ''}${mChg}`;
         let targetMarginText = "";
         let targetMarginDesc = "";
-        if (targetSymbol === "2330") {
-            targetMarginText = "2330 融資 -420張 | 大盤 -1.8億";
-            targetMarginDesc = "台積電融資餘額近10日遞減-420張，散戶獲利了結流向外資法人，搭配大盤維持率 168.4% 極度穩健。";
-        } else if (targetSymbol === "2454") {
-            targetMarginText = "2454 融資 -185張 | 大盤 -1.8億";
-            targetMarginDesc = "聯發科融資近10日減-185張，整戶維持率逾174%，籌碼沉澱；大盤維持率 168.4% 位於安全防守區間。";
-        } else if (targetSymbol === "00919") {
-            targetMarginText = "00919 融資 -320張 | 大盤 -1.8億";
-            targetMarginDesc = "00919 散戶融資單日退場 -320 張，籌碼扎實流入大戶與投信，大盤維持率 168.4% 杜絕多殺多。";
+        if (symMargin && symChg !== 0) {
+            targetMarginText = `${targetSymbol} 融資 ${symChgStr}張 | 大盤 ${mChgStr}億`;
+            targetMarginDesc = `${symMargin.name || targetSymbol} 散戶融資單日變化 ${symChgStr} 張，搭配大盤融資單日變化 ${mChgStr} 億，整戶維持率穩在 ${mRate}% 杜絕多殺多。`;
         } else {
-            targetMarginText = `${targetSymbol} 融資平穩 | 大盤 -1.8億`;
-            targetMarginDesc = `大盤維持率 ${mRate}% 處於健康安全水位，${targetSymbol} 融資籌碼穩定沉澱，流向現貨大戶。`;
+            targetMarginText = `${targetSymbol} 融資平穩 | 大盤 ${mChgStr}億`;
+            targetMarginDesc = `大盤融資維持率 ${mRate}% 處於健康區間，單日大盤融資變化 ${mChgStr} 億，籌碼流動穩定。`;
         }
         p4Status.textContent = `維持率 ${mRate}%`;
         p4Value.textContent = targetMarginText;
@@ -2591,7 +2593,9 @@ function checkDailyPushNotificationEngine() {
         setTimeout(() => {
             const sym = document.getElementById('customStockInput').value || '00919';
             const sName = temporaryStockNames[sym] || sym;
-            showPushToast(`🔔【每日 08:30 戰略推播結案】今日全自動推演報告已發送至您的 iOS 設備：${sName} (${sym}) 委員會評定信心 87%，外資期貨夜盤偏多 +1,420 口，請嚴守動態防守黃線保護本息。`);
+            const score = globalWargameReport?.symbol_reports?.[sym]?.confidence_score || globalWargameReport?.confidence_score || 88;
+            const oiChg = globalMarketContext?.categories?.cat1_taifex_night?.institutional_oi?.foreign_net_change !== undefined ? globalMarketContext.categories.cat1_taifex_night.institutional_oi.foreign_net_change : 1192;
+            showPushToast(`🔔【每日 08:30 戰略推播結案】今日全自動推演報告已發送至您的 iOS 設備：${sName} (${sym}) 委員會評定信心 ${score}%，外資期貨夜盤單日變化 ${oiChg >= 0 ? '+' : ''}${oiChg} 口，請嚴守動態防守黃線保護本息。`);
             localStorage.setItem(pushedKey, 'true');
         }, 3200);
     }

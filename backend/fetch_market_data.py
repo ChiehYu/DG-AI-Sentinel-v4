@@ -221,36 +221,43 @@ def fetch_taifex_night_and_inst_oi():
     foreign_spot_buy_sell_amt = 125.4
 
     try:
-        # 下載期交所三大法人期貨淨未平倉
-        post_data_oi = urllib.parse.urlencode({
-            'queryStartDate': datetime.now().strftime('%Y/%m/%d'),
-            'queryEndDate': datetime.now().strftime('%Y/%m/%d'),
-            'queryType': '1'
-        }).encode('utf-8')
-        req_oi = urllib.request.Request('https://www.taifex.com.tw/cht/3/futContractsDateDown', data=post_data_oi, headers={
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
-        })
-        with urllib.request.urlopen(req_oi, timeout=6) as res_oi:
-            oi_content = res_oi.read().decode('ms950', errors='replace')
-            oi_lines = [l.strip() for l in oi_content.splitlines() if l.strip()]
-            if len(oi_lines) > 1:
-                reader_oi = csv.reader(oi_lines)
-                for row in reader_oi:
-                    if len(row) >= 15 and '臺股期貨' in row[1] and '外資' in row[2]:
-                        try:
-                            foreign_net_oi = int(row[13].strip().replace(',', ''))
-                        except ValueError:
-                            pass
-                    elif len(row) >= 15 and '臺股期貨' in row[1] and '投信' in row[2]:
-                        try:
-                            invest_trust_net_oi = int(row[13].strip().replace(',', ''))
-                        except ValueError:
-                            pass
-                    elif len(row) >= 15 and '臺股期貨' in row[1] and '自營商' in row[2]:
-                        try:
-                            dealer_net_oi = int(row[13].strip().replace(',', ''))
-                        except ValueError:
-                            pass
+        # 下載期交所三大法人期貨淨未平倉 (回溯最近 5 天，確保清晨執行時能取得前一交易日真實數據)
+        for i in range(5):
+            target_dt = (datetime.now() - timedelta(days=i)).strftime('%Y/%m/%d')
+            post_data_oi = urllib.parse.urlencode({
+                'queryStartDate': target_dt,
+                'queryEndDate': target_dt,
+                'queryType': '1'
+            }).encode('utf-8')
+            req_oi = urllib.request.Request('https://www.taifex.com.tw/cht/3/futContractsDateDown', data=post_data_oi, headers={
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+            })
+            found_data = False
+            with urllib.request.urlopen(req_oi, timeout=6) as res_oi:
+                oi_content = res_oi.read().decode('ms950', errors='replace')
+                oi_lines = [l.strip() for l in oi_content.splitlines() if l.strip()]
+                if len(oi_lines) > 1:
+                    reader_oi = csv.reader(oi_lines)
+                    for row in reader_oi:
+                        if len(row) >= 15 and '臺股期貨' in row[1] and '外資' in row[2]:
+                            try:
+                                foreign_net_oi = int(row[13].strip().replace(',', ''))
+                                foreign_net_change = int(row[7].strip().replace(',', ''))
+                                found_data = True
+                            except ValueError:
+                                pass
+                        elif len(row) >= 15 and '臺股期貨' in row[1] and '投信' in row[2]:
+                            try:
+                                invest_trust_net_oi = int(row[13].strip().replace(',', ''))
+                            except ValueError:
+                                pass
+                        elif len(row) >= 15 and '臺股期貨' in row[1] and '自營商' in row[2]:
+                            try:
+                                dealer_net_oi = int(row[13].strip().replace(',', ''))
+                            except ValueError:
+                                pass
+            if found_data:
+                break
     except Exception:
         pass
 
@@ -278,7 +285,7 @@ def fetch_taifex_night_and_inst_oi():
         "invest_trust_net_oi": invest_trust_net_oi,
         "dealer_net_oi": dealer_net_oi,
         "foreign_spot_buy_sell_amt": foreign_spot_buy_sell_amt,
-        "summary_assessment": f"外資期貨淨未平倉 {foreign_net_oi:,} 口，現貨買賣超 {foreign_spot_buy_sell_amt:+.2f} 億元，日夜盤多空對沖監控中。"
+        "summary_assessment": f"外資期貨淨未平倉 {foreign_net_oi:,} 口 (單日變化 {foreign_net_change:+,} 口)，現貨買賣超 {foreign_spot_buy_sell_amt:+.2f} 億元，日夜盤多空對沖監控中。"
     }
     return {
         "category": "1. 台指期夜盤與法人籌碼 (TAIFEX Night Session & OI)",
@@ -370,20 +377,40 @@ def fetch_taiwan_margin_trading_balance():
                             except ValueError:
                                 pass
                 # 表格 1: 個股信用交易
+                stocks_margin = {}
+                target_symbols = {
+                    '00919': '群益台灣精選高息 ETF',
+                    '2330': '台積電',
+                    '2454': '聯發科',
+                    '3037': '欣興',
+                    '0056': '元大高股息 ETF',
+                    '00878': '國泰永續高息 ETF'
+                }
                 if len(m_json['tables']) > 1 and 'data' in m_json['tables'][1]:
                     for row in m_json['tables'][1]['data']:
-                        if len(row) >= 13 and '00919' in row[0]:
-                            try:
-                                p_m = int(row[5].replace(',', '').strip())
-                                c_m = int(row[6].replace(',', '').strip())
-                                p_s = int(row[11].replace(',', '').strip())
-                                c_s = int(row[12].replace(',', '').strip())
-                                etf_margin_shares = c_m
-                                etf_margin_change = c_m - p_m
-                                etf_short_shares = c_s
-                                etf_short_change = c_s - p_s
-                            except ValueError:
-                                pass
+                        if len(row) >= 13:
+                            for sym, name in target_symbols.items():
+                                if sym in row[0]:
+                                    try:
+                                        p_m = int(row[5].replace(',', '').strip())
+                                        c_m = int(row[6].replace(',', '').strip())
+                                        p_s = int(row[11].replace(',', '').strip())
+                                        c_s = int(row[12].replace(',', '').strip())
+                                        stocks_margin[sym] = {
+                                            "symbol": sym,
+                                            "name": name,
+                                            "margin_shares_balance": c_m,
+                                            "margin_shares_daily_change": c_m - p_m,
+                                            "short_shares_balance": c_s,
+                                            "short_shares_daily_change": c_s - p_s
+                                        }
+                                        if sym == '00919':
+                                            etf_margin_shares = c_m
+                                            etf_margin_change = c_m - p_m
+                                            etf_short_shares = c_s
+                                            etf_short_change = c_s - p_s
+                                    except ValueError:
+                                        pass
     except Exception:
         pass
 
@@ -392,6 +419,7 @@ def fetch_taiwan_margin_trading_balance():
         "market_margin_maintenance_status": "安全穩健 (>160%)",
         "market_daily_margin_balance_twd": market_margin_balance_ntd_B,
         "market_daily_margin_change_twd": market_margin_daily_change_B,
+        "stocks_margin": stocks_margin,
         "core_flagship_margin": {
             "symbol": "00919",
             "name": "群益台灣精選高息 ETF",

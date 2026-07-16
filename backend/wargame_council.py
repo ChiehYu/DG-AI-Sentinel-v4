@@ -211,10 +211,18 @@ def call_gemini_api(context_data):
 def generate_simulated_wargame_report(context_data):
     """
     實時行情同步版模擬對抗引擎
-    讀取 core_tracking_stocks 最新真實報價計算動態防守價與實操建議。
+    讀取 core_tracking_stocks 與 categories 最新真實報價及籌碼計算動態防守價與實操建議。
     """
     today_str = datetime.now().strftime("%Y-%m-%d")
     core = context_data.get("core_tracking_stocks", {})
+    cats = context_data.get("categories", {})
+    cat1_inst = cats.get("cat1_taifex_night", {}).get("institutional_oi", {})
+    cat4_margin = cats.get("cat4_taiwan_margin", {}).get("margin_analysis", {})
+    stocks_margin = cat4_margin.get("stocks_margin", {})
+    m_rate = cat4_margin.get("market_margin_maintenance_rate", 168.4)
+    m_daily_chg = cat4_margin.get("market_daily_margin_change_twd", -1.8)
+    foreign_change = cat1_inst.get("foreign_net_change", 1192)
+    foreign_spot_amt = cat1_inst.get("foreign_spot_buy_sell_amt", -14.15)
 
     # 取得最新真實價位
     p_00919 = core.get("00919", {}).get("price", 24.35)
@@ -223,6 +231,11 @@ def generate_simulated_wargame_report(context_data):
     p_3037  = core.get("3037", {}).get("price", 195.5)
     p_0056  = core.get("0056", {}).get("price", 39.40)
     p_00878 = core.get("00878", {}).get("price", 23.35)
+
+    m_00919 = stocks_margin.get("00919", {}).get("margin_shares_daily_change", -141)
+    m_2330  = stocks_margin.get("2330", {}).get("margin_shares_daily_change", 106)
+    m_2454  = stocks_margin.get("2454", {}).get("margin_shares_daily_change", 68)
+    m_3037  = stocks_margin.get("3037", {}).get("margin_shares_daily_change", 1242)
 
     # 精確計算動態黃線防守價 (-3% ~ -5% 安全均線緩衝)
     stop_00919 = round(p_00919 * 0.96, 2)
@@ -233,10 +246,10 @@ def generate_simulated_wargame_report(context_data):
     stop_00878 = round(p_00878 * 0.975, 2)
 
     rounds_00919 = [
-        {"round": 1, "focus": "早盤跳空與高股息籌碼動能檢視", "debate_summary": "多頭指出美股夜盤與期貨氣勢穩健，00919 具備高息收息兼資本利得抗震力；空頭提醒需防短線當沖獲利了結賣壓。"},
-        {"round": 2, "focus": "法人與散戶換手洗盤檢驗", "debate_summary": "量化專家列出 00919 近期三大法人連續買超且散戶融資大減，浮額乾淨，結構有利波段向上。"},
+        {"round": 1, "focus": "早盤跳空與高股息籌碼動能檢視", "debate_summary": f"多頭指出外資期貨單日變化 {foreign_change:+,} 口且大盤維持率穩在 {m_rate}%，00919 具備高息抗震力；空頭提醒注意外資現貨買賣超 {foreign_spot_amt:+.2f} 億元對大盤動能影響。"},
+        {"round": 2, "focus": "法人與散戶換手洗盤檢驗", "debate_summary": f"量化專家指出 00919 散戶融資單日變化 {m_00919:+,} 張，籌碼結構反映即時換手與沉澱狀況，有利波段防守。"},
         {"round": 3, "focus": "高年化配息率防禦傘對沖效益", "debate_summary": "守衛官強調 00919 穩定之高息現金流能 100% 覆蓋 200 萬信貸月息支出，下檔低接買盤極度強勁。"},
-        {"round": 4, "focus": "盤後融資維持率與多殺多測試", "debate_summary": "風控審查大盤維持率健康穩固，00919 整戶維持率極高，完全免疫斷頭多殺多連鎖風險。"},
+        {"round": 4, "focus": "盤後融資維持率與多殺多測試", "debate_summary": f"風控審查大盤維持率處於健康穩固的 {m_rate}%，大盤單日融資增減 {m_daily_chg:+.2f} 億，整戶維持率高，免疫多殺多風險。"},
         {"round": 5, "focus": "總經與新台幣匯率波動影響", "debate_summary": "VIX 處平穩安全區且台幣區間匯率穩定，外資無系統性匯出壓力，高股息資金留在池內。"},
         {"round": 6, "focus": "信貸極端回撤 (-5% Protection) 壓力模型", "debate_summary": "模擬大盤遭遇黑天鵝重挫 4% 時，00919 現價依然高於本息防護底限，對沖護城河完好無損。"},
         {"round": 7, "focus": "動態防守黃線與月線支撐判定", "debate_summary": f"共同決議將動態防守黃線錨定於 ${stop_00919}，只要未破此黃線即堅決抱牢核心張數。"},
@@ -247,9 +260,9 @@ def generate_simulated_wargame_report(context_data):
 
     rounds_2330 = [
         {"round": 1, "focus": "ADR 溢價差與美股費半連動分析", "debate_summary": "多頭指出 TSM ADR 上漲且維持正向溢價，換算現貨具備強勁向上拉抬動能；空頭提醒防範開盤跳空過高後的短線震盪。"},
-        {"round": 2, "focus": "外資期現貨與主權基金長線配置", "debate_summary": "量化專家檢索三大法人近一週累計買賣超，主權基金與海外被動型指數基金持續淨配置先進製程權值核心。"},
+        {"round": 2, "focus": "外資期現貨與主權基金長線配置", "debate_summary": f"量化專家檢索三大法人數據，外資期貨單日變化 {foreign_change:+,} 口，主權基金與海外被動型指數基金持續長期配置先進製程權值核心。"},
         {"round": 3, "focus": "3/2奈米先進製程供需與 ASP 展望", "debate_summary": "產業研究肯定：AI 加速器客戶訂單與預付款滿載，3奈米高稼動率與價格調升直接轉化為強勁長線 EPS 成長。"},
-        {"round": 4, "focus": "零股大戶與千張大戶持股結構驗證", "debate_summary": "風控確認：散戶與零股股民越跌越買提供絕佳地板支撐，千張以上大戶持股比例高檔沉澱，籌碼極度扎實。"},
+        {"round": 4, "focus": "零股大戶與千張大戶持股結構驗證", "debate_summary": f"風控確認：台積電單日融資變化 {m_2330:+,} 張，散戶與零股股民提供支撐，千張以上大戶持股比例高檔沉澱。"},
         {"round": 5, "focus": "海外建廠進度與地緣政治風險評估", "debate_summary": "空頭提出電價與海外營運成本；量化回應美/日/歐廠進展符合進度，地緣折價已完全反映於現前估值中。"},
         {"round": 6, "focus": "200 萬信貸組合之終極成長引擎定位", "debate_summary": "信貸守護官認可台積電做為全宇宙資產群成長主引擎，資本利得空間為整體資產組合提供深厚回撤氣囊。"},
         {"round": 7, "focus": "動態防守黃線與月均線安全區間", "debate_summary": f"決議將台積電動態防守黃線設立於 ${stop_2330}，目前股價位處黃線與均線之上，多方趨勢明確主導。"},
@@ -262,7 +275,7 @@ def generate_simulated_wargame_report(context_data):
         {"round": 1, "focus": "旗艦天璣 SoC 與 AI 智能手機滲透率", "debate_summary": "多頭分析師強調旗艦天璣晶片於高階 Android 市場規格與市佔大躍進，單晶片平均售價 (ASP) 挹注營收顯著。"},
         {"round": 2, "focus": "雲端巨頭 ASIC 客製化 AI 晶片訂單進展", "debate_summary": "量化精算師指出手握雲端 CSP 巨頭客製化 AI 晶片專案，為下半年與明年開闢出極高毛利之第二成長曲線。"},
         {"round": 3, "focus": "外資與國內大型投顧券商目標價共識", "debate_summary": "內外資大型機構將本益比評價自 18 倍上調，目標價共識區間大幅優於現價，潛在價差期望值極佳。"},
-        {"round": 4, "focus": "散戶融資浮額與大戶換手健康度檢測", "debate_summary": "前期股價震盪順利清洗當沖與融資浮額，整戶維持率穩定大於 170%，籌碼流向長期持股法人與大戶手裡。"},
+        {"round": 4, "focus": "散戶融資浮額與大戶換手健康度檢測", "debate_summary": f"聯發科單日融資變化 {m_2454:+,} 張，整戶維持率大於 170%，籌碼穩定流向長期持股法人與大戶手裡。"},
         {"round": 5, "focus": "與費半 SOX 及國際高價半導體估值連動", "debate_summary": "空頭提醒高價 IC 設計股對費半盤後震盪較為敏感；多頭回應估值相較國際對手仍處偏低，補漲動能充沛。"},
         {"round": 6, "focus": "信貸安全邊際與單檔部位曝險管控", "debate_summary": f"守衛官審查將聯發科動態防守黃線錨定在 ${stop_2454}，將下檔最大可能波動完全鎖定在信貸安全緩衝邊際內。"},
         {"round": 7, "focus": "支撐均線位階與技術指標多空動能判定", "debate_summary": "日 K 均線呈現良性支撐排列，KD 與 MACD 動能指標處於多方強勢控制區間，上檔沒有沉重解牢賣壓。"},
@@ -274,8 +287,8 @@ def generate_simulated_wargame_report(context_data):
     rounds_3037 = [
         {"round": 1, "focus": "AI 伺服器高階 ABF 載板供需新週期提案", "debate_summary": "多頭強調 AI 加速器封裝面積放大與層數倍增，驅動高階 ABF 載板產能消耗巨大，產業鏈正式進入供不應求新週期。"},
         {"round": 2, "focus": "載板平均銷售單價 (ASP) 與稼動率復甦", "debate_summary": "產業觀察指出各廠區稼動率穩健回升，高階產品 ASP 價格調漲，營收與毛利率即將迎來跳升拐點。"},
-        {"round": 3, "focus": "外資近期由賣轉買與底背離翻轉訊號", "debate_summary": "量化專家偵測外資近期由賣轉買，自季線低檔連續翻多回補，技術形態出現強烈且明確的底背離多頭翻轉信號。"},
-        {"round": 4, "focus": "融資維持率與短線套牢籌碼消化進程", "debate_summary": "前期短線解牢賣壓已於季線打底區間順利充分換手，散戶浮額大減，向上推升之籌碼阻力降至最低。"},
+        {"round": 3, "focus": "外資近期由賣轉買與底背離翻轉訊號", "debate_summary": f"量化專家偵測外資動向，大盤現貨買賣超 {foreign_spot_amt:+.2f} 億元，欣興技術形態維持季線低檔支撐。"},
+        {"round": 4, "focus": "融資維持率與短線套牢籌碼消化進程", "debate_summary": f"欣興單日融資變化 {m_3037:+,} 張，季線打底區間持續換手，向上推升之籌碼結構健康調適中。"},
         {"round": 5, "focus": "消費性電子庫存復甦與客戶調整拉鋸", "debate_summary": "空頭提醒傳統 PC/手機載板復甦較平；多頭論證雲端高階 AI 產品營收佔比急速拉升，足以完全彌補並超越。"},
         {"round": 6, "focus": "200 萬信貸組合之轉強爆發攻擊配置", "debate_summary": "定位為產業週期谷底翻轉之超額期望值標的，適度分批配置將有助於整體組合享有高斜率資本利得。"},
         {"round": 7, "focus": "動態防守黃線與季線黃金共振支撐", "debate_summary": f"決議將動態黃線設立於 ${stop_3037}，此價位契合季線支撐與近期換手平台，支撐鐵板極具韌性。"},
