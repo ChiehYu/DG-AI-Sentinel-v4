@@ -2,14 +2,15 @@ name: DG AI Sentinel Daily Wargame & Push Notification
 
 on:
   schedule:
-    # 台灣時間每日早晨 08:11 = UTC 00:11 (僅限週一至週五，提早至冷門時段執行資料擷取與沙盤推演，並由腳本鎖定準時於 08:30:00 發送推文)
-    - cron: '11 0 * * 1-5'
+    # 台灣時間每日早晨 07:00 = UTC 前一日 23:00 (僅限週一至週五早晨，提早運算沙盤推演，並由腳本鎖定準時於 08:30:00 發送推文)
+    - cron: '0 23 * * 0-4'
   workflow_dispatch:
     # 支援 GitHub 後台手動觸發測試
 
 jobs:
   run-sentinel-council:
     runs-on: ubuntu-latest
+    timeout-minutes: 180
     # 【關鍵修復】賦予 GITHUB_TOKEN 寫入儲存庫的權限，避免 step 5 git push 發生 exit code 128 錯誤
     permissions:
       contents: write

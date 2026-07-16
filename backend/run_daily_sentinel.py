@@ -29,9 +29,13 @@ if sys.platform.startswith('win'):
     except Exception:
         pass
 
-import fetch_market_data
-import wargame_council
-import notifier
+try:
+    import fetch_market_data
+    import wargame_council
+    import notifier
+except Exception as e:
+    print(f"❌ [Sentinel Fatal] 模組載入失敗：{e}", file=sys.stderr)
+    sys.exit(1)
 
 
 def run_pipeline(is_test=False):
@@ -43,17 +47,17 @@ def run_pipeline(is_test=False):
         return True
 
     print("=" * 60)
-    print(f"🚀 【DG AI Sentinel V4.0 早晨 08:30 自動化推演總指揮啟動】")
+    print(f"🚀 【DG AI Sentinel V4.0 早晨 07:00 運算與 08:30 推播總指揮啟動】")
     print(f"⏰ 執行時間：{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {'(測試驗證模式)' if is_test else ''}")
     print("=" * 60)
     start_time = time.time()
 
-    # 步驟 1：4 大市場分類與融資籌碼數據擷取
-    print("\n📦 [Step 1/3] 擷取 4 大核心市場數據 (夜盤、美股、黑天鵝、盤後融資)...")
+    # 步驟 1：5 大市場分類與融資籌碼數據擷取
+    print("\n📦 [Step 1/3] 擷取 5 大核心市場數據 (夜盤、美股、黑天鵝、盤後融資、追蹤個股)...")
     try:
         context = fetch_market_data.run_all_fetchers()
     except Exception as e:
-        print(f"❌ [Step 1] 資料擷取遭遇例外，停止推演：{e}")
+        print(f"❌ [Step 1] 資料擷取遭遇例外，停止推演：{e}", file=sys.stderr)
         return False
 
     # 步驟 2：5 大角色 10 輪對抗沙盤推演
@@ -61,7 +65,7 @@ def run_pipeline(is_test=False):
     try:
         report = wargame_council.run_wargame()
     except Exception as e:
-        print(f"❌ [Step 2] 沙盤推演遭遇例外，停止推播：{e}")
+        print(f"❌ [Step 2] 沙盤推演遭遇例外，停止推播：{e}", file=sys.stderr)
         return False
 
     # 步驟 3：早晨手機推文發送與 Obsidian 日誌同步
@@ -69,7 +73,7 @@ def run_pipeline(is_test=False):
     try:
         notifier.run_notifier()
     except Exception as e:
-        print(f"❌ [Step 3] 推播或日誌同步遭遇例外：{e}")
+        print(f"❌ [Step 3] 推播或日誌同步遭遇例外：{e}", file=sys.stderr)
         return False
 
     total_time = round(time.time() - start_time, 2)
@@ -82,4 +86,7 @@ def run_pipeline(is_test=False):
 
 if __name__ == "__main__":
     is_test_mode = "--test" in sys.argv
-    run_pipeline(is_test=is_test_mode)
+    success = run_pipeline(is_test=is_test_mode)
+    if not success:
+        sys.exit(1)
+    sys.exit(0)

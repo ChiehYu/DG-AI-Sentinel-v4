@@ -29,20 +29,20 @@ if sys.platform.startswith('win'):
 try:
     from dotenv import load_dotenv
     load_dotenv()
-except ImportError:
+except Exception:
     pass
 
 try:
     from google import genai
     from google.genai import types
     HAS_NEW_GENAI = True
-except ImportError:
+except Exception:
     HAS_NEW_GENAI = False
 
 try:
     import google.generativeai as genai_old
     HAS_OLD_GENAI = True
-except ImportError:
+except Exception:
     HAS_OLD_GENAI = False
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data")

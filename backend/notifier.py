@@ -31,7 +31,7 @@ if sys.platform.startswith('win'):
 try:
     from dotenv import load_dotenv
     load_dotenv()
-except ImportError:
+except Exception:
     pass
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data")
