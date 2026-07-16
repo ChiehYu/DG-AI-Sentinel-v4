@@ -1820,8 +1820,8 @@ async function loadWargameAndMarketContext(targetSymbol = '00919') {
     const p1Value = document.getElementById('pillar1Value');
     const p1Desc = document.getElementById('pillar1Desc');
     if (p1Status && p1Value && p1Desc) {
-        const chg = cat1.night_futures?.change || 145;
-        const pct = cat1.night_futures?.change_pct || 0.62;
+        const chg = cat1.night_futures?.change !== undefined ? cat1.night_futures.change : 145;
+        const pct = cat1.night_futures?.change_pct !== undefined ? cat1.night_futures.change_pct : 0.62;
         const oi = cat1.institutional_oi?.foreign_net_change !== undefined ? cat1.institutional_oi.foreign_net_change : 1192;
         const spot = cat1.institutional_oi?.foreign_spot_buy_sell_amt !== undefined ? cat1.institutional_oi.foreign_spot_buy_sell_amt : -14.15;
         p1Status.textContent = oi >= 0 ? `偏多 (+${oi}口)` : `調節 (${oi}口)`;

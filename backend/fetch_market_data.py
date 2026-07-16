@@ -175,29 +175,47 @@ def fetch_taifex_night_and_inst_oi():
                     reader = csv.reader(lines)
                     header = next(reader, None)
                     day_close = None
+                    day_change_val = 0.0
+                    day_change_pct_val = 0.0
                     night_close_val = None
+                    night_change_val = 0.0
+                    night_change_pct_val = 0.0
                     for row in reader:
                         if len(row) >= 18 and row[1].strip() == 'TX':
                             contract_m = row[2].strip()
                             session_type = row[17].strip()
-                            # 取近期近月契約
                             if contract_m and len(contract_m) == 6:
                                 try:
                                     c_price = float(row[6].strip() or row[5].strip())
+                                    try:
+                                        c_change = float(row[7].strip())
+                                    except ValueError:
+                                        c_change = 0.0
+                                    try:
+                                        c_change_pct = float(row[8].strip().replace('%', ''))
+                                    except ValueError:
+                                        c_change_pct = 0.0
+
                                     if session_type == '一般' and day_close is None:
                                         day_close = c_price
+                                        day_change_val = c_change
+                                        day_change_pct_val = c_change_pct
                                     elif session_type in ['盤後', 'L'] and night_close_val is None:
                                         night_close_val = c_price
+                                        night_change_val = c_change
+                                        night_change_pct_val = c_change_pct
                                 except ValueError:
                                     continue
-                    if night_close_val is not None and day_close is not None:
+                    if night_close_val is not None:
                         night_price = night_close_val
-                        night_change = night_close_val - day_close
-                        night_change_pct = round((night_change / day_close) * 100, 2)
+                        night_change = night_change_val
+                        night_change_pct = night_change_pct_val
                         status_str = "success"
                         break
-                    elif night_close_val is not None:
-                        night_price = night_close_val
+                    elif day_close is not None:
+                        night_price = day_close
+                        night_change = day_change_val
+                        night_change_pct = day_change_pct_val
                         status_str = "success"
                         break
     except Exception:
