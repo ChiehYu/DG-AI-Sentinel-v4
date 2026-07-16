@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-16 11:54:27",
+  "timestamp": "2026-07-16 06:03:58",
   "version": "DG AI Sentinel V4.0 Wargame Data Engine",
   "categories": {
     "cat1_taifex_night": {
@@ -11,15 +11,15 @@
         "change": -249.0,
         "change_pct": -0.54,
         "status": "success",
-        "updated_at": "2026-07-16 11:54"
+        "updated_at": "2026-07-16 06:03"
       },
       "institutional_oi": {
-        "foreign_net_oi": -79557,
-        "foreign_net_change": 1192,
-        "invest_trust_net_oi": 75646,
-        "dealer_net_oi": -664,
+        "foreign_net_oi": 0,
+        "foreign_net_change": -3207,
+        "invest_trust_net_oi": 0,
+        "dealer_net_oi": 0,
         "foreign_spot_buy_sell_amt": -14.15,
-        "summary_assessment": "外資期貨淨未平倉 -79,557 口 (單日變化 +1,192 口)，現貨買賣超 -14.15 億元，日夜盤多空對沖監控中。"
+        "summary_assessment": "外資期貨淨未平倉 0 口 (單日變化 -3,207 口)，現貨買賣超 -14.15 億元，日夜盤多空對沖監控中。"
       }
     },
     "cat2_us_stocks": {
@@ -32,7 +32,7 @@
           "change": 28.81,
           "change_pct": 0.38,
           "status": "success",
-          "updated_at": "2026-07-16 11:54"
+          "updated_at": "2026-07-16 06:03"
         },
         "nasdaq": {
           "symbol": "^IXIC",
@@ -41,7 +41,7 @@
           "change": 162.22,
           "change_pct": 0.62,
           "status": "success",
-          "updated_at": "2026-07-16 11:54"
+          "updated_at": "2026-07-16 06:03"
         },
         "sox": {
           "symbol": "^SOX",
@@ -50,7 +50,7 @@
           "change": -263.04,
           "change_pct": -2.08,
           "status": "success",
-          "updated_at": "2026-07-16 11:54"
+          "updated_at": "2026-07-16 06:03"
         },
         "dow_jones": {
           "symbol": "^DJI",
@@ -59,7 +59,7 @@
           "change": 150.37,
           "change_pct": 0.29,
           "status": "success",
-          "updated_at": "2026-07-16 11:54"
+          "updated_at": "2026-07-16 06:03"
         }
       },
       "tech_leaders": {
@@ -70,7 +70,7 @@
           "change": -0.91,
           "change_pct": -0.22,
           "status": "success",
-          "updated_at": "2026-07-16 11:54"
+          "updated_at": "2026-07-16 06:03"
         },
         "nvda": {
           "symbol": "NVDA",
@@ -79,13 +79,13 @@
           "change": 0.7,
           "change_pct": 0.33,
           "status": "success",
-          "updated_at": "2026-07-16 11:54"
+          "updated_at": "2026-07-16 06:03"
         },
-        "tsm_adr_implied_twd": 2696.5,
-        "tsm_adr_premium_pct": 10.06,
-        "tsmc_tw_price": 2450.0
+        "tsm_adr_implied_twd": 2699.4,
+        "tsm_adr_premium_pct": 9.29,
+        "tsmc_tw_price": 2470.0
       },
-      "summary_assessment": "費半收 12398.89 (-2.08%)，台積電 ADR 溢價 10.06%，半導體與 AI 供應鏈動能明確。"
+      "summary_assessment": "費半收 12398.89 (-2.08%)，台積電 ADR 溢價 9.29%，半導體與 AI 供應鏈動能明確。"
     },
     "cat3_macro_black_swan": {
       "category": "3. 宏觀黑天鵝與外匯殖利率 (Macro VIX, Yields & Forex)",
@@ -96,16 +96,16 @@
         "change": -0.83,
         "change_pct": -5.03,
         "status": "success",
-        "updated_at": "2026-07-16 11:54"
+        "updated_at": "2026-07-16 06:03"
       },
       "usd_twd": {
         "symbol": "TWD=X",
         "name": "美元兌新台幣匯率 (USD/TWD)",
-        "price": 32.141,
-        "change": 0.007,
-        "change_pct": 0.02,
+        "price": 32.176,
+        "change": 0.042,
+        "change_pct": 0.13,
         "status": "success",
-        "updated_at": "2026-07-16 11:54"
+        "updated_at": "2026-07-16 06:03"
       },
       "us10y_yield": {
         "symbol": "^TNX",
@@ -114,13 +114,13 @@
         "change": -0.04,
         "change_pct": -0.87,
         "status": "success",
-        "updated_at": "2026-07-16 11:54"
+        "updated_at": "2026-07-16 06:03"
       },
       "status_alerts": {
         "vix_status": "安全區間 (平穩)",
         "forex_status": "匯率穩定"
       },
-      "summary_assessment": "當前 VIX 15.67 (安全區間 (平穩))，匯率 32.141 (匯率穩定)，宏觀環境穩定無黑天鵝風險。"
+      "summary_assessment": "當前 VIX 15.67 (安全區間 (平穩))，匯率 32.176 (匯率穩定)，宏觀環境穩定無黑天鵝風險。"
     },
     "cat4_taiwan_margin": {
       "category": "4. 台股市場盤後融資變化與籌碼壓力 (Taiwan Margin Trading Balance)",
@@ -195,56 +195,56 @@
     "00919": {
       "symbol": "00919",
       "name": "群益精選高息",
-      "price": 29.56,
-      "change": 0.14,
-      "change_pct": 0.48,
+      "price": 29.55,
+      "change": -0.22,
+      "change_pct": -0.74,
       "status": "success",
-      "updated_at": "2026-07-16 11:54"
+      "updated_at": "2026-07-16 06:03"
     },
     "2330": {
       "symbol": "2330",
       "name": "台積電",
-      "price": 2450.0,
-      "change": 10.0,
-      "change_pct": 0.41,
+      "price": 2470.0,
+      "change": 30.0,
+      "change_pct": 1.23,
       "status": "success",
-      "updated_at": "2026-07-16 11:54"
+      "updated_at": "2026-07-16 06:03"
     },
     "2454": {
       "symbol": "2454",
       "name": "聯發科",
-      "price": 3705.0,
-      "change": -35.0,
-      "change_pct": -0.94,
+      "price": 3700.0,
+      "change": -40.0,
+      "change_pct": -1.07,
       "status": "success",
-      "updated_at": "2026-07-16 11:54"
+      "updated_at": "2026-07-16 06:03"
     },
     "3037": {
       "symbol": "3037",
       "name": "欣興",
-      "price": 893.0,
-      "change": -43.0,
-      "change_pct": -4.59,
+      "price": 882.0,
+      "change": -54.0,
+      "change_pct": -5.77,
       "status": "success",
-      "updated_at": "2026-07-16 11:54"
+      "updated_at": "2026-07-16 06:03"
     },
     "0056": {
       "symbol": "0056",
       "name": "元大高股息",
-      "price": 52.75,
-      "change": 1.0,
-      "change_pct": 1.93,
+      "price": 52.65,
+      "change": -0.35,
+      "change_pct": -0.66,
       "status": "success",
-      "updated_at": "2026-07-16 11:54"
+      "updated_at": "2026-07-16 06:03"
     },
     "00878": {
       "symbol": "00878",
       "name": "國泰永續高息",
-      "price": 33.01,
-      "change": 0.29,
-      "change_pct": 0.89,
+      "price": 32.95,
+      "change": -0.26,
+      "change_pct": -0.78,
       "status": "success",
-      "updated_at": "2026-07-16 11:54"
+      "updated_at": "2026-07-16 06:03"
     }
   }
 }
