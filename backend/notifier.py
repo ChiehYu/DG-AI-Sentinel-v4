@@ -120,9 +120,11 @@ def format_multi_symbol_push_messages(report, context):
         get_card_section("2454", "聯發科"),
         get_card_section("3037", "欣興")
     ]
+    sep = "\n----------------------------\n"
+    card2_content = sep.join(card2_sections)
     card2 = f"""🚀【權值與進攻三傑 10 輪對抗策略】
 ============================
-{"\n----------------------------\n".join(card2_sections)}"""
+{card2_content}"""
 
     # 卡片 3：月月配防守三劍客與信貸對沖 (00919, 0056, 00878)
     card3_sections = [
@@ -130,9 +132,10 @@ def format_multi_symbol_push_messages(report, context):
         get_card_section("0056", "元大高股息"),
         get_card_section("00878", "國泰永續高息")
     ]
+    card3_content = sep.join(card3_sections)
     card3 = f"""🛡️【月月配防守三劍客與信貸對沖】
 ============================
-{"\n----------------------------\n".join(card3_sections)}"""
+{card3_content}"""
 
     # 卡片 4：戰情室傳送門與每日紀錄 (加入 V4.0 Clickable URL)
     card4 = f"""📱【V4.0 旗艦戰情室傳送門與每日紀錄】
