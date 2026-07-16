@@ -278,7 +278,7 @@ def wait_until_taiwan_time_if_early(target_hour=8, target_minute=30):
     import time
     tz_tw = timezone(timedelta(hours=8))
     now_tw = datetime.now(tz_tw)
-    if now_tw.hour == target_hour and now_tw.minute < target_minute and "--now" not in sys.argv and "--test" not in sys.argv:
+    if (now_tw.hour < target_hour or (now_tw.hour == target_hour and now_tw.minute < target_minute)) and "--now" not in sys.argv and "--test" not in sys.argv:
         target_tw = now_tw.replace(hour=target_hour, minute=target_minute, second=0, microsecond=0)
         sleep_seconds = (target_tw - now_tw).total_seconds()
         if sleep_seconds > 0:

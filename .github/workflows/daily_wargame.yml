@@ -2,8 +2,8 @@ name: DG AI Sentinel Daily Wargame & Push Notification
 
 on:
   schedule:
-    # 台灣時間每日早晨 08:26 = UTC 00:26 (僅限週一至週五，預留 4 分鐘執行資料擷取與沙盤推演，並準時於 08:30:00 發送手機推文)
-    - cron: '26 0 * * 1-5'
+    # 台灣時間每日早晨 08:11 = UTC 00:11 (僅限週一至週五，提早至冷門時段執行資料擷取與沙盤推演，並由腳本鎖定準時於 08:30:00 發送推文)
+    - cron: '11 0 * * 1-5'
   workflow_dispatch:
     # 支援 GitHub 後台手動觸發測試
 
