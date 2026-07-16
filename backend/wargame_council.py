@@ -193,15 +193,27 @@ def call_gemini_api(context_data):
         
         # 確保資料結構完整並與實時行情同步
         sim_data = generate_simulated_wargame_report(context_data)
+        if not isinstance(parsed, dict):
+            return sim_data
         if "symbol_reports" not in parsed or not isinstance(parsed["symbol_reports"], dict):
             parsed["symbol_reports"] = sim_data["symbol_reports"]
         else:
             for sym, s_data in sim_data["symbol_reports"].items():
-                if sym not in parsed["symbol_reports"]:
+                if sym not in parsed["symbol_reports"] or not isinstance(parsed["symbol_reports"][sym], dict):
                     parsed["symbol_reports"][sym] = s_data
                 else:
-                    if "actionable_plan" not in parsed["symbol_reports"][sym]:
-                        parsed["symbol_reports"][sym]["actionable_plan"] = s_data["actionable_plan"]
+                    target_dict = parsed["symbol_reports"][sym]
+                    if "actionable_plan" not in target_dict or not isinstance(target_dict.get("actionable_plan"), dict):
+                        target_dict["actionable_plan"] = s_data["actionable_plan"]
+                    else:
+                        for k, v in s_data["actionable_plan"].items():
+                            if k not in target_dict["actionable_plan"] or target_dict["actionable_plan"][k] is None:
+                                target_dict["actionable_plan"][k] = v
+                    if "wargame_rounds" not in target_dict or not target_dict.get("wargame_rounds") or not isinstance(target_dict.get("wargame_rounds"), list):
+                        target_dict["wargame_rounds"] = s_data["wargame_rounds"]
+                    for k in ["name", "confidence_score", "cio_action_directive", "today_strategy_rationale"]:
+                        if k not in target_dict or target_dict[k] is None:
+                            target_dict[k] = s_data.get(k, "")
         return parsed
     except Exception as e:
         print(f"⚠️ [Wargame Council] Gemini API 呼叫異常，轉用智慧模擬推理引擎：{e}")
@@ -454,6 +466,25 @@ def generate_simulated_wargame_report(context_data):
 
 
 def enrich_rounds_with_dialogues(rounds_list, symbol, name, price, stop_price):
+    try:
+        price = float(price) if price is not None else 100.0
+    except Exception:
+        price = 100.0
+    try:
+        if isinstance(stop_price, (int, float)):
+            pass
+        elif isinstance(stop_price, str):
+            import re
+            m = re.search(r"[-+]?\d*\.\d+|\d+", stop_price)
+            if m:
+                stop_price = float(m.group(0))
+            else:
+                stop_price = round(price * 0.96, 1)
+        else:
+            stop_price = round(price * 0.96, 1)
+    except Exception:
+        stop_price = round(price * 0.96, 1)
+
     enriched = []
     for idx, r in enumerate(rounds_list):
         r_num = r.get("round", idx + 1)
@@ -541,17 +572,23 @@ def ensure_dialogues_in_report(report, context_data):
     """
     確保所有個股報告中，10 輪推演皆有完整的 analyst_dialogues 疊加攻防與對上一輪修正紀錄
     """
-    core = context_data.get("core_tracking_stocks", {})
-    symbols_map = report.get("symbol_reports", {})
+    if not isinstance(report, dict) or not isinstance(context_data, dict):
+        return report
+    core = context_data.get("core_tracking_stocks", {}) if isinstance(context_data.get("core_tracking_stocks"), dict) else {}
+    symbols_map = report.get("symbol_reports", {}) if isinstance(report.get("symbol_reports"), dict) else {}
     for sym, s_data in symbols_map.items():
         if not isinstance(s_data, dict):
             continue
         rounds = s_data.get("wargame_rounds", [])
-        if not rounds:
+        if not isinstance(rounds, list) or not rounds:
             continue
-        p = core.get(sym, {}).get("price", 100.0)
-        stop_p = s_data.get("actionable_plan", {}).get("dynamic_stop_price", round(p*0.96, 1))
-        sym_name = s_data.get("name", sym)
+        try:
+            p = float(core.get(sym, {}).get("price", 100.0))
+        except Exception:
+            p = 100.0
+        plan = s_data.get("actionable_plan") if isinstance(s_data.get("actionable_plan"), dict) else {}
+        stop_p = plan.get("dynamic_stop_price", round(p*0.96, 1))
+        sym_name = s_data.get("name") or sym
         s_data["wargame_rounds"] = enrich_rounds_with_dialogues(rounds, sym, sym_name, p, stop_p)
     return report
 

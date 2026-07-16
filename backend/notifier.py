@@ -91,16 +91,22 @@ def format_multi_symbol_push_messages(report, context):
     core_quotes = context.get("core_tracking_stocks", {})
 
     def get_card_section(sym, name):
-        s_data = symbols_map.get(sym, {})
+        s_data = symbols_map.get(sym, {}) if isinstance(symbols_map, dict) else {}
+        if not isinstance(s_data, dict):
+            s_data = {}
         plan = s_data.get("actionable_plan", {})
-        q_data = core_quotes.get(sym, {})
+        if not isinstance(plan, dict):
+            plan = {}
+        q_data = core_quotes.get(sym, {}) if isinstance(core_quotes, dict) else {}
+        if not isinstance(q_data, dict):
+            q_data = {}
         live_p = q_data.get("price", "N/A")
         live_chg = q_data.get("change_pct", "")
-        chg_str = f" ({'+' if isinstance(live_chg, (int, float)) and live_chg>=0 else ''}{live_chg}%)" if live_chg != "" else ""
+        chg_str = f" ({'+' if isinstance(live_chg, (int, float)) and live_chg>=0 else ''}{live_chg}%)" if live_chg != "" and live_chg is not None else ""
         
-        verdict = plan.get("verdict", "🛡️ 穩健偏多 / 守穩黃線")
-        stop_p = plan.get("dynamic_stop_price", "依技術均線")
-        advice = plan.get("execution_advice", "守穩動態防守黃線續抱。")
+        verdict = plan.get("verdict") or "🛡️ 穩健偏多 / 守穩黃線"
+        stop_p = plan.get("dynamic_stop_price") or "依技術均線"
+        advice = plan.get("execution_advice") or "守穩動態防守黃線續抱。"
         
         return f"""📌【{sym} {name}】現價：${live_p}{chg_str}
 ▫️ 策略定調：{verdict}
@@ -235,13 +241,18 @@ ai_words: 850
 
 #### 🎯 核心 6 大個股與高息 ETF 今日實操點位：
 """
-    symbols_map = report.get("symbol_reports", {})
-    core_quotes = context.get("core_tracking_stocks", {})
+    symbols_map = report.get("symbol_reports", {}) if isinstance(report.get("symbol_reports"), dict) else {}
+    core_quotes = context.get("core_tracking_stocks", {}) if isinstance(context.get("core_tracking_stocks"), dict) else {}
     for sym, s_data in symbols_map.items():
-        plan = s_data.get("actionable_plan", {})
-        live_p = core_quotes.get(sym, {}).get("price", "N/A")
-        log_entry += f"- **【{sym} {s_data.get('name', '')}】(現價 ${live_p})**：`{plan.get('verdict','')}`｜防守黃線：**${plan.get('dynamic_stop_price','')}**\n"
-        log_entry += f"  - *操作建議*：{plan.get('execution_advice','').replace(chr(10), ' ')}\n"
+        if not isinstance(s_data, dict):
+            continue
+        plan = s_data.get("actionable_plan", {}) if isinstance(s_data.get("actionable_plan"), dict) else {}
+        live_p = core_quotes.get(sym, {}).get("price", "N/A") if isinstance(core_quotes.get(sym), dict) else "N/A"
+        verdict = plan.get("verdict") or ""
+        stop_p = plan.get("dynamic_stop_price") or ""
+        advice = (plan.get("execution_advice") or "").replace("\n", " ")
+        log_entry += f"- **【{sym} {s_data.get('name', '')}】(現價 ${live_p})**：`{verdict}`｜防守黃線：**${stop_p}**\n"
+        log_entry += f"  - *操作建議*：{advice}\n"
 
     log_entry += "\n* 吸收與維護：[[姜杰佑 (Chiang Chieh-Yu)]]\n"
 
