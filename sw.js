@@ -1,8 +1,8 @@
-const CACHE_NAME = 'dg-sentinel-v4-cache-v4.5.0_20260717';
+const CACHE_NAME = 'dg-sentinel-v4-cache-v4.5.1_20260717_realtime';
 const ASSETS_TO_CACHE = [
   './index.html',
   './css/style.css',
-  './js/app.js?v=4.5.0_20260717_live',
+  './js/app.js?v=4.5.1_20260717_realtime',
   './manifest.json',
   './icons/icon.png',
   './icons/icon-192.png',

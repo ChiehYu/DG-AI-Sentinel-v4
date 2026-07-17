@@ -248,14 +248,34 @@ async function debounceTopSearchName() {
 
 // 4. 即時市場基準報價庫 (克服 Fugle API 盤中/盤後 K 線延遲或跨日緩存所導致之舊價問題)
 const REAL_MARKET_PRICES = {
-    '2330': { name: '台積電', close: 2470, prevClose: 2440, volume: 58000 },
-    '00919': { name: '群益精選高息', close: 29.66, prevClose: 29.49, volume: 82000 },
-    '3037': { name: '欣興', close: 882, prevClose: 875, volume: 18500 },
-    '2454': { name: '聯發科', close: 3833, prevClose: 3800, volume: 6500 },
-    '0056': { name: '元大高股息', close: 53.30, prevClose: 53.10, volume: 45000 },
-    '00878': { name: '國泰永續高股息', close: 33.33, prevClose: 33.20, volume: 62000 },
-    '0050': { name: '元大台灣50', close: 236.50, prevClose: 234.50, volume: 31000 }
+    '2330': { name: '台積電', close: 2365.0, prevClose: 2470.0, volume: 85000 },
+    '00919': { name: '群益精選高息', close: 29.18, prevClose: 29.77, volume: 92000 },
+    '3037': { name: '欣興', close: 794.0, prevClose: 882.0, volume: 45000 },
+    '2454': { name: '聯發科', close: 3430.0, prevClose: 3700.0, volume: 12000 },
+    '0056': { name: '元大高股息', close: 50.90, prevClose: 53.00, volume: 65000 },
+    '00878': { name: '國泰永續高股息', close: 32.13, prevClose: 33.21, volume: 88000 },
+    '0050': { name: '元大台灣50', close: 230.50, prevClose: 236.50, volume: 45000 }
 };
+
+async function syncRealPricesFromMarketContext() {
+    try {
+        const res = await fetch(`data/market_context.json?t=${Date.now()}`);
+        if (res.ok) {
+            const ctx = await res.json();
+            if (ctx && ctx.core_tracking_stocks) {
+                for (const sym in ctx.core_tracking_stocks) {
+                    const item = ctx.core_tracking_stocks[sym];
+                    if (item && item.price && REAL_MARKET_PRICES[sym]) {
+                        REAL_MARKET_PRICES[sym].prevClose = REAL_MARKET_PRICES[sym].close;
+                        REAL_MARKET_PRICES[sym].close = item.price;
+                    } else if (item && item.price) {
+                        REAL_MARKET_PRICES[sym] = { name: item.name || sym, close: item.price, prevClose: item.price, volume: 50000 };
+                    }
+                }
+            }
+        }
+    } catch (e) {}
+}
 
 async function syncRealtimeMarketQuote(symbol, rawData) {
     if (!rawData || rawData.length < 2) return rawData;
@@ -288,11 +308,6 @@ async function syncRealtimeMarketQuote(symbol, rawData) {
             const p = getDynamicPortfolio()[symbol];
             if (p.cost > 0) latestPrice = p.cost;
         }
-    } else if (baseline) {
-        // 若 API 傳回的 latestPrice 與已知實價產生時差落後，校正為當日最新實真基準收盤
-        if (symbol === '2330' && latestPrice < 2465) { latestPrice = baseline.close; prevPrice = baseline.prevClose; }
-        if (symbol === '00919' && Math.abs(latestPrice - baseline.close) > 0.5) { latestPrice = baseline.close; prevPrice = baseline.prevClose; }
-        if (symbol === '3037' && Math.abs(latestPrice - baseline.close) > 20) { latestPrice = baseline.close; prevPrice = baseline.prevClose; }
     }
 
     if (latestPrice && !isNaN(latestPrice) && latestPrice > 0) {
@@ -327,12 +342,12 @@ function generateFallbackOHLCV(symbol) {
     let prevPrice = REAL_MARKET_PRICES[symbol]?.prevClose || basePrice * 0.99;
     let baseVol = REAL_MARKET_PRICES[symbol]?.volume || 30000;
     if (!REAL_MARKET_PRICES[symbol]) {
-        if (symbol === '2330') { basePrice = 2470; prevPrice = 2440; }
-        else if (symbol === '2454') { basePrice = 3833; prevPrice = 3800; }
-        else if (symbol === '3037') { basePrice = 882; prevPrice = 875; }
-        else if (symbol === '00919') { basePrice = 29.66; prevPrice = 29.49; }
-        else if (symbol === '0056') { basePrice = 53.30; prevPrice = 53.10; }
-        else if (symbol === '00878') { basePrice = 33.33; prevPrice = 33.20; }
+        if (symbol === '2330') { basePrice = 2365; prevPrice = 2470; }
+        else if (symbol === '2454') { basePrice = 3430; prevPrice = 3700; }
+        else if (symbol === '3037') { basePrice = 794; prevPrice = 882; }
+        else if (symbol === '00919') { basePrice = 29.18; prevPrice = 29.77; }
+        else if (symbol === '0056') { basePrice = 50.90; prevPrice = 53.00; }
+        else if (symbol === '00878') { basePrice = 32.13; prevPrice = 33.21; }
         else if (getDynamicPortfolio()[symbol]?.cost) {
             basePrice = getDynamicPortfolio()[symbol].cost;
             prevPrice = basePrice * 0.995;
@@ -3066,6 +3081,7 @@ function applyResponsiveViewportScaling() {
 
 window.addEventListener('load', async () => {
     applyResponsiveViewportScaling();
+    await syncRealPricesFromMarketContext();
     await seedDefaultItemizedTradesIfNeeded();
     loadBasePortfolioFromLocal();
     updateQuickSelector();
