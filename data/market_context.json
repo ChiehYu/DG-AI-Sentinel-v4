@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-17 00:04:43",
+  "timestamp": "2026-07-17 11:21:17",
   "version": "DG AI Sentinel V4.0 Wargame Data Engine",
   "categories": {
     "cat1_taifex_night": {
@@ -11,7 +11,7 @@
         "change": -976.0,
         "change_pct": -2.14,
         "status": "success",
-        "updated_at": "2026-07-17 00:04"
+        "updated_at": "2026-07-17 11:21"
       },
       "institutional_oi": {
         "foreign_net_oi": -84453,
@@ -32,7 +32,7 @@
           "change": -38.63,
           "change_pct": -0.51,
           "status": "success",
-          "updated_at": "2026-07-17 00:04"
+          "updated_at": "2026-07-17 11:21"
         },
         "nasdaq": {
           "symbol": "^IXIC",
@@ -41,7 +41,7 @@
           "change": -387.28,
           "change_pct": -1.47,
           "status": "success",
-          "updated_at": "2026-07-17 00:04"
+          "updated_at": "2026-07-17 11:21"
         },
         "sox": {
           "symbol": "^SOX",
@@ -50,7 +50,7 @@
           "change": -531.39,
           "change_pct": -4.29,
           "status": "success",
-          "updated_at": "2026-07-17 00:04"
+          "updated_at": "2026-07-17 11:21"
         },
         "dow_jones": {
           "symbol": "^DJI",
@@ -59,7 +59,7 @@
           "change": -105.67,
           "change_pct": -0.2,
           "status": "success",
-          "updated_at": "2026-07-17 00:04"
+          "updated_at": "2026-07-17 11:21"
         }
       },
       "tech_leaders": {
@@ -70,7 +70,7 @@
           "change": -9.74,
           "change_pct": -2.32,
           "status": "success",
-          "updated_at": "2026-07-17 00:04"
+          "updated_at": "2026-07-17 11:21"
         },
         "nvda": {
           "symbol": "NVDA",
@@ -79,13 +79,13 @@
           "change": -5.1,
           "change_pct": -2.4,
           "status": "success",
-          "updated_at": "2026-07-17 00:04"
+          "updated_at": "2026-07-17 11:21"
         },
-        "tsm_adr_implied_twd": 2643.9,
-        "tsm_adr_premium_pct": 7.04,
-        "tsmc_tw_price": 2470.0
+        "tsm_adr_implied_twd": 2644.7,
+        "tsm_adr_premium_pct": 11.83,
+        "tsmc_tw_price": 2365.0
       },
-      "summary_assessment": "費半收 11867.5 (-4.29%)，台積電 ADR 溢價 7.04%，半導體與 AI 供應鏈動能明確。"
+      "summary_assessment": "費半收 11867.5 (-4.29%)，台積電 ADR 溢價 11.83%，半導體與 AI 供應鏈動能明確。"
     },
     "cat3_macro_black_swan": {
       "category": "3. 宏觀黑天鵝與外匯殖利率 (Macro VIX, Yields & Forex)",
@@ -96,16 +96,16 @@
         "change": 1.06,
         "change_pct": 6.76,
         "status": "success",
-        "updated_at": "2026-07-17 00:04"
+        "updated_at": "2026-07-17 11:21"
       },
       "usd_twd": {
         "symbol": "TWD=X",
         "name": "美元兌新台幣匯率 (USD/TWD)",
-        "price": 32.263,
-        "change": 0.052,
-        "change_pct": 0.16,
+        "price": 32.272,
+        "change": 0.061,
+        "change_pct": 0.19,
         "status": "success",
-        "updated_at": "2026-07-17 00:04"
+        "updated_at": "2026-07-17 11:21"
       },
       "us10y_yield": {
         "symbol": "^TNX",
@@ -114,13 +114,13 @@
         "change": 0.02,
         "change_pct": 0.53,
         "status": "success",
-        "updated_at": "2026-07-17 00:04"
+        "updated_at": "2026-07-17 11:21"
       },
       "status_alerts": {
         "vix_status": "安全區間 (平穩)",
         "forex_status": "匯率穩定"
       },
-      "summary_assessment": "當前 VIX 16.73 (安全區間 (平穩))，匯率 32.263 (匯率穩定)，宏觀環境穩定無黑天鵝風險。"
+      "summary_assessment": "當前 VIX 16.73 (安全區間 (平穩))，匯率 32.272 (匯率穩定)，宏觀環境穩定無黑天鵝風險。"
     },
     "cat4_taiwan_margin": {
       "category": "4. 台股市場盤後融資變化與籌碼壓力 (Taiwan Margin Trading Balance)",
@@ -195,56 +195,56 @@
     "00919": {
       "symbol": "00919",
       "name": "群益精選高息",
-      "price": 29.77,
-      "change": 0.35,
-      "change_pct": 1.19,
+      "price": 29.18,
+      "change": -0.59,
+      "change_pct": -1.98,
       "status": "success",
-      "updated_at": "2026-07-17 00:04"
+      "updated_at": "2026-07-17 11:21"
     },
     "2330": {
       "symbol": "2330",
       "name": "台積電",
-      "price": 2470.0,
-      "change": 30.0,
-      "change_pct": 1.23,
+      "price": 2365.0,
+      "change": -105.0,
+      "change_pct": -4.25,
       "status": "success",
-      "updated_at": "2026-07-17 00:04"
+      "updated_at": "2026-07-17 11:21"
     },
     "2454": {
       "symbol": "2454",
       "name": "聯發科",
-      "price": 3700.0,
-      "change": -40.0,
-      "change_pct": -1.07,
+      "price": 3430.0,
+      "change": -270.0,
+      "change_pct": -7.3,
       "status": "success",
-      "updated_at": "2026-07-17 00:04"
+      "updated_at": "2026-07-17 11:21"
     },
     "3037": {
       "symbol": "3037",
       "name": "欣興",
-      "price": 882.0,
-      "change": -54.0,
-      "change_pct": -5.77,
+      "price": 794.0,
+      "change": -88.0,
+      "change_pct": -9.98,
       "status": "success",
-      "updated_at": "2026-07-17 00:04"
+      "updated_at": "2026-07-17 11:21"
     },
     "0056": {
       "symbol": "0056",
       "name": "元大高股息",
-      "price": 53.0,
-      "change": 1.25,
-      "change_pct": 2.42,
+      "price": 50.9,
+      "change": -2.1,
+      "change_pct": -3.96,
       "status": "success",
-      "updated_at": "2026-07-17 00:04"
+      "updated_at": "2026-07-17 11:21"
     },
     "00878": {
       "symbol": "00878",
       "name": "國泰永續高息",
-      "price": 33.21,
-      "change": 0.49,
-      "change_pct": 1.5,
+      "price": 32.13,
+      "change": -1.08,
+      "change_pct": -3.25,
       "status": "success",
-      "updated_at": "2026-07-17 00:04"
+      "updated_at": "2026-07-17 11:21"
     }
   }
 }

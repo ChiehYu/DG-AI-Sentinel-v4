@@ -58,8 +58,12 @@ let basePortfolio = {
     }
 };
 
-// 預設匯入前段時間討論之 Phase 2 初期建倉與千點回檔低吸逐項明細 (共 14 筆真實紀錄，包含 2026-07-16 最新 2 筆)
+// 預設匯入前段時間討論之 Phase 2 初期建倉與千點回檔低吸逐項明細 (共 18 筆真實紀錄，包含 2026-07-17 最新 4 筆)
 const defaultItemizedTrades = [
+    { id: 1721174400004, date: '2026-07-17', symbol: '2454', type: 'buy', price: 3430.00, shares: 5 },
+    { id: 1721174400003, date: '2026-07-17', symbol: '2330', type: 'buy', price: 2360.00, shares: 20 },
+    { id: 1721174400002, date: '2026-07-17', symbol: '00919', type: 'buy', price: 29.19, shares: 1000 },
+    { id: 1721174400001, date: '2026-07-17', symbol: '00878', type: 'buy', price: 32.15, shares: 1000 },
     { id: 1721088000002, date: '2026-07-16', symbol: '3037', type: 'buy', price: 882.00, shares: 15 },
     { id: 1721088000001, date: '2026-07-16', symbol: '00919', type: 'buy', price: 29.49, shares: 1000 },
     { id: 1720915200006, date: '2026-07-14', symbol: '3037', type: 'buy', price: 855.00, shares: 15 },
@@ -84,23 +88,23 @@ async function seedDefaultItemizedTradesIfNeeded() {
     if (!localStorage.getItem('dg_sentinel_v4_portfolio') && localStorage.getItem('dg_sentinel_v3_portfolio')) {
         localStorage.setItem('dg_sentinel_v4_portfolio', localStorage.getItem('dg_sentinel_v3_portfolio'));
     }
-    if (localStorage.getItem('dg_sentinel_v4_seeded_12itemized') !== 'v4.1-20260716') {
-        localStorage.removeItem('dg_sentinel_v4_portfolio');
-        try {
-            const res = await fetch('data/trades.json');
-            if (res.ok) {
-                const jsonTrades = await res.json();
-                if (Array.isArray(jsonTrades) && jsonTrades.length > 0) {
-                    localStorage.setItem('dg_sentinel_v4_trades', JSON.stringify(jsonTrades));
-                    localStorage.setItem('dg_sentinel_v4_seeded_12itemized', 'v4.1-20260716');
-                    return;
-                }
+    try {
+        const res = await fetch(`data/trades.json?t=${Date.now()}`);
+        if (res.ok) {
+            const jsonTrades = await res.json();
+            if (Array.isArray(jsonTrades) && jsonTrades.length > 0) {
+                localStorage.setItem('dg_sentinel_v4_trades', JSON.stringify(jsonTrades));
+                localStorage.setItem('dg_sentinel_v4_seeded_12itemized', 'v4.5.0-20260717');
+                return;
             }
-        } catch (e) {
-            // 離線或讀取失敗時，自動使用內建 defaultItemizedTrades 備援
         }
+    } catch (e) {
+        // 離線或讀取失敗時，自動使用內建 defaultItemizedTrades 備援
+    }
+    if (localStorage.getItem('dg_sentinel_v4_seeded_12itemized') !== 'v4.5.0-20260717') {
+        localStorage.removeItem('dg_sentinel_v4_portfolio');
         localStorage.setItem('dg_sentinel_v4_trades', JSON.stringify(defaultItemizedTrades));
-        localStorage.setItem('dg_sentinel_v4_seeded_12itemized', 'v4.1-20260716');
+        localStorage.setItem('dg_sentinel_v4_seeded_12itemized', 'v4.5.0-20260717');
     }
 }
 

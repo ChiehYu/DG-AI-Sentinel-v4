@@ -357,7 +357,7 @@ def generate_simulated_wargame_report(context_data):
                     "verdict": "🔥 強力多頭 / 逢回分批承接",
                     "dynamic_stop_price": stop_00919,
                     "cost_margin_status": f"現價 ${p_00919} 元距離防守黃線 ${stop_00919} 具備緩衝保護",
-                    "execution_advice": f"1. 盤中若回踩 ${stop_00919} ~ ${round(p_00919*0.985, 2)} 可低吸分批。\n2. 未破防守黃線前，4 張收息核心堅決續抱。"
+                    "execution_advice": f"1. 盤中若回踩 ${stop_00919} ~ ${round(p_00919*0.985, 2)} 可低吸分批。\n2. 未破防守黃線前，累積 6 張收息核心堅決續抱 (配合 00878 累積 3 張，防守水庫穩固)。"
                 },
                 "wargame_rounds": rounds_00919
             },
