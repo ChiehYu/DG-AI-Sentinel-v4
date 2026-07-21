@@ -27,39 +27,44 @@ const PREDICT_DAYS = 20;
 // 核心 6 大標的與真實信貸持股成本
 let basePortfolio = {
     '00919': {
-        name: '群益精選高息', shares: 0, cost: 0, targetShares: 16670, category: 'defense',
+        name: '群益精選高息', shares: 0, cost: 0, targetShares: 16970, category: 'defense',
         color: '#10b981', border: 'border-green-500',
-        strategy: "【防守月月配核心】1/4/7/10 月領息。已持股 4 張均價 $29.70。單季配息低於 $20,000 元二代健保門檻免扣稅。"
+        strategy: "【防守月月配核心】1/4/7/10 月領息。已持股 7 張均價 $29.46。單季配息低於 $20,000 元二代健保門檻免扣稅。"
     },
     '0056': {
-        name: '元大高股息', shares: 0, cost: 0, targetShares: 4690, category: 'defense',
+        name: '元大高股息', shares: 0, cost: 0, targetShares: 4910, category: 'defense',
         color: '#10b981', border: 'border-green-500',
-        strategy: "【防守月月配核心】2/5/8/11 月領息。已卡位除息門票，持有 2 張均價 $51.70。"
+        strategy: "【防守月月配核心】2/5/8/11 月領息。於 7/21 除息首日分批低吸 1 張，累計持有 3 張均價降至 $50.90。持續厚植利息緩衝防禦網。"
     },
     '00878': {
-        name: '國泰永續高息', shares: 0, cost: 0, targetShares: 7500, category: 'defense',
+        name: '國泰永續高息', shares: 0, cost: 0, targetShares: 7720, category: 'defense',
         color: '#10b981', border: 'border-green-500',
-        strategy: "【防守月月配核心】3/6/9/12 月領息。持有 2 張均價 $32.75，與 00919/0056 形成全年 12 個月無縫接息防衛網。"
+        strategy: "【防守月月配核心】3/6/9/12 月領息。持有 4 張均價 $32.37，與 00919/0056 形成全年 12 個月無縫接息防衛網。"
     },
     '2330': {
-        name: '台積電', shares: 0, cost: 0, targetShares: 183, category: 'offense', targetPrice: 3000,
+        name: '台積電', shares: 0, cost: 0, targetShares: 188, category: 'offense', targetPrice: 3000,
         color: '#3b82f6', border: 'border-blue-500',
-        strategy: "【進攻 AI 晶片龍頭】全球晶圓製造與 CoWoS 先進封裝霸主。信貸進攻部位 50% 核心，守季線分批定期定額承接。"
+        strategy: "【進攻 AI 晶片龍頭】全球晶圓製造與 CoWoS 先進封裝霸主。信貸進攻部位 50% 核心，持有 40 股均價 $2,392.5。"
     },
     '2454': {
-        name: '聯發科', shares: 0, cost: 0, targetShares: 65, category: 'offense', targetPrice: 5000,
+        name: '聯發科', shares: 0, cost: 0, targetShares: 74, category: 'offense', targetPrice: 5000,
         color: '#a855f7', border: 'border-purple-500',
-        strategy: "【進攻 ASIC 算力核心】Google TPU v8t 專案與手機 SoC 高度成長。趁大跌分批零股進場，均價大降至 $3,833。"
+        strategy: "【進攻 ASIC 算力核心】Google TPU v8t 專案與手機 SoC 高度成長。趁大跌分批零股進場，持有 25 股均價狂降至 $3,666。"
     },
     '3037': {
-        name: '欣興', shares: 0, cost: 0, targetShares: 187, category: 'offense', targetPrice: 1200,
+        name: '欣興', shares: 0, cost: 0, targetShares: 209, category: 'offense', targetPrice: 1200,
         color: '#ef4444', border: 'border-red-500',
-        strategy: "【進攻先進封裝載板】ABF 載板全球龍頭。嚴守 900 元下方承接紀律，兼具爆發性與安全邊際。"
+        strategy: "【進攻先進封裝載板】ABF 載板全球龍頭。經過 12:00 右側試單考核，持有 95 股均價降至 $860。"
     }
 };
 
-// 預設匯入前段時間討論之 Phase 2 初期建倉與千點回檔低吸逐項明細 (共 18 筆真實紀錄，包含 2026-07-17 最新 4 筆)
+// 預設匯入前段時間討論之 Phase 2 初期建倉與千點回檔低吸逐項明細 (共 23 筆真實紀錄，包含 2026-07-21 最新 1 筆與 7-20 的 4 筆)
 const defaultItemizedTrades = [
+    { id: 1721520000001, date: '2026-07-21', symbol: '0056', type: 'buy', price: 49.30, shares: 1000 },
+    { id: 1721433600004, date: '2026-07-20', symbol: '3037', type: 'buy', price: 770.00, shares: 15 },
+    { id: 1721433600003, date: '2026-07-20', symbol: '2454', type: 'buy', price: 3400.00, shares: 5 },
+    { id: 1721433600002, date: '2026-07-20', symbol: '00919', type: 'buy', price: 28.73, shares: 1000 },
+    { id: 1721433600001, date: '2026-07-20', symbol: '00878', type: 'buy', price: 31.84, shares: 1000 },
     { id: 1721174400004, date: '2026-07-17', symbol: '2454', type: 'buy', price: 3430.00, shares: 5 },
     { id: 1721174400003, date: '2026-07-17', symbol: '2330', type: 'buy', price: 2360.00, shares: 20 },
     { id: 1721174400002, date: '2026-07-17', symbol: '00919', type: 'buy', price: 29.19, shares: 1000 },
@@ -94,17 +99,17 @@ async function seedDefaultItemizedTradesIfNeeded() {
             const jsonTrades = await res.json();
             if (Array.isArray(jsonTrades) && jsonTrades.length > 0) {
                 localStorage.setItem('dg_sentinel_v4_trades', JSON.stringify(jsonTrades));
-                localStorage.setItem('dg_sentinel_v4_seeded_12itemized', 'v4.5.0-20260717');
+                localStorage.setItem('dg_sentinel_v4_seeded_12itemized', 'v4.5.1-20260721');
                 return;
             }
         }
     } catch (e) {
         // 離線或讀取失敗時，自動使用內建 defaultItemizedTrades 備援
     }
-    if (localStorage.getItem('dg_sentinel_v4_seeded_12itemized') !== 'v4.5.0-20260717') {
+    if (localStorage.getItem('dg_sentinel_v4_seeded_12itemized') !== 'v4.5.1-20260721') {
         localStorage.removeItem('dg_sentinel_v4_portfolio');
         localStorage.setItem('dg_sentinel_v4_trades', JSON.stringify(defaultItemizedTrades));
-        localStorage.setItem('dg_sentinel_v4_seeded_12itemized', 'v4.5.0-20260717');
+        localStorage.setItem('dg_sentinel_v4_seeded_12itemized', 'v4.5.1-20260721');
     }
 }
 
@@ -252,7 +257,7 @@ const REAL_MARKET_PRICES = {
     '00919': { name: '群益精選高息', close: 29.18, prevClose: 29.77, volume: 92000 },
     '3037': { name: '欣興', close: 794.0, prevClose: 882.0, volume: 45000 },
     '2454': { name: '聯發科', close: 3430.0, prevClose: 3700.0, volume: 12000 },
-    '0056': { name: '元大高股息', close: 50.90, prevClose: 53.00, volume: 65000 },
+    '0056': { name: '元大高股息', close: 49.30, prevClose: 53.00, volume: 85000 },
     '00878': { name: '國泰永續高股息', close: 32.13, prevClose: 33.21, volume: 88000 },
     '0050': { name: '元大台灣50', close: 230.50, prevClose: 236.50, volume: 45000 }
 };
