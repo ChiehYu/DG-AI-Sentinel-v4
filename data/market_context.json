@@ -1,5 +1,9 @@
 {
+<<<<<<< Updated upstream
   "timestamp": "2026-07-23 00:08:12",
+=======
+  "timestamp": "2026-07-23 15:56:45",
+>>>>>>> Stashed changes
   "version": "DG AI Sentinel V4.0 Wargame Data Engine",
   "categories": {
     "cat1_taifex_night": {
@@ -11,6 +15,7 @@
         "change": 389.0,
         "change_pct": 0.87,
         "status": "success",
+<<<<<<< Updated upstream
         "updated_at": "2026-07-23 00:08"
       },
       "institutional_oi": {
@@ -20,6 +25,17 @@
         "dealer_net_oi": 1139,
         "foreign_spot_buy_sell_amt": 173.44,
         "summary_assessment": "外資期貨淨未平倉 -76,595 口 (單日變化 +465 口)，現貨買賣超 +173.44 億元，日夜盤多空對沖監控中。"
+=======
+        "updated_at": "2026-07-23 15:56"
+      },
+      "institutional_oi": {
+        "foreign_net_oi": -75198,
+        "foreign_net_change": 1397,
+        "invest_trust_net_oi": 75492,
+        "dealer_net_oi": 739,
+        "foreign_spot_buy_sell_amt": 69.58,
+        "summary_assessment": "外資期貨淨未平倉 -75,198 口 (單日變化 +1,397 口)，現貨買賣超 +69.58 億元，日夜盤多空對沖監控中。"
+>>>>>>> Stashed changes
       }
     },
     "cat2_us_stocks": {
@@ -32,7 +48,11 @@
           "change": -10.24,
           "change_pct": -0.14,
           "status": "success",
+<<<<<<< Updated upstream
           "updated_at": "2026-07-23 00:08"
+=======
+          "updated_at": "2026-07-23 15:56"
+>>>>>>> Stashed changes
         },
         "nasdaq": {
           "symbol": "^IXIC",
@@ -41,16 +61,27 @@
           "change": -146.31,
           "change_pct": -0.57,
           "status": "success",
+<<<<<<< Updated upstream
           "updated_at": "2026-07-23 00:08"
+=======
+          "updated_at": "2026-07-23 15:56"
+>>>>>>> Stashed changes
         },
         "sox": {
           "symbol": "^SOX",
           "name": "費城半導體指數 (SOX)",
           "price": 12410.67,
+<<<<<<< Updated upstream
           "change": 54.5,
           "change_pct": 0.44,
           "status": "success",
           "updated_at": "2026-07-23 00:08"
+=======
+          "change": 54.51,
+          "change_pct": 0.44,
+          "status": "success",
+          "updated_at": "2026-07-23 15:56"
+>>>>>>> Stashed changes
         },
         "dow_jones": {
           "symbol": "^DJI",
@@ -59,7 +90,11 @@
           "change": -6.06,
           "change_pct": -0.01,
           "status": "success",
+<<<<<<< Updated upstream
           "updated_at": "2026-07-23 00:08"
+=======
+          "updated_at": "2026-07-23 15:56"
+>>>>>>> Stashed changes
         }
       },
       "tech_leaders": {
@@ -70,7 +105,11 @@
           "change": -3.4,
           "change_pct": -0.8,
           "status": "success",
+<<<<<<< Updated upstream
           "updated_at": "2026-07-23 00:08"
+=======
+          "updated_at": "2026-07-23 15:56"
+>>>>>>> Stashed changes
         },
         "nvda": {
           "symbol": "NVDA",
@@ -79,6 +118,7 @@
           "change": 4.77,
           "change_pct": 2.3,
           "status": "success",
+<<<<<<< Updated upstream
           "updated_at": "2026-07-23 00:08"
         },
         "tsm_adr_implied_twd": 2727.6,
@@ -86,26 +126,51 @@
         "tsmc_tw_price": 2400.0
       },
       "summary_assessment": "費半收 12410.67 (0.44%)，台積電 ADR 溢價 13.65%，半導體與 AI 供應鏈動能明確。"
+=======
+          "updated_at": "2026-07-23 15:56"
+        },
+        "tsm_adr_implied_twd": 2718.2,
+        "tsm_adr_premium_pct": 13.02,
+        "tsmc_tw_price": 2405.0
+      },
+      "summary_assessment": "費半收 12410.67 (0.44%)，台積電 ADR 溢價 13.02%，半導體與 AI 供應鏈動能明確。"
+>>>>>>> Stashed changes
     },
     "cat3_macro_black_swan": {
       "category": "3. 宏觀黑天鵝與外匯殖利率 (Macro VIX, Yields & Forex)",
       "vix": {
         "symbol": "^VIX",
         "name": "CBOE 恐慌指數 (VIX)",
+<<<<<<< Updated upstream
         "price": 16.64,
         "change": -0.41,
         "change_pct": -2.4,
         "status": "success",
         "updated_at": "2026-07-23 00:08"
+=======
+        "price": 17.77,
+        "change": 1.13,
+        "change_pct": 6.79,
+        "status": "success",
+        "updated_at": "2026-07-23 15:56"
+>>>>>>> Stashed changes
       },
       "usd_twd": {
         "symbol": "TWD=X",
         "name": "美元兌新台幣匯率 (USD/TWD)",
+<<<<<<< Updated upstream
         "price": 32.378,
         "change": 0.053,
         "change_pct": 0.16,
         "status": "success",
         "updated_at": "2026-07-23 00:08"
+=======
+        "price": 32.267,
+        "change": -0.058,
+        "change_pct": -0.18,
+        "status": "success",
+        "updated_at": "2026-07-23 15:56"
+>>>>>>> Stashed changes
       },
       "us10y_yield": {
         "symbol": "^TNX",
@@ -114,19 +179,32 @@
         "change": 0.03,
         "change_pct": 0.63,
         "status": "success",
+<<<<<<< Updated upstream
         "updated_at": "2026-07-23 00:08"
+=======
+        "updated_at": "2026-07-23 15:56"
+>>>>>>> Stashed changes
       },
       "status_alerts": {
         "vix_status": "安全區間 (平穩)",
         "forex_status": "匯率穩定"
       },
+<<<<<<< Updated upstream
       "summary_assessment": "當前 VIX 16.64 (安全區間 (平穩))，匯率 32.378 (匯率穩定)，宏觀環境穩定無黑天鵝風險。"
+=======
+      "summary_assessment": "當前 VIX 17.77 (安全區間 (平穩))，匯率 32.267 (匯率穩定)，宏觀環境穩定無黑天鵝風險。"
+>>>>>>> Stashed changes
     },
     "cat4_taiwan_margin": {
       "category": "4. 台股市場盤後融資變化與籌碼壓力 (Taiwan Margin Trading Balance)",
       "margin_analysis": {
+<<<<<<< Updated upstream
         "market_margin_maintenance_rate": 168.4,
         "market_margin_maintenance_status": "安全穩健 (>160%)",
+=======
+        "market_margin_maintenance_rate": 167.22,
+        "market_margin_maintenance_status": "安全穩健 (>162.22%)",
+>>>>>>> Stashed changes
         "market_daily_margin_balance_twd": 5828.24,
         "market_daily_margin_change_twd": 63.27,
         "stocks_margin": {
@@ -187,7 +265,11 @@
           "short_shares_balance": 26,
           "short_shares_daily_change": -89
         },
+<<<<<<< Updated upstream
         "summary_assessment": "大盤融資餘額 5828.24 億元 (單日變化 +63.27 億)，整體維持率安全穩健。"
+=======
+        "summary_assessment": "大盤融資餘額 5828.24 億元 (單日變化 +63.27 億)，整體維持率 167.22% 安全穩健。"
+>>>>>>> Stashed changes
       }
     }
   },
@@ -195,56 +277,104 @@
     "00919": {
       "symbol": "00919",
       "name": "群益精選高息",
+<<<<<<< Updated upstream
       "price": 29.0,
       "change": 0.45,
       "change_pct": 1.58,
       "status": "success",
       "updated_at": "2026-07-23 00:08"
+=======
+      "price": 29.5,
+      "change": 0.04,
+      "change_pct": 0.14,
+      "status": "success",
+      "updated_at": "2026-07-23 15:56"
+>>>>>>> Stashed changes
     },
     "2330": {
       "symbol": "2330",
       "name": "台積電",
+<<<<<<< Updated upstream
       "price": 2400.0,
       "change": -10.0,
       "change_pct": -0.41,
       "status": "success",
       "updated_at": "2026-07-23 00:08"
+=======
+      "price": 2405.0,
+      "change": 5.0,
+      "change_pct": 0.21,
+      "status": "success",
+      "updated_at": "2026-07-23 15:56"
+>>>>>>> Stashed changes
     },
     "2454": {
       "symbol": "2454",
       "name": "聯發科",
+<<<<<<< Updated upstream
       "price": 3850.0,
       "change": 180.0,
       "change_pct": 4.9,
       "status": "success",
       "updated_at": "2026-07-23 00:08"
+=======
+      "price": 3875.0,
+      "change": 25.0,
+      "change_pct": 0.65,
+      "status": "success",
+      "updated_at": "2026-07-23 15:56"
+>>>>>>> Stashed changes
     },
     "3037": {
       "symbol": "3037",
       "name": "欣興",
+<<<<<<< Updated upstream
       "price": 907.0,
       "change": 82.0,
       "change_pct": 9.94,
       "status": "success",
       "updated_at": "2026-07-23 00:08"
+=======
+      "price": 896.0,
+      "change": -11.0,
+      "change_pct": -1.21,
+      "status": "success",
+      "updated_at": "2026-07-23 15:56"
+>>>>>>> Stashed changes
     },
     "0056": {
       "symbol": "0056",
       "name": "元大高股息",
+<<<<<<< Updated upstream
       "price": 49.55,
       "change": -0.4,
       "change_pct": -0.8,
       "status": "success",
       "updated_at": "2026-07-23 00:08"
+=======
+      "price": 50.65,
+      "change": -0.3,
+      "change_pct": -0.59,
+      "status": "success",
+      "updated_at": "2026-07-23 15:56"
+>>>>>>> Stashed changes
     },
     "00878": {
       "symbol": "00878",
       "name": "國泰永續高息",
+<<<<<<< Updated upstream
       "price": 32.05,
       "change": 0.69,
       "change_pct": 2.2,
       "status": "success",
       "updated_at": "2026-07-23 00:08"
+=======
+      "price": 32.73,
+      "change": 0.01,
+      "change_pct": 0.03,
+      "status": "success",
+      "updated_at": "2026-07-23 15:56"
+>>>>>>> Stashed changes
     }
   }
 }

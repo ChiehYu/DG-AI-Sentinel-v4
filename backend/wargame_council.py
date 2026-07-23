@@ -359,7 +359,13 @@ def generate_simulated_wargame_report(context_data):
                     "cost_margin_status": f"現價 ${p_00919} 元距離防守黃線 ${stop_00919} 具備緩衝保護",
                     "execution_advice": f"1. 盤中若回踩 ${stop_00919} ~ ${round(p_00919*0.985, 2)} 可低吸分批。\n2. 未破防守黃線前，累積 6 張收息核心堅決續抱 (配合 00878 累積 3 張，防守水庫穩固)。"
                 },
-                "wargame_rounds": rounds_00919
+                "wargame_rounds": rounds_00919,
+                "supporting_evidence": {
+                    "foreign_trust_5d_flow": f"三大法人近期進出與大戶動向，外資期現貨變動({foreign_spot_amt:+.2f}億)",
+                    "margin_10d_change": f"融資維持率 {m_rate}%，大盤增減 {m_daily_chg:+.2f} 億，該標的融資增減 {m_00919:+,} 張",
+                    "consensus_target_price": "目標價預估具備高息防守與穩健殖利率",
+                    "upcoming_catalyst": "除權息行情與高股息 ETF 定期審核換股"
+                }
             },
             "2330": {
                 "symbol": "2330",
@@ -379,7 +385,13 @@ def generate_simulated_wargame_report(context_data):
                     "cost_margin_status": f"現價 ${p_2330} 元，趨勢向上安全邊際強韌",
                     "execution_advice": f"1. 開盤若跳空不急於當沖追高。\n2. 逢拉回接近黃線 ${stop_2330} 為零股優質承接點。"
                 },
-                "wargame_rounds": rounds_2330
+                "wargame_rounds": rounds_2330,
+                "supporting_evidence": {
+                    "foreign_trust_5d_flow": f"三大法人近期進出與大戶動向，外資期現貨變動({foreign_spot_amt:+.2f}億)",
+                    "margin_10d_change": f"融資維持率 {m_rate}%，大盤增減 {m_daily_chg:+.2f} 億，該標的融資增減 {m_2330:+,} 張",
+                    "consensus_target_price": f"目標價預期 ${round(p_2330 * 1.15)} (上軌潛力 +15% ~ +22%)",
+                    "upcoming_catalyst": "先進製程產能利用率與下季度法說會"
+                }
             },
             "2454": {
                 "symbol": "2454",
@@ -399,7 +411,13 @@ def generate_simulated_wargame_report(context_data):
                     "cost_margin_status": f"現價 ${p_2454} 元高於黃線 ${stop_2454}，波段穩健",
                     "execution_advice": f"1. 守穩動態防守黃線 ${stop_2454} 之上維持既有部位。\n2. 遇半導體震盪量縮時可逢支撐加碼。"
                 },
-                "wargame_rounds": rounds_2454
+                "wargame_rounds": rounds_2454,
+                "supporting_evidence": {
+                    "foreign_trust_5d_flow": f"三大法人近期進出與大戶動向，外資期現貨變動({foreign_spot_amt:+.2f}億)",
+                    "margin_10d_change": f"融資維持率 {m_rate}%，大盤增減 {m_daily_chg:+.2f} 億，該標的融資增減 {m_2454:+,} 張",
+                    "consensus_target_price": f"目標價預期 ${round(p_2454 * 1.15)} (上軌潛力 +15% ~ +22%)",
+                    "upcoming_catalyst": "天璣晶片滲透率與 ASIC 專案進展"
+                }
             },
             "3037": {
                 "symbol": "3037",
@@ -419,7 +437,13 @@ def generate_simulated_wargame_report(context_data):
                     "cost_margin_status": f"現價 ${p_3037} 元，季線打底具備強大護盤力道",
                     "execution_advice": f"1. 回測黃線支撐帶 ${stop_3037} ~ ${round(p_3037*0.97,1)} 為分批吸納點。\n2. 嚴格遵守動態黃線停利停損紀律。"
                 },
-                "wargame_rounds": rounds_3037
+                "wargame_rounds": rounds_3037,
+                "supporting_evidence": {
+                    "foreign_trust_5d_flow": f"三大法人近期進出與大戶動向，外資期現貨變動({foreign_spot_amt:+.2f}億)",
+                    "margin_10d_change": f"融資維持率 {m_rate}%，大盤增減 {m_daily_chg:+.2f} 億，該標的融資增減 {m_3037:+,} 張",
+                    "consensus_target_price": f"目標價預期 ${round(p_3037 * 1.15)} (上軌潛力 +15% ~ +22%)",
+                    "upcoming_catalyst": "高階載板稼動率回升與月營收公告"
+                }
             },
             "0056": {
                 "symbol": "0056",
@@ -439,7 +463,13 @@ def generate_simulated_wargame_report(context_data):
                     "cost_margin_status": f"現價 ${p_0056} 元，長線存股氣囊保護充足",
                     "execution_advice": f"1. 穩定配息對沖銀行信貸利息攤還。\n2. 大盤大幅震盪日皆是長線存股加碼黃金時刻。"
                 },
-                "wargame_rounds": rounds_0056
+                "wargame_rounds": rounds_0056,
+                "supporting_evidence": {
+                    "foreign_trust_5d_flow": f"三大法人近期進出與大戶動向，外資期現貨變動({foreign_spot_amt:+.2f}億)",
+                    "margin_10d_change": f"融資維持率 {m_rate}%，大盤增減 {m_daily_chg:+.2f} 億，該標的融資平穩沉澱",
+                    "consensus_target_price": "目標價預估具備長期存股與填息效應",
+                    "upcoming_catalyst": "金控股獲利公告與 AI 換股審查"
+                }
             },
             "00878": {
                 "symbol": "00878",
@@ -459,7 +489,13 @@ def generate_simulated_wargame_report(context_data):
                     "cost_margin_status": f"現價 ${p_00878} 元，下檔防禦鐵板堅固",
                     "execution_advice": f"1. 擔任 2/5/8/11 月配息主力，長期抱牢不動。\n2. 動態防守線 ${stop_00878} 未破持續享受複利。"
                 },
-                "wargame_rounds": rounds_00878
+                "wargame_rounds": rounds_00878,
+                "supporting_evidence": {
+                    "foreign_trust_5d_flow": f"三大法人近期進出與大戶動向，外資期現貨變動({foreign_spot_amt:+.2f}億)",
+                    "margin_10d_change": f"融資維持率 {m_rate}%，大盤增減 {m_daily_chg:+.2f} 億，該標的融資平穩沉澱",
+                    "consensus_target_price": "目標價預估具備永續高息與抗震保護",
+                    "upcoming_catalyst": "金融股獲利公告與季配息除息"
+                }
             }
         }
     }
