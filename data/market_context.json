@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-23 16:02:49",
+  "timestamp": "2026-07-23 16:09:39",
   "version": "DG AI Sentinel V4.0 Wargame Data Engine",
   "categories": {
     "cat1_taifex_night": {
@@ -11,7 +11,7 @@
         "change": 389.0,
         "change_pct": 0.87,
         "status": "success",
-        "updated_at": "2026-07-23 16:02"
+        "updated_at": "2026-07-23 16:09"
       },
       "institutional_oi": {
         "foreign_net_oi": -75198,
@@ -32,7 +32,7 @@
           "change": -10.24,
           "change_pct": -0.14,
           "status": "success",
-          "updated_at": "2026-07-23 16:02"
+          "updated_at": "2026-07-23 16:09"
         },
         "nasdaq": {
           "symbol": "^IXIC",
@@ -41,7 +41,7 @@
           "change": -146.31,
           "change_pct": -0.57,
           "status": "success",
-          "updated_at": "2026-07-23 16:02"
+          "updated_at": "2026-07-23 16:09"
         },
         "sox": {
           "symbol": "^SOX",
@@ -50,7 +50,7 @@
           "change": 54.51,
           "change_pct": 0.44,
           "status": "success",
-          "updated_at": "2026-07-23 16:02"
+          "updated_at": "2026-07-23 16:09"
         },
         "dow_jones": {
           "symbol": "^DJI",
@@ -59,7 +59,7 @@
           "change": -6.06,
           "change_pct": -0.01,
           "status": "success",
-          "updated_at": "2026-07-23 16:02"
+          "updated_at": "2026-07-23 16:09"
         }
       },
       "tech_leaders": {
@@ -70,7 +70,7 @@
           "change": -3.4,
           "change_pct": -0.8,
           "status": "success",
-          "updated_at": "2026-07-23 16:02"
+          "updated_at": "2026-07-23 16:09"
         },
         "nvda": {
           "symbol": "NVDA",
@@ -79,33 +79,33 @@
           "change": 4.77,
           "change_pct": 2.3,
           "status": "success",
-          "updated_at": "2026-07-23 16:02"
+          "updated_at": "2026-07-23 16:09"
         },
-        "tsm_adr_implied_twd": 2718.5,
-        "tsm_adr_premium_pct": 13.03,
+        "tsm_adr_implied_twd": 2717.6,
+        "tsm_adr_premium_pct": 13.0,
         "tsmc_tw_price": 2405.0
       },
-      "summary_assessment": "費半收 12410.67 (0.44%)，台積電 ADR 溢價 13.03%，半導體與 AI 供應鏈動能明確。"
+      "summary_assessment": "費半收 12410.67 (0.44%)，台積電 ADR 溢價 13.0%，半導體與 AI 供應鏈動能明確。"
     },
     "cat3_macro_black_swan": {
       "category": "3. 宏觀黑天鵝與外匯殖利率 (Macro VIX, Yields & Forex)",
       "vix": {
         "symbol": "^VIX",
         "name": "CBOE 恐慌指數 (VIX)",
-        "price": 17.92,
-        "change": 1.28,
-        "change_pct": 7.69,
+        "price": 17.89,
+        "change": 1.25,
+        "change_pct": 7.51,
         "status": "success",
-        "updated_at": "2026-07-23 16:02"
+        "updated_at": "2026-07-23 16:09"
       },
       "usd_twd": {
         "symbol": "TWD=X",
         "name": "美元兌新台幣匯率 (USD/TWD)",
-        "price": 32.27,
-        "change": -0.055,
-        "change_pct": -0.17,
+        "price": 32.26,
+        "change": -0.065,
+        "change_pct": -0.2,
         "status": "success",
-        "updated_at": "2026-07-23 16:02"
+        "updated_at": "2026-07-23 16:09"
       },
       "us10y_yield": {
         "symbol": "^TNX",
@@ -114,13 +114,13 @@
         "change": 0.03,
         "change_pct": 0.63,
         "status": "success",
-        "updated_at": "2026-07-23 16:02"
+        "updated_at": "2026-07-23 16:09"
       },
       "status_alerts": {
         "vix_status": "安全區間 (平穩)",
         "forex_status": "匯率穩定"
       },
-      "summary_assessment": "當前 VIX 17.92 (安全區間 (平穩))，匯率 32.27 (匯率穩定)，宏觀環境穩定無黑天鵝風險。"
+      "summary_assessment": "當前 VIX 17.89 (安全區間 (平穩))，匯率 32.26 (匯率穩定)，宏觀環境穩定無黑天鵝風險。"
     },
     "cat4_taiwan_margin": {
       "category": "4. 台股市場盤後融資變化與籌碼壓力 (Taiwan Margin Trading Balance)",
@@ -199,7 +199,7 @@
       "change": 0.04,
       "change_pct": 0.14,
       "status": "success",
-      "updated_at": "2026-07-23 16:02"
+      "updated_at": "2026-07-23 16:09"
     },
     "2330": {
       "symbol": "2330",
@@ -208,7 +208,7 @@
       "change": 5.0,
       "change_pct": 0.21,
       "status": "success",
-      "updated_at": "2026-07-23 16:02"
+      "updated_at": "2026-07-23 16:09"
     },
     "2454": {
       "symbol": "2454",
@@ -217,7 +217,7 @@
       "change": 25.0,
       "change_pct": 0.65,
       "status": "success",
-      "updated_at": "2026-07-23 16:02"
+      "updated_at": "2026-07-23 16:09"
     },
     "3037": {
       "symbol": "3037",
@@ -226,7 +226,7 @@
       "change": -11.0,
       "change_pct": -1.21,
       "status": "success",
-      "updated_at": "2026-07-23 16:02"
+      "updated_at": "2026-07-23 16:09"
     },
     "0056": {
       "symbol": "0056",
@@ -235,7 +235,7 @@
       "change": -0.3,
       "change_pct": -0.59,
       "status": "success",
-      "updated_at": "2026-07-23 16:02"
+      "updated_at": "2026-07-23 16:09"
     },
     "00878": {
       "symbol": "00878",
@@ -244,7 +244,7 @@
       "change": 0.01,
       "change_pct": 0.03,
       "status": "success",
-      "updated_at": "2026-07-23 16:02"
+      "updated_at": "2026-07-23 16:09"
     }
   }
 }
