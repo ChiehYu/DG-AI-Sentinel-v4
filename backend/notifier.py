@@ -53,8 +53,8 @@ def format_multi_symbol_push_messages(report, context):
     將晨間沙盤推演報告與市場 context 封裝為 4 張高清晰度推文卡片
     """
     today_str = report.get("wargame_date", datetime.now().strftime("%Y-%m-%d"))
-    score = report.get("overall_market_confidence", 88)
-    cio_summary = report.get("cio_executive_summary", "今日動能穩健，分批承接、嚴守防線。")
+    score = report.get("overall_market_confidence", "N/A")
+    cio_summary = report.get("cio_executive_summary", "【系統】未能獲取動態總結，請直接檢視量化報告。")
 
     # 市場總覽
     cat1 = context.get("categories", {}).get("cat1_taifex_night", {})
@@ -239,7 +239,7 @@ domain: DG-AI-Sentinel
 ai_words: 850
 ---
 ### 👑 DG AI Sentinel V4.0 晨間 10 輪對抗推演紀錄
-* **全場信心分數**：{report.get('overall_market_confidence', 88)}%
+* **全場信心分數**：{report.get('overall_market_confidence', 'N/A')}%
 * **CIO 總裁示警**：{report.get('cio_executive_summary', '')}
 
 #### 🎯 核心 6 大個股與高息 ETF 今日實操點位：

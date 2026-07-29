@@ -87,14 +87,14 @@ def call_gemini_api(context_data):
 {{
   "report_title": "DG AI Sentinel V4.0 晨間 10 輪對抗沙盤推演報告",
   "wargame_date": "{datetime.now().strftime("%Y-%m-%d")}",
-  "overall_market_confidence": 88,
-  "cio_executive_summary": "綜合全場評估結論...",
+  "overall_market_confidence": "[請依據夜盤與真實市場漲跌幅，計算並輸出 0~100 的動態全場總信心分數（整數）]",
+  "cio_executive_summary": "[請依據今日市場總結與 VIX 風險，動態給予包含加碼/減碼/續抱的真實全景警示與指令，切勿寫死]",
   "symbol_reports": {{
     "00919": {{
       "symbol": "00919",
       "name": "群益精選高息",
-      "confidence_score": 88,
-      "cio_action_directive": "指令...",
+      "confidence_score": "[0~100 的個股動態信心分數]",
+      "cio_action_directive": "[針對本個股的動態實操指令]",
       "today_strategy_rationale": "理由...",
       "actionable_plan": {{
         "verdict": "🔥 強力多頭 / 逢回分批承接",
@@ -106,7 +106,7 @@ def call_gemini_api(context_data):
     "2330": {{
       "symbol": "2330",
       "name": "台積電",
-      "confidence_score": 91,
+      "confidence_score": "[0~100 的個股動態信心分數]",
       "cio_action_directive": "...",
       "today_strategy_rationale": "...",
       "actionable_plan": {{
@@ -119,7 +119,7 @@ def call_gemini_api(context_data):
     "2454": {{
       "symbol": "2454",
       "name": "聯發科",
-      "confidence_score": 89,
+      "confidence_score": "[0~100 的個股動態信心分數]",
       "cio_action_directive": "...",
       "today_strategy_rationale": "...",
       "actionable_plan": {{
@@ -132,7 +132,7 @@ def call_gemini_api(context_data):
     "3037": {{
       "symbol": "3037",
       "name": "欣興",
-      "confidence_score": 85,
+      "confidence_score": "[0~100 的個股動態信心分數]",
       "cio_action_directive": "...",
       "today_strategy_rationale": "...",
       "actionable_plan": {{
@@ -145,7 +145,7 @@ def call_gemini_api(context_data):
     "0056": {{
       "symbol": "0056",
       "name": "元大高股息",
-      "confidence_score": 88,
+      "confidence_score": "[0~100 的個股動態信心分數]",
       "cio_action_directive": "...",
       "today_strategy_rationale": "...",
       "actionable_plan": {{
@@ -158,7 +158,7 @@ def call_gemini_api(context_data):
     "00878": {{
       "symbol": "00878",
       "name": "國泰永續高息",
-      "confidence_score": 86,
+      "confidence_score": "[0~100 的個股動態信心分數]",
       "cio_action_directive": "...",
       "today_strategy_rationale": "...",
       "actionable_plan": {{
@@ -335,16 +335,34 @@ def generate_simulated_wargame_report(context_data):
         {"round": 10, "focus": "CIO 總評與 00878 最終結案指令", "debate_summary": f"首席投資總監裁定：【00878 國泰永續高息】扮演永續收息大樑，維持防守黃線 ${stop_00878} 之上一路續抱！"}
     ]
 
+    # 動態計算信心分數
+    night_chg_pct = cats.get("cat1_taifex_night", {}).get("night_futures", {}).get("change_pct", 0.0)
+    vix_val = cats.get("cat3_macro_black_swan", {}).get("vix", {}).get("price", 15.0)
+    
+    base_confidence = 80
+    overall_confidence = base_confidence + int(night_chg_pct * 5)
+    if vix_val > 25:
+        overall_confidence -= 20
+    overall_confidence = max(10, min(100, overall_confidence))
+    
+    # 動態 CIO 指令
+    if overall_confidence < 50:
+        cio_summary = f"🚨 【恐慌警訊】夜盤跌幅 {night_chg_pct}%，VIX {vix_val}！市場陷入極度恐慌，信心分數 {overall_confidence}%。請嚴守防守黃線，準備逢大跌啟動分水嶺承接戰術！"
+    elif overall_confidence > 90:
+        cio_summary = f"🔥 【多頭狂熱】夜盤漲幅 {night_chg_pct}%！市場動能強勁，信心分數 {overall_confidence}%。請留意波段停利機會，未破黃線前享受獲利奔跑！"
+    else:
+        cio_summary = f"📊 【動能穩健】夜盤波動 {night_chg_pct}%，VIX {vix_val}。大盤處於區間震盪，信心分數 {overall_confidence}%。未破黃線前維持高持股並收息對沖！"
+
     return {
         "report_title": "DG AI Sentinel V4.0 晨間 10 輪對抗沙盤推演報告",
         "wargame_date": today_str,
-        "overall_market_confidence": 88,
-        "cio_executive_summary": f"台指夜盤與籌碼動能穩健，今日 6 大追蹤標的（2330現價 ${p_2330}、2454現價 ${p_2454}、3037現價 ${p_3037}、00919現價 ${p_00919}）皆依據最新價位設定動態黃線，未破黃線一路緊抱、收息對沖！",
+        "overall_market_confidence": overall_confidence,
+        "cio_executive_summary": cio_summary,
         "symbol_reports": {
             "00919": {
                 "symbol": "00919",
                 "name": "群益精選高息",
-                "confidence_score": 88,
+                "confidence_score": min(100, overall_confidence + 1),
                 "cio_action_directive": f"現價 ${p_00919} 元，收息兼防禦主力；守穩黃線 ${stop_00919} 堅決抱牢。",
                 "today_strategy_rationale": "高息對沖銀行信貸主力，籌碼集中在大戶，波段平穩。",
                 "persona_verdicts": {
@@ -370,7 +388,7 @@ def generate_simulated_wargame_report(context_data):
             "2330": {
                 "symbol": "2330",
                 "name": "台積電",
-                "confidence_score": 91,
+                "confidence_score": min(100, overall_confidence + 5),
                 "cio_action_directive": f"現價 ${p_2330} 元，先進製程霸主；開盤沿月線與動態黃線續抱。",
                 "today_strategy_rationale": "AI 先進晶片與 CoWoS 需求滿載，外資長線買盤支撐。",
                 "persona_verdicts": {
@@ -396,7 +414,7 @@ def generate_simulated_wargame_report(context_data):
             "2454": {
                 "symbol": "2454",
                 "name": "聯發科",
-                "confidence_score": 89,
+                "confidence_score": min(100, overall_confidence + 3),
                 "cio_action_directive": f"現價 ${p_2454} 元，旗艦天璣與 ASIC 雙引擎；守穩黃線維持高持股續抱。",
                 "today_strategy_rationale": "高階智能手機與雲端算力專案放量，籌碼穩定。",
                 "persona_verdicts": {
@@ -422,7 +440,7 @@ def generate_simulated_wargame_report(context_data):
             "3037": {
                 "symbol": "3037",
                 "name": "欣興",
-                "confidence_score": 85,
+                "confidence_score": max(10, overall_confidence - 2),
                 "cio_action_directive": f"現價 ${p_3037} 元，AI 載板供不應求；動態黃線之上續抱並逢回吸納。",
                 "today_strategy_rationale": "載板進入供需緊俏新週期，外資由賣轉買，打底完成。",
                 "persona_verdicts": {
@@ -448,7 +466,7 @@ def generate_simulated_wargame_report(context_data):
             "0056": {
                 "symbol": "0056",
                 "name": "元大高股息",
-                "confidence_score": 88,
+                "confidence_score": min(100, overall_confidence + 2),
                 "cio_action_directive": f"現價 ${p_0056} 元，除息與防禦核心；沿黃線抱牢收息。",
                 "today_strategy_rationale": "歷史填息優異且三大法人穩定吸納，金控電子均衡配置抗震強。",
                 "persona_verdicts": {
@@ -474,7 +492,7 @@ def generate_simulated_wargame_report(context_data):
             "00878": {
                 "symbol": "00878",
                 "name": "國泰永續高息",
-                "confidence_score": 86,
+                "confidence_score": min(100, overall_confidence + 1),
                 "cio_action_directive": f"現價 ${p_00878} 元，永續現金流大樑；緊抱領息滾動複利。",
                 "today_strategy_rationale": "ESG 優質成分股與金融雙支柱，波動極低且穩定貢獻利息。",
                 "persona_verdicts": {

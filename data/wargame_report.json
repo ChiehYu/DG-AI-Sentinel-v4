@@ -1,13 +1,13 @@
 {
   "report_title": "DG AI Sentinel V4.0 晨間 10 輪對抗沙盤推演報告",
   "wargame_date": "2026-07-29",
-  "overall_market_confidence": 88,
-  "cio_executive_summary": "台指夜盤與籌碼動能穩健，今日 6 大追蹤標的（2330現價 $2280.0、2454現價 $3315.0、3037現價 $764.0、00919現價 $29.59）皆依據最新價位設定動態黃線，未破黃線一路緊抱、收息對沖！",
+  "overall_market_confidence": 83,
+  "cio_executive_summary": "📊 【動能穩健】夜盤波動 0.76%，VIX 18.21。大盤處於區間震盪，信心分數 83%。未破黃線前維持高持股並收息對沖！",
   "symbol_reports": {
     "00919": {
       "symbol": "00919",
       "name": "群益精選高息",
-      "confidence_score": 88,
+      "confidence_score": 84,
       "cio_action_directive": "現價 $29.59 元，收息兼防禦主力；守穩黃線 $28.41 堅決抱牢。",
       "today_strategy_rationale": "高息對沖銀行信貸主力，籌碼集中在大戶，波段平穩。",
       "persona_verdicts": {
@@ -154,7 +154,7 @@
     "2330": {
       "symbol": "2330",
       "name": "台積電",
-      "confidence_score": 91,
+      "confidence_score": 88,
       "cio_action_directive": "現價 $2280.0 元，先進製程霸主；開盤沿月線與動態黃線續抱。",
       "today_strategy_rationale": "AI 先進晶片與 CoWoS 需求滿載，外資長線買盤支撐。",
       "persona_verdicts": {
@@ -301,7 +301,7 @@
     "2454": {
       "symbol": "2454",
       "name": "聯發科",
-      "confidence_score": 89,
+      "confidence_score": 86,
       "cio_action_directive": "現價 $3315.0 元，旗艦天璣與 ASIC 雙引擎；守穩黃線維持高持股續抱。",
       "today_strategy_rationale": "高階智能手機與雲端算力專案放量，籌碼穩定。",
       "persona_verdicts": {
@@ -448,7 +448,7 @@
     "3037": {
       "symbol": "3037",
       "name": "欣興",
-      "confidence_score": 85,
+      "confidence_score": 81,
       "cio_action_directive": "現價 $764.0 元，AI 載板供不應求；動態黃線之上續抱並逢回吸納。",
       "today_strategy_rationale": "載板進入供需緊俏新週期，外資由賣轉買，打底完成。",
       "persona_verdicts": {
@@ -595,7 +595,7 @@
     "0056": {
       "symbol": "0056",
       "name": "元大高股息",
-      "confidence_score": 88,
+      "confidence_score": 85,
       "cio_action_directive": "現價 $50.0 元，除息與防禦核心；沿黃線抱牢收息。",
       "today_strategy_rationale": "歷史填息優異且三大法人穩定吸納，金控電子均衡配置抗震強。",
       "persona_verdicts": {
@@ -742,7 +742,7 @@
     "00878": {
       "symbol": "00878",
       "name": "國泰永續高息",
-      "confidence_score": 86,
+      "confidence_score": 84,
       "cio_action_directive": "現價 $32.55 元，永續現金流大樑；緊抱領息滾動複利。",
       "today_strategy_rationale": "ESG 優質成分股與金融雙支柱，波動極低且穩定貢獻利息。",
       "persona_verdicts": {
