@@ -1,4 +1,10 @@
 [
+    { "id": 1722254490006, "date": "2026-07-29", "symbol": "2330", "type": "buy", "price": 2208.75, "shares": 40 },
+    { "id": 1722254490005, "date": "2026-07-29", "symbol": "2454", "type": "buy", "price": 3032.5, "shares": 10 },
+    { "id": 1722254490004, "date": "2026-07-29", "symbol": "3037", "type": "buy", "price": 688.0, "shares": 15 },
+    { "id": 1722254490003, "date": "2026-07-29", "symbol": "00919", "type": "buy", "price": 28.55, "shares": 1000 },
+    { "id": 1722254490002, "date": "2026-07-29", "symbol": "0056", "type": "buy", "price": 46.81, "shares": 1000 },
+    { "id": 1722254490001, "date": "2026-07-29", "symbol": "00878", "type": "buy", "price": 30.9, "shares": 1000 },
     { "id": 1722168090003, "date": "2026-07-28", "symbol": "3037", "type": "buy", "price": 780.00, "shares": 10 },
     { "id": 1722168090002, "date": "2026-07-28", "symbol": "2454", "type": "buy", "price": 3378.00, "shares": 5 },
     { "id": 1722168090001, "date": "2026-07-28", "symbol": "2330", "type": "buy", "price": 2285.00, "shares": 5 },
