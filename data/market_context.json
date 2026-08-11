@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-09 23:38:49",
+  "timestamp": "2026-08-10 23:41:58",
   "version": "DG AI Sentinel V4.0 Wargame Data Engine",
   "categories": {
     "cat1_taifex_night": {
@@ -7,19 +7,19 @@
       "night_futures": {
         "symbol": "WTX&.TW",
         "name": "台指期夜盤",
-        "price": 44543.0,
-        "change": 285.0,
-        "change_pct": 0.64,
+        "price": 45033.0,
+        "change": 736.0,
+        "change_pct": 1.66,
         "status": "success",
-        "updated_at": "2026-08-09 23:38"
+        "updated_at": "2026-08-10 23:41"
       },
       "institutional_oi": {
-        "foreign_net_oi": -87911,
-        "foreign_net_change": 1449,
-        "invest_trust_net_oi": 83077,
-        "dealer_net_oi": 2512,
-        "foreign_spot_buy_sell_amt": -407.16,
-        "summary_assessment": "外資期貨淨未平倉 -87,911 口 (單日變化 +1,449 口)，現貨買賣超 -407.16 億元，日夜盤多空對沖監控中。"
+        "foreign_net_oi": -89201,
+        "foreign_net_change": -1306,
+        "invest_trust_net_oi": 83751,
+        "dealer_net_oi": 1679,
+        "foreign_spot_buy_sell_amt": 517.41,
+        "summary_assessment": "外資期貨淨未平倉 -89,201 口 (單日變化 -1,306 口)，現貨買賣超 +517.41 億元，日夜盤多空對沖監控中。"
       }
     },
     "cat2_us_stocks": {
@@ -28,166 +28,166 @@
         "sp500": {
           "symbol": "^GSPC",
           "name": "標普500指數 (S&P 500)",
-          "price": 7757.64,
-          "change": 47.68,
-          "change_pct": 0.62,
+          "price": 7753.11,
+          "change": -4.53,
+          "change_pct": -0.06,
           "status": "success",
-          "updated_at": "2026-08-09 23:38"
+          "updated_at": "2026-08-10 23:41"
         },
         "nasdaq": {
           "symbol": "^IXIC",
           "name": "那斯達克綜合指數 (Nasdaq)",
-          "price": 26690.62,
-          "change": 342.27,
-          "change_pct": 1.3,
+          "price": 26605.36,
+          "change": -85.26,
+          "change_pct": -0.32,
           "status": "success",
-          "updated_at": "2026-08-09 23:38"
+          "updated_at": "2026-08-10 23:41"
         },
         "sox": {
           "symbol": "^SOX",
           "name": "費城半導體指數 (SOX)",
-          "price": 12356.79,
-          "change": 308.1,
-          "change_pct": 2.56,
+          "price": 11993.86,
+          "change": -362.93,
+          "change_pct": -2.94,
           "status": "success",
-          "updated_at": "2026-08-09 23:38"
+          "updated_at": "2026-08-10 23:41"
         },
         "dow_jones": {
           "symbol": "^DJI",
           "name": "道瓊工業指數 (Dow Jones)",
-          "price": 54036.93,
-          "change": 151.83,
-          "change_pct": 0.28,
+          "price": 53975.98,
+          "change": -60.95,
+          "change_pct": -0.11,
           "status": "success",
-          "updated_at": "2026-08-09 23:38"
+          "updated_at": "2026-08-10 23:41"
         }
       },
       "tech_leaders": {
         "tsm_adr": {
           "symbol": "TSM",
           "name": "台積電 ADR (TSM)",
-          "price": 420.04,
-          "change": 1.84,
-          "change_pct": 0.44,
+          "price": 418.47,
+          "change": -1.57,
+          "change_pct": -0.37,
           "status": "success",
-          "updated_at": "2026-08-09 23:38"
+          "updated_at": "2026-08-10 23:41"
         },
         "nvda": {
           "symbol": "NVDA",
           "name": "輝達 (NVIDIA)",
-          "price": 223.96,
-          "change": 4.97,
-          "change_pct": 2.27,
+          "price": 217.55,
+          "change": -6.41,
+          "change_pct": -2.86,
           "status": "success",
-          "updated_at": "2026-08-09 23:38"
+          "updated_at": "2026-08-10 23:41"
         },
-        "tsm_adr_implied_twd": 2707.9,
-        "tsm_adr_premium_pct": 14.26,
-        "tsmc_tw_price": 2370.0
+        "tsm_adr_implied_twd": 2697.1,
+        "tsm_adr_premium_pct": 13.32,
+        "tsmc_tw_price": 2380.0
       },
-      "summary_assessment": "費半收 12356.79 (2.56%)，台積電 ADR 溢價 14.26%，半導體與 AI 供應鏈動能明確。"
+      "summary_assessment": "費半收 11993.86 (-2.94%)，台積電 ADR 溢價 13.32%，半導體與 AI 供應鏈動能明確。"
     },
     "cat3_macro_black_swan": {
       "category": "3. 宏觀黑天鵝與外匯殖利率 (Macro VIX, Yields & Forex)",
       "vix": {
         "symbol": "^VIX",
         "name": "CBOE 恐慌指數 (VIX)",
-        "price": 14.9,
-        "change": -0.25,
-        "change_pct": -1.65,
+        "price": 15.46,
+        "change": 0.56,
+        "change_pct": 3.76,
         "status": "success",
-        "updated_at": "2026-08-09 23:38"
+        "updated_at": "2026-08-10 23:41"
       },
       "usd_twd": {
         "symbol": "TWD=X",
         "name": "美元兌新台幣匯率 (USD/TWD)",
-        "price": 32.234,
-        "change": 0.027,
-        "change_pct": 0.08,
+        "price": 32.226,
+        "change": -0.009,
+        "change_pct": -0.03,
         "status": "success",
-        "updated_at": "2026-08-09 23:38"
+        "updated_at": "2026-08-10 23:41"
       },
       "us10y_yield": {
         "symbol": "^TNX",
         "name": "美國10年期公債殖利率 (US 10Y Yield)",
-        "price": 4.66,
-        "change": -0.01,
-        "change_pct": -0.21,
+        "price": 4.7,
+        "change": 0.04,
+        "change_pct": 0.84,
         "status": "success",
-        "updated_at": "2026-08-09 23:38"
+        "updated_at": "2026-08-10 23:41"
       },
       "status_alerts": {
         "vix_status": "安全區間 (平穩)",
         "forex_status": "匯率穩定"
       },
-      "summary_assessment": "當前 VIX 14.9 (安全區間 (平穩))，匯率 32.234 (匯率穩定)，宏觀環境穩定無黑天鵝風險。"
+      "summary_assessment": "當前 VIX 15.46 (安全區間 (平穩))，匯率 32.226 (匯率穩定)，宏觀環境穩定無黑天鵝風險。"
     },
     "cat4_taiwan_margin": {
       "category": "4. 台股市場盤後融資變化與籌碼壓力 (Taiwan Margin Trading Balance)",
       "margin_analysis": {
-        "market_margin_maintenance_rate": 166.91,
-        "market_margin_maintenance_status": "安全穩健 (>161.91%)",
-        "market_daily_margin_balance_twd": 5376.65,
-        "market_daily_margin_change_twd": 48.6,
+        "market_margin_maintenance_rate": 166.36,
+        "market_margin_maintenance_status": "安全穩健 (>161.36%)",
+        "market_daily_margin_balance_twd": 5452.96,
+        "market_daily_margin_change_twd": 76.31,
         "stocks_margin": {
           "0056": {
             "symbol": "0056",
             "name": "元大高股息 ETF",
-            "margin_shares_balance": 8177,
-            "margin_shares_daily_change": 15,
-            "short_shares_balance": 153,
-            "short_shares_daily_change": -3
+            "margin_shares_balance": 6905,
+            "margin_shares_daily_change": -1272,
+            "short_shares_balance": 186,
+            "short_shares_daily_change": 33
           },
           "00878": {
             "symbol": "00878",
             "name": "國泰永續高息 ETF",
-            "margin_shares_balance": 4233,
-            "margin_shares_daily_change": 98,
+            "margin_shares_balance": 4484,
+            "margin_shares_daily_change": 251,
             "short_shares_balance": 3,
-            "short_shares_daily_change": -7
+            "short_shares_daily_change": 0
           },
           "00919": {
             "symbol": "00919",
             "name": "群益台灣精選高息 ETF",
-            "margin_shares_balance": 9666,
-            "margin_shares_daily_change": 1409,
-            "short_shares_balance": 50,
-            "short_shares_daily_change": -74
+            "margin_shares_balance": 9536,
+            "margin_shares_daily_change": -130,
+            "short_shares_balance": 52,
+            "short_shares_daily_change": 2
           },
           "2330": {
             "symbol": "2330",
             "name": "台積電",
-            "margin_shares_balance": 29657,
-            "margin_shares_daily_change": -292,
-            "short_shares_balance": 33,
-            "short_shares_daily_change": -5
+            "margin_shares_balance": 29788,
+            "margin_shares_daily_change": 131,
+            "short_shares_balance": 32,
+            "short_shares_daily_change": -1
           },
           "2454": {
             "symbol": "2454",
             "name": "聯發科",
-            "margin_shares_balance": 10104,
-            "margin_shares_daily_change": 130,
-            "short_shares_balance": 31,
-            "short_shares_daily_change": -2
+            "margin_shares_balance": 10133,
+            "margin_shares_daily_change": 29,
+            "short_shares_balance": 34,
+            "short_shares_daily_change": 3
           },
           "3037": {
             "symbol": "3037",
             "name": "欣興",
-            "margin_shares_balance": 39328,
-            "margin_shares_daily_change": -305,
-            "short_shares_balance": 552,
-            "short_shares_daily_change": -48
+            "margin_shares_balance": 39054,
+            "margin_shares_daily_change": -274,
+            "short_shares_balance": 682,
+            "short_shares_daily_change": 130
           }
         },
         "core_flagship_margin": {
           "symbol": "00919",
           "name": "群益台灣精選高息 ETF",
-          "margin_shares_balance": 9666,
-          "margin_shares_daily_change": 1409,
-          "short_shares_balance": 50,
-          "short_shares_daily_change": -74
+          "margin_shares_balance": 9536,
+          "margin_shares_daily_change": -130,
+          "short_shares_balance": 52,
+          "short_shares_daily_change": 2
         },
-        "summary_assessment": "大盤融資餘額 5376.65 億元 (單日變化 +48.60 億)，整體維持率 166.91% 安全穩健。"
+        "summary_assessment": "大盤融資餘額 5452.96 億元 (單日變化 +76.31 億)，整體維持率 166.36% 安全穩健。"
       }
     }
   },
@@ -195,38 +195,38 @@
     "00919": {
       "symbol": "00919",
       "name": "群益精選高息",
-      "price": 29.74,
-      "change": 0.14,
-      "change_pct": 0.47,
+      "price": 30.03,
+      "change": 0.29,
+      "change_pct": 0.98,
       "status": "success",
-      "updated_at": "2026-08-09 23:38"
+      "updated_at": "2026-08-10 23:41"
     },
     "2330": {
       "symbol": "2330",
       "name": "台積電",
-      "price": 2370.0,
-      "change": 5.0,
-      "change_pct": 0.21,
+      "price": 2380.0,
+      "change": 10.0,
+      "change_pct": 0.42,
       "status": "success",
-      "updated_at": "2026-08-09 23:38"
+      "updated_at": "2026-08-10 23:41"
     },
     "2454": {
       "symbol": "2454",
       "name": "聯發科",
-      "price": 3900.0,
-      "change": -20.0,
-      "change_pct": -0.51,
+      "price": 3960.0,
+      "change": 60.0,
+      "change_pct": 1.54,
       "status": "success",
-      "updated_at": "2026-08-09 23:38"
+      "updated_at": "2026-08-10 23:41"
     },
     "3037": {
       "symbol": "3037",
       "name": "欣興",
-      "price": 955.0,
-      "change": -18.0,
-      "change_pct": -1.85,
+      "price": 992.0,
+      "change": 37.0,
+      "change_pct": 3.87,
       "status": "success",
-      "updated_at": "2026-08-09 23:38"
+      "updated_at": "2026-08-10 23:41"
     },
     "0056": {
       "symbol": "0056",
@@ -235,16 +235,16 @@
       "change": -0.25,
       "change_pct": -0.49,
       "status": "success",
-      "updated_at": "2026-08-09 23:38"
+      "updated_at": "2026-08-10 23:41"
     },
     "00878": {
       "symbol": "00878",
       "name": "國泰永續高息",
-      "price": 32.81,
-      "change": -0.03,
-      "change_pct": -0.09,
+      "price": 33.4,
+      "change": 0.59,
+      "change_pct": 1.8,
       "status": "success",
-      "updated_at": "2026-08-09 23:38"
+      "updated_at": "2026-08-10 23:41"
     }
   }
 }
